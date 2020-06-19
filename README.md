@@ -1,2 +1,2 @@
-# messenger_android
+# Messenger Android
 Android Application of Messenger
