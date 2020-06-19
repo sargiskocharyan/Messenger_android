@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="finishRegistrationViewModel"
+            type="com.example.dynamicmessenger.authorization.viewModels.FinishRegistrationViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <com.example.dynamicmessenger.customViews.CustomGradientView
+            android:id="@+id/customGradientView2"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            app:downEndColor="@color/GradientEndColor"
+            app:downStartColor="@color/GradientStartColor"
+            app:endColor="@color/GradientEndColorDark"
+            app:isTopView="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:startColor="@color/GradientStartColorDark" />
+
+        <com.example.dynamicmessenger.customViews.CustomGradientView
+            android:id="@+id/customGradientView"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            app:downEndColor="@color/GradientEndColor"
+            app:downStartColor="@color/GradientStartColor"
+            app:endColor="@color/GradientEndColorDark"
+            app:isTopView="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:startColor="@color/GradientStartColorDark" />
+
+        <TextView
+            android:id="@+id/finish_registration_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:text="@string/congratulations_you_are_registered"
+            android:textSize="30sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/customGradientView2" />
+
+        <Button
+            android:id="@+id/next_button"
+            style="@style/ButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="110dp"
+            android:background="@drawable/enable_button_design"
+            android:text="@string/continue_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

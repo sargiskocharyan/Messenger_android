@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/emailAndPhoneFragment">
+
+    <fragment
+        android:id="@+id/emailAndPhoneFragment"
+        android:name="com.example.dynamicmessenger.authorization.fragments.EmailAndPhoneFragment"
+        android:label="EmailAndPhoneFragment"
+        tools:layout="@layout/fragment_email_and_phone">
+        <action
+            android:id="@+id/action_emailAndPhoneFragment_to_personLoginFragment"
+            app:destination="@id/personLoginFragment"
+            app:enterAnim="@android:anim/fade_in" />
+    </fragment>
+    <fragment
+        android:id="@+id/personRegistrationFragment"
+        android:name="com.example.dynamicmessenger.authorization.fragments.PersonRegistrationFragment"
+        android:label="PersonRegistrationFragment"
+        tools:layout="@layout/fragment_person_registration">
+        <action
+            android:id="@+id/action_personRegistrationFragment_to_finishRegistrationFragment"
+            app:destination="@id/finishRegistrationFragment"
+            app:enterAnim="@android:anim/fade_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/personLoginFragment"
+        android:name="com.example.dynamicmessenger.authorization.fragments.PersonLoginFragment"
+        android:label="PersonLoginFragment"
+        tools:layout="@layout/fragment_person_login">
+        <action
+            android:id="@+id/action_personLoginFragment_to_personRegistrationFragment"
+            app:destination="@id/personRegistrationFragment"
+            app:enterAnim="@android:anim/fade_in" />
+        <action
+            android:id="@+id/action_personLoginFragment_to_finishRegistrationFragment"
+            app:destination="@id/finishRegistrationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/finishRegistrationFragment"
+        android:name="com.example.dynamicmessenger.authorization.fragments.FinishRegistrationFragment"
+        android:label="FinishRegistrationFragment"
+        tools:layout="@layout/fragment_finish_registration"/>
+
+</navigation>

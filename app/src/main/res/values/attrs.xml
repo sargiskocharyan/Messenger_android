@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomGradientView">
+        <attr name="startColor" format="color" />
+        <attr name="downStartColor" format="color" />
+        <attr name="endColor" format="color" />
+        <attr name="downEndColor" format="color" />
+        <attr name="isTopView" format="boolean" />
+        <attr name="borderWidth" format="dimension" />
+    </declare-styleable>
+</resources>

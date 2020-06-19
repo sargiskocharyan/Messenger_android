@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#0024F9</color>
+    <color name="GradientStartColorDark">#b536ff</color>
+    <color name="GradientStartColor">#BD8FD9</color>
+    <color name="GradientEndColorDark">#368dff</color>
+    <color name="GradientEndColor">#8CB0DF</color>
+    <color name="holoBlueDark">@android:color/holo_blue_dark</color>
+    <color name="holoRedDark">@android:color/holo_red_dark</color>
+    <color name="invisibleColor">#579C9C9C</color>
+    <color name="gray">#606060</color>
+    <color name="appMainColour">#805EFB</color>
+    <color name="appMainBlack">#000000</color>
+<!--    <color name="appMain"-->
+<!--    <color name="DisabledButton">#787878</color>-->
+</resources>

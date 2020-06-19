@@ -1,0 +1,2 @@
+rootProject.name='Dynamic Messenger'
+include ':app'

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dynamic Messenger</string>
+    <string name="first_page_asking_text">Введите Ваш номер телефона и email</string>
+    <string name="sms_comment">На этот номер будет отправлено SMS с кодом</string>
+    <string name="email_comment">Email будет использован для подтверждения</string>
+    <string name="continue_button">Продолжить</string>
+    <string name="phone_number">Номер телефона</string>
+    <string name="email">Email</string>
+    <string name="registration">Регистрация</string>
+    <string name="login">Логин</string>
+    <string name="resend_verification_code">Отправить заново код подтверждения?</string>
+    <string name="congratulations_you_are_registered">Поздравляю, вы зарегистрированы</string>
+    <string name="verification_code">Код подтверждения</string>
+    <string name="name">Имя</string>
+    <string name="last_name">Фамилия</string>
+    <string name="username">Имя пользователя</string>
+    <string name="skip">Пропустить</string>
+    <string name="language">Language</string>
+    <string name="phone">Phone</string>
+
+</resources>

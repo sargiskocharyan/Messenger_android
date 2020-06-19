@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Dynamic Messenger</string>
+    <string name="first_page_asking_text">Enter your email for login or register</string>
+    <string name="sms_comment">In this phone number will be sent SMS with the code</string>
+    <string name="email_comment">Email will be used to confirm</string>
+    <string name="continue_button">Continue</string>
+    <string name="phone_number">Phone number</string>
+    <string name="email">Email</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="registration">Registration</string>
+    <string name="login">Login</string>
+    <string name="resend_verification_code">Resend verification code?</string>
+    <string name="congratulations_you_are_registered">Congratulations, you are registered</string>
+    <string name="next" translatable="false">Next</string>
+    <string name="verification_code">Verification code</string>
+    <string name="name">Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="username">Username</string>
+    <string name="skip">Skip</string>
+    <string name="language">Language</string>
+    <string name="phone">Phone</string>
+    <string name="dark_mode">Dark mode</string>
+    <string name="contacts">Contacts</string>
+    <string name="update_your_information">Update your information</string>
+</resources>

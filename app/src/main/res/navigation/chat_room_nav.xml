@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/chat_room_nav"
+    app:startDestination="@id/chatRoomFragment">
+
+    <fragment
+        android:id="@+id/chatRoomFragment"
+        android:name="com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment"
+        android:label="fragment_chat_room"
+        tools:layout="@layout/fragment_chat_room" />
+</navigation>
