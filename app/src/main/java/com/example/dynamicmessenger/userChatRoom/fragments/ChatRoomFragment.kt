@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.RelativeLayout
+import androidx.core.view.size
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -53,6 +55,7 @@ class ChatRoomFragment : Fragment() {
 //        linearLayoutManager.stackFromEnd = true
         val firstVisibleItemPosition =  linearLayoutManager.findFirstVisibleItemPosition()
         binding.chatRecyclerView.layoutManager = linearLayoutManager
+
         updateRecyclerView(receiverID)
         binding.root.setHasTransientState(true)
         Log.i("+++itemCount", adapter.itemCount.toString())
@@ -71,6 +74,12 @@ class ChatRoomFragment : Fragment() {
         binding.sendMessageButton.setOnClickListener {
             socketManager.sendMessage(receiverID, binding.sendMessageEditText)
         }
+
+//        binding.sendMessageEditText.setOnFocusChangeListener { v, hasFocus ->
+//            if (hasFocus) {
+//                binding.messagesRelativeLayout.setH = RelativeLayout.LayoutParams.MATCH_PARENT
+//            }
+//        }
 
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
             override fun onChanged() {

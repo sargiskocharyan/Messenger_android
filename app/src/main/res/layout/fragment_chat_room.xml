@@ -8,6 +8,7 @@
             type="com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel"/>
     </data>
     <RelativeLayout
+        android:id="@+id/messagesRelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 <!--<ScrollView-->
