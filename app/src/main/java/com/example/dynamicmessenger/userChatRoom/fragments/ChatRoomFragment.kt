@@ -1,14 +1,12 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
-import android.database.DataSetObserver
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.RelativeLayout
-import androidx.core.view.size
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.view.Window
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -16,18 +14,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
-import com.example.dynamicmessenger.network.authorization.models.ChatRoom
-import com.example.dynamicmessenger.network.authorization.models.Message
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.Socket
-import com.google.gson.Gson
-import kotlinx.coroutines.awaitAll
-import org.json.JSONException
-import org.json.JSONObject
 
 
 class ChatRoomFragment : Fragment() {
@@ -75,10 +66,38 @@ class ChatRoomFragment : Fragment() {
             socketManager.sendMessage(receiverID, binding.sendMessageEditText)
         }
 
-//        binding.sendMessageEditText.setOnFocusChangeListener { v, hasFocus ->
-//            if (hasFocus) {
-//                binding.messagesRelativeLayout.setH = RelativeLayout.LayoutParams.MATCH_PARENT
+//        binding.sendMessageEditText.addTextChangedListener(object : TextWatcher {
+//            @SuppressLint("ResourceAsColor")
+//            override fun afterTextChanged(s: Editable?) {
+//                scrollToBottom(binding, adapter)
 //            }
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+////                scrollToBottom(binding, adapter)
+//            }
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+////                scrollToBottom(binding, adapter)
+//            }
+//        })
+
+        binding.sendMessageEditText.setOnFocusChangeListener { _, hasFocus ->
+            Log.i("+++", hasFocus.toString())
+            if (hasFocus) {
+                scrollToBottom(binding, adapter)
+            }
+        }
+        var mLastContentHeight = 0
+        val keyboardLayoutListener = OnGlobalLayoutListener {
+            val currentContentHeight: Int = binding.messagesRelativeLayout.height
+            if (mLastContentHeight > currentContentHeight + 100) {
+                mLastContentHeight = currentContentHeight
+            } else if (currentContentHeight > mLastContentHeight + 100) {
+                mLastContentHeight = currentContentHeight
+            }
+        }
+
+
+//        binding.sendMessageEditText.setOnClickListener {
+//            scrollToBottom(binding, adapter)
 //        }
 
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
