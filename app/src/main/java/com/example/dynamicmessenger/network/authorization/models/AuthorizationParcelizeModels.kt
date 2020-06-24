@@ -1,7 +1,9 @@
 package com.example.dynamicmessenger.network.authorization.models
 
+import android.annotation.SuppressLint
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import java.text.SimpleDateFormat
 
 @Parcelize
 data class MailExistProperty(val mailExist: Boolean, val code: String) : Parcelable
@@ -37,7 +39,21 @@ data class Users(val users: List<UserContacts>) : Parcelable
 data class Chat(val id: String, val name: String?, val lastname: String?, val username: String, val message: Message?) : Parcelable
 
 @Parcelize
-data class Message(val sender: Sender, val text: String, var createdAt: String, val reciever: String) : Parcelable
+data class Message(val sender: Sender, val text: String, var createdAt: String, val reciever: String) : Parcelable, Comparable<Message> {
+    @SuppressLint("SimpleDateFormat")
+    override fun compareTo(other: Message): Int {
+        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        val area1 = format.parse(createdAt)
+        val area2 = format.parse(other.createdAt)
+        if(area1 == area2){
+            return 0;
+        }else if(area1 < area2){
+            return -1;
+        }
+        return 1;
+    }
+
+}
 
 @Parcelize
 data class Sender(val id: String, val name: String) : Parcelable

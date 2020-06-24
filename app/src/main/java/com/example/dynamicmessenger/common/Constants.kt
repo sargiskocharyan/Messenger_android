@@ -2,10 +2,10 @@ package com.example.dynamicmessenger.common
 
 import java.util.regex.Pattern
 
-class MyUrls {
+class ResponseUrls {
     companion object {
         const val ErosServerIP = "http://192.168.0.105:3000/"
-        const val ErosServerIPForSocket = "http://192.168.0.105:3000"
+        const val ErosServerIPForSocket = "http://192.168.0.101:3000"
         const val herokuIP = "https://messenger-dynamic.herokuapp.com/"
         const val herokuIPForSocket = "https://messenger-dynamic.herokuapp.com"
         const val reg = "register"
@@ -18,7 +18,7 @@ class MyUrls {
         const val searchContacts = "findusers"
         const val addContact = "addcontact"
         const val logout = "user/logout"
-        const val chats = "chats/"
+        const val chats = "chats"
     }
 }
 
@@ -33,6 +33,7 @@ class SharedPrefConstants {
         const val sharedPrefUser = "user"
         const val sharedPrefDarkMode = "darkMode"
         const val sharedPrefReceiverID = "receiverID"
+        const val sharedPrefIsContacts = "isContacts"
     }
 }
 

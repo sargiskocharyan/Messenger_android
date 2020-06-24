@@ -1,12 +1,10 @@
 package com.example.dynamicmessenger.userHome.viewModels
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import com.example.dynamicmessenger.network.authorization.ChatsApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
-import com.example.dynamicmessenger.network.authorization.models.UserContacts
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import retrofit2.Call

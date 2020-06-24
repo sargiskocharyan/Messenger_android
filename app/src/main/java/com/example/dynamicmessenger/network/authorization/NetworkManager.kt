@@ -1,10 +1,8 @@
 package com.example.dynamicmessenger.network.authorization
 
 import com.example.dynamicmessenger.common.MyHeaders
-import com.example.dynamicmessenger.common.MyUrls
+import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.network.authorization.models.*
-import com.github.nkzawa.socketio.client.IO
-import com.github.nkzawa.socketio.client.Socket
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -12,9 +10,8 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
-import java.net.URISyntaxException
 
-private val BASE_URL = MyUrls.herokuIP
+private val BASE_URL = ResponseUrls.herokuIP
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
@@ -29,7 +26,7 @@ private val retrofit = Retrofit.Builder()
 //Email exist
 interface JsonPlaceHolderMailExistApi {
     @Headers(MyHeaders.contentType)
-    @POST(MyUrls.mailIsExist)
+    @POST(ResponseUrls.mailIsExist)
     fun isMailExist(@Body task: EmailExistTask):
             Call<MailExistProperty>
 }
@@ -44,7 +41,7 @@ object MailExistApi {
 //Login
 interface JsonPlaceHolderLoginApi {
     @Headers(MyHeaders.accept)
-    @POST(MyUrls.login)
+    @POST(ResponseUrls.login)
     fun loginResponse(@Body task: LoginTask):
             Call<LoginProperty>
 
@@ -60,7 +57,7 @@ object LoginApi {
 //Registration
 interface JsonPlaceHolderRegistrationApi {
     @Headers(MyHeaders.accept)
-    @POST(MyUrls.reg)
+    @POST(ResponseUrls.reg)
     fun registrationResponse(@Body loginTask: LoginTask):
             Call<RegistrationProperty>
 }
@@ -75,7 +72,7 @@ object RegistrationApi {
 //Update User
 interface JsonPlaceHolderUpdateUserApi {
     @Headers(MyHeaders.accept)
-    @POST(MyUrls.updateUser)
+    @POST(ResponseUrls.updateUser)
     fun updateUserResponse(@Header (MyHeaders.tokenAuthorization) header: String,
                            @Body updateUserTask: UpdateUserTask):
             Call<UpdateUserProperty>
@@ -90,7 +87,7 @@ object UpdateUserApi {
 
 //User token verify
 interface JsonPlaceHolderUserTokenVerifyApi {
-    @POST(MyUrls.verifyToken)
+    @POST(ResponseUrls.verifyToken)
     fun userTokenResponse(@Header (MyHeaders.tokenAuthorization) header: String):
             Call<UserTokenProperty>
 }
@@ -105,7 +102,7 @@ object UserTokenVerifyApi {
 //University
 interface JsonPlaceHolderUniversityApi {
     @Headers(MyHeaders.accept)
-    @GET(MyUrls.allUniversity)
+    @GET(ResponseUrls.allUniversity)
     fun universityResponse(@Header (MyHeaders.tokenAuthorization) header: String):
             Call<List<UniversityProperty>>
 }
@@ -120,7 +117,7 @@ object UniversityApi {
 //User contacts
 interface JsonPlaceHolderContactsApi {
     @Headers(MyHeaders.accept)
-    @GET(MyUrls.contacts)
+    @GET(ResponseUrls.contacts)
     fun contactsResponse(@Header (MyHeaders.tokenAuthorization) header: String):
             Call<List<UserContacts>>
 }
@@ -136,7 +133,7 @@ object ContactsApi {
 //Search contacts
 interface JsonPlaceHolderSearchContactsApi {
     @Headers(MyHeaders.accept)
-    @POST(MyUrls.searchContacts)
+    @POST(ResponseUrls.searchContacts)
     fun contactsSearchResponse(@Header (MyHeaders.tokenAuthorization) header: String,
                                @Body term: SearchTask) :
             Call<Users>
@@ -153,7 +150,7 @@ object SearchContactsApi {
 //Add Contact
 interface JsonPlaceHolderAddContactApi {
     @Headers(MyHeaders.accept)
-    @POST(MyUrls.addContact)
+    @POST(ResponseUrls.addContact)
     fun addContactResponse(@Header (MyHeaders.tokenAuthorization) header: String,
                            @Body userID : AddUserContactTask) :
             Call<Void>
@@ -170,7 +167,7 @@ object AddContactApi {
 //Logout
 interface JsonPlaceHolderLogoutApi {
     @Headers(MyHeaders.accept)
-    @POST(MyUrls.logout)
+    @POST(ResponseUrls.logout)
     fun logoutResponse(@Header (MyHeaders.tokenAuthorization) header: String) :
             Call<Void>
 }
@@ -186,7 +183,7 @@ object LogoutApi {
 //Chats
 interface JsonPlaceHolderChatsApi {
     @Headers(MyHeaders.accept)
-    @GET(MyUrls.chats)
+    @GET("${ResponseUrls.chats}/")
     fun chatsResponse(@Header (MyHeaders.tokenAuthorization) header: String) :
             Call<List<Chat>>
 }
@@ -202,7 +199,7 @@ object ChatsApi {
 //Chat room
 interface JsonPlaceHolderChatRoomApi {
     @Headers(MyHeaders.accept)
-    @GET("${MyUrls.chats}{id}")
+    @GET("${ResponseUrls.chats}/{id}")
     fun chatRoomResponse(@Header (MyHeaders.tokenAuthorization) header: String,
                          @Path ("id") receiverId: String) :
             Call<List<ChatRoom>>

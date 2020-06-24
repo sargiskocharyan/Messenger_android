@@ -58,17 +58,20 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
                 val newFormat = SimpleDateFormat("HH:mm")
                 timeInHours = newFormat.format(date)
                 holder.messageTime.text = timeInHours
-            } else {
-                val newFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+            } else if ((currentDate.day != date.day) || (currentDate.month != date.month) && (currentDate.year == date.year)) {
+                val newFormat = SimpleDateFormat("MMMM-dd")
                 timeInHours = newFormat.format(date)
                 holder.messageTime.text = timeInHours
+            } else {
+                holder.messageTime.setText(R.string.long_time_ago)
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        holder.chat = item
-        holder.lastname.text = item.lastname
+
         holder.name.text = item.name
+        holder.chat = item
+        holder.lastname.text = item.lastname ?: item.username
         holder.lastMessage.text = item.message?.text
     }
 

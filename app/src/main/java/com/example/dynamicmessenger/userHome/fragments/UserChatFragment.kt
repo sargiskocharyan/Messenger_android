@@ -1,8 +1,6 @@
 package com.example.dynamicmessenger.userHome.fragments
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,12 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
-import com.example.dynamicmessenger.network.authorization.models.Chat
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.adapters.UserChatsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserChatViewModel
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class UserChatFragment : Fragment() {
@@ -45,20 +39,9 @@ class UserChatFragment : Fragment() {
         return binding.root
     }
 
-//    @SuppressLint("SimpleDateFormat")
     private fun updateRecyclerView(adapter: UserChatsAdapter) {
         viewModel.getUserChatsFromNetwork(requireContext()) {
-//            it.forEach {chat ->
-//                val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-//                val date: Date = format.parse(chat.message?.createdAt)!!
-//                Log.i("+++", date.time.toString())
-//                chat.message!!.createdAt = date.toString()
-//            }
-//            it.sortedBy {chat ->
-//                chat.message!!.createdAt
-//            }
-
-            adapter.data = it
+            adapter.data = it.sortedWith(compareBy { chat -> chat.message }).reversed()
             adapter.notifyDataSetChanged()
         }
     }

@@ -22,4 +22,5 @@
     <string name="dark_mode">Dark mode</string>
     <string name="contacts">Contacts</string>
     <string name="update_your_information">Update your information</string>
+    <string name="long_time_ago">Long time ago</string>
 </resources>

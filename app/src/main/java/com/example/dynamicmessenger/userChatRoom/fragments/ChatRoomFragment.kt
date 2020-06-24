@@ -55,17 +55,18 @@ class ChatRoomFragment : Fragment() {
         socketManager = SocketManager(requireContext())
 
         try {
-            mSocket = socketManager.getSocketInstance()
+            mSocket = socketManager.getSocketInstance()!!
         } catch (e: Exception){
             Log.i("+++", e.toString())
         }
-        mSocket.on("message", socketManager.onMessage(adapter, receiverID, activity))
         mSocket.connect()
-        mSocket.emit("messageTest" , "Davona")
+        mSocket.on("message", socketManager.onMessage(adapter, receiverID, activity))
         binding.sendMessageButton.setOnClickListener {
+            Log.i("+++", "send message $receiverID ${binding.sendMessageEditText.text}")
             socketManager.sendMessage(receiverID, binding.sendMessageEditText)
         }
 
+/*
 //        binding.sendMessageEditText.addTextChangedListener(object : TextWatcher {
 //            @SuppressLint("ResourceAsColor")
 //            override fun afterTextChanged(s: Editable?) {
@@ -99,15 +100,12 @@ class ChatRoomFragment : Fragment() {
 //        binding.sendMessageEditText.setOnClickListener {
 //            scrollToBottom(binding, adapter)
 //        }
+*/ 
 
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
             override fun onChanged() {
                 super.onChanged()
-//                Log.i("+++DataObserver", adapter.itemCount.toString() + " state " + firstVisibleItemPosition)
-//                if (firstVisibleItemPosition == adapter.itemCount - 2) {
-//                    Log.i("+++ifDataObserver", adapter.itemCount.toString() + " state " + firstVisibleItemPosition)
                 scrollToBottom(binding, adapter)
-//                }
             }
         })
 
@@ -116,8 +114,7 @@ class ChatRoomFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        mSocket.off("message", socketManager.onMessage(adapter, "", activity))
-        mSocket.disconnect()
+        socketManager.closeSocket()
 
     }
 

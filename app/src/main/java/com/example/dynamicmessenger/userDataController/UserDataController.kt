@@ -99,6 +99,26 @@ object SharedPreferencesManager {
         return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefReceiverID, "")!!
     }
 
+    fun isAddContacts(context: Context, isContacts: Boolean) {
+        getSharedPreferences(context)
+            .edit()
+            .putBoolean(SharedPrefConstants.sharedPrefIsContacts, isContacts)
+            .apply()
+    }
+
+    fun getIsAddContacts(context: Context): Boolean {
+        return getSharedPreferences(context).getBoolean(SharedPrefConstants.sharedPrefIsContacts, false)
+    }
+
+    fun deleteUserAllInformation(context: Context) {
+        setUserMail(context, "")
+        setUserCode(context, "")
+        setUserToken(context, "")
+//        saveUserObject(context, User())
+        setDarkMode(context, false)
+        setReceiverID(context, "")
+    }
+
 }
 
 object SaveToken {

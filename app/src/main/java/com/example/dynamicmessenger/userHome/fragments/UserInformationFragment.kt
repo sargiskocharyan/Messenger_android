@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,9 +20,11 @@ import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.customViews.spinner.CountryAdapter
 import com.example.dynamicmessenger.customViews.spinner.CountryItem
 import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
+import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
+import com.github.nkzawa.socketio.client.Socket
 
 
 class UserInformationFragment : Fragment() {
@@ -89,7 +92,9 @@ class UserInformationFragment : Fragment() {
             val token = SaveToken.decrypt(SharedPreferencesManager.getUserToken(requireContext()))
             viewModel.logoutNetwork(token, requireContext()) {
                 if (it) {
+                    //TODO UserDataManager.logoutUser()
                     SharedPreferencesManager.setUserToken(requireContext(), "")
+                    SharedPreferencesManager.deleteUserAllInformation(requireContext())
                     val intent = Intent(activity, MainActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -106,6 +111,7 @@ class UserInformationFragment : Fragment() {
                 selectedFragment
             )?.commit()
         }
+
         return binding.root
     }
 

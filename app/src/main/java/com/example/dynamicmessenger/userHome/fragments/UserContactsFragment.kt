@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.databinding.FragmentUserContactsBinding
 import com.example.dynamicmessenger.dialogs.ContactsSearchDialog
+import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.adapters.UserContactsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -34,19 +35,19 @@ class UserContactsFragment : Fragment() {
         binding.viewModel = viewModel
         val adapter = UserContactsAdapter(requireContext(), viewModel)
         updateRecycleView(adapter)
+        binding.root.setHasTransientState(true)
+        binding.contactsRecyclerView.adapter = adapter
+        val linearLayoutManager = LinearLayoutManager(requireContext())
+        binding.contactsRecyclerView.layoutManager = linearLayoutManager
 
         binding.addImageView.setOnClickListener {
+            SharedPreferencesManager.isAddContacts(requireContext(), true)
             val exampleDialog = ContactsSearchDialog {myList ->
                 adapter.data = myList
                 adapter.notifyDataSetChanged()
             }
             exampleDialog.show(requireActivity().supportFragmentManager, "Dialog")
         }
-
-        binding.root.setHasTransientState(true)
-        binding.contactsRecyclerView.adapter = adapter
-        val linearLayoutManager = LinearLayoutManager(requireContext())
-        binding.contactsRecyclerView.layoutManager = linearLayoutManager
 
         binding.backImageView.setOnClickListener {
             val selectedFragment = UserInformationFragment()

@@ -1,11 +1,10 @@
 package com.example.dynamicmessenger.network.chatRooms
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.widget.EditText
-import com.example.dynamicmessenger.common.MyUrls
+import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 import com.example.dynamicmessenger.network.authorization.models.Message
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
@@ -17,30 +16,56 @@ import com.github.nkzawa.socketio.client.Socket
 import com.google.gson.Gson
 import org.json.JSONException
 import org.json.JSONObject
-import java.net.URISyntaxException
 
 
-class SocketManager(context: Context): Application() {
-    val myEncryptedToken = SharedPreferencesManager.getUserToken(context)
-    val myToken = SaveToken.decrypt(myEncryptedToken)
-    private var mSocket: Socket
-    init {
-        try {
-            mSocket = IO.socket(MyUrls.herokuIPForSocket + "?token=" + myToken)
-        } catch (e: URISyntaxException) {
-            Log.i("+++", e.toString())
-            throw RuntimeException(e)
-        }
-    }
+class SocketManager(val context: Context) {
 
-    fun getSocketInstance(): Socket {
+     var mSocket: Socket? = null
+
+
+//    init {
+//        try {
+//             val myEncryptedToken = SharedPreferencesManager.getUserToken(context)
+//             val myToken = SaveToken.decrypt(myEncryptedToken)
+//            Log.i("+++", "my token ========== $myToken")
+//            mSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + myToken)
+//            Log.i("+++", myToken)
+//        } catch (e: URISyntaxException) {
+//            Log.i("+++", e.toString())
+//            throw RuntimeException(e)
+//        }
+//    }
+
+    fun getSocketInstance(): Socket? {
+        val opts =
+            IO.Options()
+            opts.forceNew = true
+            opts.reconnection = false
+        val myEncryptedToken = SharedPreferencesManager.getUserToken(context)
+        val myToken = SaveToken.decrypt(myEncryptedToken)
+        Log.i("+++", "my token ========== $myToken")
+        mSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + myToken, opts)
+
         return mSocket
     }
 
+    private fun deleteSocket() {
+        mSocket = null
+    }
+
+     fun closeSocket() {
+         mSocket?.disconnect()
+         mSocket?.close()
+         //mSocket?.off()
+         deleteSocket()
+    }
+
     fun sendMessage(receiverID: String, text: EditText) {
-        mSocket.emit("sendMessage" , text.text.toString() , receiverID)
+        mSocket?.emit("sendMessage" , text.text.toString() , receiverID)
         text.text.clear()
     }
+
+
 
     fun onMessage(adapter: ChatRoomAdapter, chatID: String, activity: Activity?): Emitter.Listener {
         return Emitter.Listener { args ->

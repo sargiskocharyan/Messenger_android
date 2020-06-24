@@ -1,7 +1,6 @@
 package com.example.dynamicmessenger.activitys
 
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.example.dynamicmessenger.R
 
