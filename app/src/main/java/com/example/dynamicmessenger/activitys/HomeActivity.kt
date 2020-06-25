@@ -15,6 +15,7 @@ import com.example.dynamicmessenger.network.authorization.models.UserTokenProper
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.fragments.*
+import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.Call
@@ -35,6 +36,10 @@ class HomeActivity : AppCompatActivity() {
         val myToken = SaveToken.decrypt(myEncryptedToken)
         val context = this
         tokenCheck(context, myToken!!)
+    }
+
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value))
     }
 
     private val navListener: BottomNavigationView.OnNavigationItemSelectedListener =

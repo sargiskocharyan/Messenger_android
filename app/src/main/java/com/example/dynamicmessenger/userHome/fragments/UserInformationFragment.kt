@@ -1,13 +1,17 @@
 package com.example.dynamicmessenger.userHome.fragments
 
-//import com.example.dynamicmessenger.userDataController.App
+//import com.example.dynamicmessenger.activitys.App
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageInstaller
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
+import android.se.omapi.Session
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -27,7 +31,6 @@ import com.example.dynamicmessenger.customViews.spinner.CountryItem
 import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import com.example.dynamicmessenger.userDataController.UserDataManager
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import java.util.*
@@ -64,22 +67,6 @@ class UserInformationFragment : Fragment() {
         popupMenu(binding)
         setLanguageImage(binding)
 
-        setLocale(requireContext(), SharedConfigs.appLang.value)
-
-//        override fun attachBaseContext(base: Context?) {
-//            super.attachBaseContext(LocalizationUtil.applyLanguage(base!!, "ru"))
-//        }
-//        val languageToLoad = SharedConfigs.appLang.value
-//
-//        val locale = Locale(languageToLoad)
-//        Locale.setDefault(locale)
-//        val config = Configuration()
-//        config.locale = locale
-//        requireContext().resources.updateConfiguration(
-//            config,
-//            requireContext().resources.displayMetrics
-//        )
-
         binding.contactConstraintLayout.setOnClickListener {
             val selectedFragment = UserContactsFragment()
             activity?.supportFragmentManager?.beginTransaction()?.replace(
@@ -88,15 +75,15 @@ class UserInformationFragment : Fragment() {
             )?.commit()
         }
 
-        binding.darkModeSwitch.isChecked = UserDataManager.getDarkMode()
+        binding.darkModeSwitch.isChecked = SharedConfigs.getDarkMode()
 
         binding.darkModeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                UserDataManager.setDarkMode(true)
+                SharedConfigs.setDarkMode(true)
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                UserDataManager.setDarkMode(false)
+                SharedConfigs.setDarkMode(false)
             }
         }
 
@@ -124,10 +111,6 @@ class UserInformationFragment : Fragment() {
         return binding.root
     }
 
-//    override fun onAttach(context: Context) {
-//        super.onAttach(LocalizationUtil.applyLanguage(context, SharedConfigs.appLang.value))
-//    }
-
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun popupMenu(binding: FragmentUserInformationBinding) {
         val popup = PopupMenu(requireContext(), binding.languageConstraintLayout)
@@ -138,28 +121,20 @@ class UserInformationFragment : Fragment() {
                 R.id.languageEn -> {
                     SharedConfigs.appLang = AppLangKeys.EN
                     binding.languageImage.setImageResource(R.drawable.ic_united_kingdom)
-//                    LocalizationUtil.applyLanguage(requireContext(), SharedConfigs.appLang.value)setApplicationLocale
-//                    LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
-                    retainInstance = true
-                    Log.i("+++","${SharedConfigs.appLang}")
+                    LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
+                    requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
                 }
                 R.id.languageRu -> {
                     SharedConfigs.appLang = AppLangKeys.RU
                     binding.languageImage.setImageResource(R.drawable.ic_russia)
-//                    LocalizationUtil.applyLanguage(requireContext(), SharedConfigs.appLang.value)
-//                    LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
-//                    setLocale(requireContext(), SharedConfigs.appLang.value)
-                    retainInstance = true
-                    Log.i("+++","${SharedConfigs.appLang}")
+                    LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
+                    requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
                 }
                 else -> {
                     SharedConfigs.appLang = AppLangKeys.AM
                     binding.languageImage.setImageResource(R.drawable.ic_armenia)
-//                    LocalizationUtil.applyLanguage(requireContext(), SharedConfigs.appLang.value)
-//                    LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
-//                    setLocale(requireContext(), SharedConfigs.appLang.value)
-                    retainInstance = true
-                    Log.i("+++","${SharedConfigs.appLang}")
+                    LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
+                    requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
                 }
             }
             true
@@ -181,14 +156,5 @@ class UserInformationFragment : Fragment() {
                 binding.languageImage.setImageResource(R.drawable.ic_armenia)
             }
         }
-    }
-
-    private fun setLocale(context: Context, lang: String) {
-        val locale = Locale(lang)
-        Locale.setDefault(locale)
-        val config = Configuration()
-        config.locale = locale
-        context.resources.updateConfiguration(config, context.resources.displayMetrics)
-
     }
 }

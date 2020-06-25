@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
@@ -14,8 +15,8 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.ActivityMainBinding
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import com.example.dynamicmessenger.userDataController.UserDataManager
 import com.example.dynamicmessenger.utils.LocalizationUtil
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this,
             R.layout.activity_main
         )
-
         changeDarkMode()
 
         if (SharedConfigs.signedUser != null) {
@@ -46,11 +46,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value))
-//        applyLanguage(base!!, SharedConfigs.appLang.value))
     }
 
     private fun changeDarkMode() {
-        if (UserDataManager.getDarkMode()) {
+        if (SharedConfigs.getDarkMode()) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)

@@ -60,17 +60,15 @@ class IntentExtra {
     }
 }
 
-//class AppLangKeys {
-//    companion object {
-//        val EN = "en"
-//        val RU = "ru"
-//        val AM = "hy"
-//    }
-//}
-enum class AppLangKeys(val value: String) {
+enum class AppLangKeys(var value: String) {
     EN("en"),
     RU("ru"),
-    AM("hy")
+    AM("hy");
+
+    companion object {
+        private val mapping = values().associateBy(AppLangKeys::value)
+        fun fromValue(value: String) = mapping[value] ?: EN
+    }
 }
 
 enum class AppMode {

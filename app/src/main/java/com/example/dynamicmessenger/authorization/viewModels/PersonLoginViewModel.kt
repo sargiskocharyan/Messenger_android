@@ -13,7 +13,6 @@ import com.example.dynamicmessenger.network.authorization.RegistrationApi
 import com.example.dynamicmessenger.network.authorization.models.*
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import com.example.dynamicmessenger.userDataController.UserDataManager
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import retrofit2.Call
 import retrofit2.Callback

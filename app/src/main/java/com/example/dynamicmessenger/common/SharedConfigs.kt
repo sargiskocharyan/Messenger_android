@@ -3,9 +3,7 @@ package com.example.dynamicmessenger.common
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.dynamicmessenger.network.authorization.models.User
-import com.example.dynamicmessenger.userDataController.UserDataManager
-import java.lang.reflect.Array.get
-import java.net.UnknownServiceException
+import java.util.*
 
 
 object SharedConfigs {
@@ -20,9 +18,11 @@ object SharedConfigs {
 
     var appLang: AppLangKeys
         get() {
-            //todo get shared preferences app lang value
-            // if lang from shared pref is null get OS preferred language and save it in shared preferences
-            return AppLangKeys.valueOf(getAppLanguage())
+            return (if (getAppLanguage() == null || getAppLanguage() == "") {
+                AppLangKeys.fromValue(Locale.getDefault().language)
+            } else {
+                AppLangKeys.valueOf(getAppLanguage()!!)
+            })
         }
         set(value) {
             setAppLanguage(value.name)
@@ -56,8 +56,7 @@ object SharedConfigs {
             .apply()
     }
 
-    private fun getAppLanguage(): String {
-        return sharedPrefs.getString(SharedPrefConstants.sharedPrefAppLang, "EN") ?: "EN"
+    private fun getAppLanguage(): String? {
+        return sharedPrefs.getString(SharedPrefConstants.sharedPrefAppLang, "")
     }
-
 }
