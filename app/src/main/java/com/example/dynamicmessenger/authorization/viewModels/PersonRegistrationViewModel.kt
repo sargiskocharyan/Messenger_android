@@ -27,7 +27,7 @@ class PersonRegistrationViewModel: ViewModel(){
     fun updateUserNetwork(view: View, updateUserTask: UpdateUserTask, context: Context?) {
         val myEncryptedToken = SharedPreferencesManager.getUserToken(context!!)
         val myToken = SaveToken.decrypt(myEncryptedToken)
-        val getProperties: Call<UpdateUserProperty> = UpdateUserApi.retrofitService.updateUserResponse(myToken ,updateUserTask)
+        val getProperties: Call<UpdateUserProperty> = UpdateUserApi.retrofitService.updateUserResponse(myToken!! ,updateUserTask)
         try {
             getProperties.enqueue(object : Callback<UpdateUserProperty?> {
                 override fun onResponse(
@@ -63,7 +63,7 @@ class PersonRegistrationViewModel: ViewModel(){
     fun getAllUniversity(context: Context?, closure: (List<UniversityProperty>) -> Unit){
         val myToken = SharedPreferencesManager.getUserToken(context!!)
         val token = SaveToken.decrypt(myToken)
-        val getProperties: Call<List<UniversityProperty>> = UniversityApi.retrofitService.universityResponse(token)
+        val getProperties: Call<List<UniversityProperty>> = UniversityApi.retrofitService.universityResponse(token!!)
         var allUniversity: List<UniversityProperty>? = null
         try {
             getProperties.enqueue(object : Callback<List<UniversityProperty>> {

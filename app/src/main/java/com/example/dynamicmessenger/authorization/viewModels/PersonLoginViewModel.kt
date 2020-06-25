@@ -13,6 +13,7 @@ import com.example.dynamicmessenger.network.authorization.RegistrationApi
 import com.example.dynamicmessenger.network.authorization.models.*
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.UserDataManager
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import retrofit2.Call
 import retrofit2.Callback
@@ -42,6 +43,8 @@ class PersonLoginViewModel: ViewModel() {
                             binding.progressBar.visibility = View.INVISIBLE
                             SharedPreferencesManager.setUserToken(context!!, SaveToken.encrypt(response.body()!!.token))
                             SharedPreferencesManager.saveUserObject(context, response.body()!!.user)
+//                            UserDataManager.setUserToken(SaveToken.encrypt(response.body()!!.token))
+//                            UserDataManager.saveUserObject(response.body()!!.user)
                             closure(true)
                         } else {
                             MyAlertMessage.showAlertDialog(context, "Enter correct code")
@@ -72,6 +75,8 @@ class PersonLoginViewModel: ViewModel() {
                             binding.progressBar.visibility = View.INVISIBLE
                             SharedPreferencesManager.setUserToken(context!!, SaveToken.encrypt(response.body()!!.token))
                             SharedPreferencesManager.saveUserObject(context, response.body()!!.user)
+//                            UserDataManager.setUserToken(SaveToken.encrypt(response.body()!!.token))
+//                            UserDataManager.saveUserObject(response.body()!!.user)
                             view.findNavController().navigate(R.id.action_personLoginFragment_to_personRegistrationFragment)
                         } else {
                             MyAlertMessage.showAlertDialog(context, "Enter correct code")
@@ -103,6 +108,9 @@ class PersonLoginViewModel: ViewModel() {
                         SharedPreferencesManager.setUserMailExists(context!!, response.body()!!.mailExist)
                         SharedPreferencesManager.setUserCode(context, response.body()!!.code)
                         SharedPreferencesManager.setUserMail(context, task.email)
+//                        UserDataManager.setUserMailExists(response.body()!!.mailExist)
+//                        UserDataManager.setUserCode(response.body()!!.code)
+//                        UserDataManager.setUserMail(task.email)
                         binding.verificationCode.setText(response.body()!!.code)
                     } else {
                         MyAlertMessage.showAlertDialog(context, "Try again")

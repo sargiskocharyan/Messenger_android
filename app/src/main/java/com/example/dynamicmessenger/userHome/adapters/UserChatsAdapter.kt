@@ -52,7 +52,6 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
         format.timeZone = TimeZone.getTimeZone("UTC")
         try {
             val date: Date = format.parse(item.message?.createdAt)!!
-            Log.i("+++", item.message?.toString())
             val currentDate: Date = Calendar.getInstance().time
             if ((currentDate.day == date.day) && (currentDate.month == date.month) && (currentDate.year == date.year)) {
                 val newFormat = SimpleDateFormat("HH:mm")

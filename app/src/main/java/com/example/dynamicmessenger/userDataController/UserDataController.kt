@@ -3,6 +3,7 @@ package com.example.dynamicmessenger.userDataController
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.common.SharedPrefConstants
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.google.gson.Gson
@@ -48,16 +49,6 @@ object SharedPreferencesManager {
         return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefCode, "")!!
     }
 
-    fun setUserToken(context: Context, token: String) {
-        getSharedPreferences(context)
-            .edit()
-            .putString(SharedPrefConstants.sharedPrefToken, token)
-            .apply()
-    }
-
-    fun getUserToken(context: Context): String {
-        return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefToken, "")!!
-    }
 
     fun saveUserObject(context: Context, user: User) {
         val gson = Gson()
@@ -71,10 +62,14 @@ object SharedPreferencesManager {
     fun loadUserObject(context: Context): User? {
         val jsonString = getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefUser, "")!!
         val gson = Gson()
-        if (jsonString.isNullOrEmpty()) {
+        if (jsonString.isEmpty()) {
             return null
         }
         return gson.fromJson(jsonString, User::class.java)
+    }
+
+    fun loadUserObjectToSharedConfigs(context: Context) {
+        SharedConfigs.signedUser = loadUserObject(context)
     }
 
     fun setDarkMode(context: Context, enabled: Boolean) {
@@ -111,18 +106,25 @@ object SharedPreferencesManager {
     }
 
     fun deleteUserAllInformation(context: Context) {
-        setUserMail(context, "")
-        setUserCode(context, "")
-        setUserToken(context, "")
-//        saveUserObject(context, User())
-        setDarkMode(context, false)
-        setReceiverID(context, "")
+        getSharedPreferences(context).edit().clear().apply()
+    }
+
+    fun setUserToken(context: Context, token: String) {
+        getSharedPreferences(context)
+            .edit()
+            .putString(SharedPrefConstants.sharedPrefToken, token)
+            .apply()
+    }
+
+    fun getUserToken(context: Context): String {
+        return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefToken, "")!!
     }
 
 }
 
 object SaveToken {
-    fun decrypt(outputString: String): String {
+    fun decrypt(outputString: String?): String? {
+        if (outputString == null || outputString == "") return null
         val key = generateKey(SharedPrefConstants.sharedPrefToken)
         val c = Cipher.getInstance("AES")
         c.init(Cipher.DECRYPT_MODE, key)

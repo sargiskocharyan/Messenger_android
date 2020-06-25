@@ -58,3 +58,15 @@ class IntentExtra {
         const val receiverId = "receiverID"
     }
 }
+
+class AppLangKeys {
+    companion object {
+        val EN = "en"
+        val RU = "ru"
+        val AM = "hy"
+    }
+}
+
+enum  class AppMode {
+    dark, light
+}

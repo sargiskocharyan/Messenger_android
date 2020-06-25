@@ -1,12 +1,13 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
+import android.app.Notification
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import android.view.Window
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -49,7 +50,6 @@ class ChatRoomFragment : Fragment() {
 
         updateRecyclerView(receiverID)
         binding.root.setHasTransientState(true)
-        Log.i("+++itemCount", adapter.itemCount.toString())
         binding.chatRecyclerView.adapter = adapter
         //socket
         socketManager = SocketManager(requireContext())
@@ -62,7 +62,6 @@ class ChatRoomFragment : Fragment() {
         mSocket.connect()
         mSocket.on("message", socketManager.onMessage(adapter, receiverID, activity))
         binding.sendMessageButton.setOnClickListener {
-            Log.i("+++", "send message $receiverID ${binding.sendMessageEditText.text}")
             socketManager.sendMessage(receiverID, binding.sendMessageEditText)
         }
 
@@ -121,7 +120,6 @@ class ChatRoomFragment : Fragment() {
     private fun updateRecyclerView(receiverID: String) {
         viewModel.getMessagesFromNetwork(requireContext(), receiverID) {
             adapter.data = it
-            Log.i("+++itermcount", adapter.itemCount.toString())
             scrollToBottom(binding, adapter)
             adapter.notifyDataSetChanged()
         }

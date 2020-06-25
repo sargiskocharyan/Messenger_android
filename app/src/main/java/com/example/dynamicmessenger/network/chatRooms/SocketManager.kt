@@ -20,21 +20,7 @@ import org.json.JSONObject
 
 class SocketManager(val context: Context) {
 
-     var mSocket: Socket? = null
-
-
-//    init {
-//        try {
-//             val myEncryptedToken = SharedPreferencesManager.getUserToken(context)
-//             val myToken = SaveToken.decrypt(myEncryptedToken)
-//            Log.i("+++", "my token ========== $myToken")
-//            mSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + myToken)
-//            Log.i("+++", myToken)
-//        } catch (e: URISyntaxException) {
-//            Log.i("+++", e.toString())
-//            throw RuntimeException(e)
-//        }
-//    }
+     private var mSocket: Socket? = null
 
     fun getSocketInstance(): Socket? {
         val opts =
@@ -43,8 +29,7 @@ class SocketManager(val context: Context) {
             opts.reconnection = false
         val myEncryptedToken = SharedPreferencesManager.getUserToken(context)
         val myToken = SaveToken.decrypt(myEncryptedToken)
-        Log.i("+++", "my token ========== $myToken")
-        mSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + myToken, opts)
+        mSocket = IO.socket(ResponseUrls.herokuIPForSocket + "?token=" + myToken, opts)
 
         return mSocket
     }
@@ -53,11 +38,11 @@ class SocketManager(val context: Context) {
         mSocket = null
     }
 
-     fun closeSocket() {
-         mSocket?.disconnect()
-         mSocket?.close()
-         //mSocket?.off()
-         deleteSocket()
+    fun closeSocket() {
+        mSocket?.disconnect()
+        mSocket?.close()
+        //mSocket?.off()
+        deleteSocket()
     }
 
     fun sendMessage(receiverID: String, text: EditText) {
@@ -75,7 +60,6 @@ class SocketManager(val context: Context) {
                 val gsonMessage = gson.fromJson(data.toString(), Message::class.java)
                 val message = ChatRoom(gsonMessage.sender,gsonMessage.text,gsonMessage.reciever)
                 try {
-                    Log.i("+++", data.toString())
                     if (message.sender.id == chatID || message.reciever == chatID) {
                         adapter.data += message
                         adapter.notifyDataSetChanged()

@@ -36,7 +36,7 @@ class ContactsSearchDialog(val myClosure: (List<UserContacts>) -> Unit): AppComp
                     val myEncryptedToken = SharedPreferencesManager.getUserToken(requireContext())
                     val myToken = SaveToken.decrypt(myEncryptedToken)
                     val task = SearchTask(name)
-                    val getProperties: Call<Users> = SearchContactsApi.retrofitService.contactsSearchResponse(myToken, task)
+                    val getProperties: Call<Users> = SearchContactsApi.retrofitService.contactsSearchResponse(myToken!!, task)
                     try {
                         getProperties.enqueue(object : Callback<Users?> {
                             override fun onResponse(

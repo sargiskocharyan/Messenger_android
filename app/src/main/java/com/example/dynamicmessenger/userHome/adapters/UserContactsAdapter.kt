@@ -61,7 +61,7 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
                 val myToken = SaveToken.decrypt(myEncryptedToken)
                 val task = AddUserContactTask(userContact!!._id)
                 if (SharedPreferencesManager.getIsAddContacts(context)) {
-                    val getProperties: Call<Void> = AddContactApi.retrofitService.addContactResponse(myToken, task)
+                    val getProperties: Call<Void> = AddContactApi.retrofitService.addContactResponse(myToken!!, task)
                     try {
                         getProperties.enqueue(object : Callback<Void> {
                             override fun onResponse(

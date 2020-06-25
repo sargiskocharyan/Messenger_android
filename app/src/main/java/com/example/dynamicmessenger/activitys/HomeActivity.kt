@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.UserTokenVerifyApi
 import com.example.dynamicmessenger.network.authorization.models.UserTokenProperty
 import com.example.dynamicmessenger.userDataController.SaveToken
@@ -25,6 +26,7 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SharedPreferencesManager.loadUserObjectToSharedConfigs(this)
         setContentView(R.layout.activity_home)
         (this as AppCompatActivity?)!!.supportActionBar!!.hide()
         val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
@@ -32,7 +34,7 @@ class HomeActivity : AppCompatActivity() {
         val myEncryptedToken = SharedPreferencesManager.getUserToken(this)
         val myToken = SaveToken.decrypt(myEncryptedToken)
         val context = this
-        tokenCheck(context, myToken)
+        tokenCheck(context, myToken!!)
     }
 
     private val navListener: BottomNavigationView.OnNavigationItemSelectedListener =

@@ -15,7 +15,7 @@ class UserContactsViewModel: ViewModel() {
     fun getUserContactsFromNetwork(context: Context?, closure: (List<UserContacts>) -> Unit) {
         val myEncryptedToken = SharedPreferencesManager.getUserToken(context!!)
         val myToken = SaveToken.decrypt(myEncryptedToken)
-        val getProperties: Call<List<UserContacts>> = ContactsApi.retrofitService.contactsResponse(myToken)
+        val getProperties: Call<List<UserContacts>> = ContactsApi.retrofitService.contactsResponse(myToken!!)
         try {
             getProperties.enqueue(object : Callback<List<UserContacts>?> {
                 override fun onResponse(

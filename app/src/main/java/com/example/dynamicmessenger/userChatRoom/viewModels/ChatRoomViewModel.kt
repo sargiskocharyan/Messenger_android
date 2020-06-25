@@ -15,7 +15,7 @@ class ChatRoomViewModel : ViewModel() {
     fun getMessagesFromNetwork(context: Context?, receiverID: String, closure: (List<ChatRoom>) -> Unit) {
         val myEncryptedToken = SharedPreferencesManager.getUserToken(context!!)
         val myToken = SaveToken.decrypt(myEncryptedToken)
-        val getProperties: Call<List<ChatRoom>> = ChatRoomApi.retrofitService.chatRoomResponse(myToken, receiverID)
+        val getProperties: Call<List<ChatRoom>> = ChatRoomApi.retrofitService.chatRoomResponse(myToken!!, receiverID)
         try {
             getProperties.enqueue(object  : Callback<List<ChatRoom>> {
                 override fun onResponse(

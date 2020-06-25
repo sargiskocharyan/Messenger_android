@@ -17,12 +17,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.MainActivity
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.customViews.spinner.CountryAdapter
 import com.example.dynamicmessenger.customViews.spinner.CountryItem
 import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.userDataController.App
+//import com.example.dynamicmessenger.userDataController.App
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.UserDataManager
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
 import com.github.nkzawa.socketio.client.Socket
 
@@ -44,7 +48,7 @@ class UserInformationFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        val userObject = SharedPreferencesManager.loadUserObject(requireContext())
+        val userObject = SharedConfigs.signedUser
         binding.username.text = userObject?.username ?: ""
         binding.email.text = userObject?.email ?: ""
         binding.name.text = userObject?.name ?: "Name"
@@ -76,24 +80,22 @@ class UserInformationFragment : Fragment() {
             )?.commit()
         }
 
-        binding.darkModeSwitch.isChecked = SharedPreferencesManager.getDarkMode(requireContext())
+        binding.darkModeSwitch.isChecked = UserDataManager.getDarkMode()
 
         binding.darkModeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                SharedPreferencesManager.setDarkMode(requireContext(), true)
+                UserDataManager.setDarkMode(true)
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                SharedPreferencesManager.setDarkMode(requireContext(), false)
+                UserDataManager.setDarkMode(false)
             }
         }
 
         binding.logoutButton.setOnClickListener {
             val token = SaveToken.decrypt(SharedPreferencesManager.getUserToken(requireContext()))
-            viewModel.logoutNetwork(token, requireContext()) {
+            viewModel.logoutNetwork(token!!, requireContext()) {
                 if (it) {
-                    //TODO UserDataManager.logoutUser()
-                    SharedPreferencesManager.setUserToken(requireContext(), "")
                     SharedPreferencesManager.deleteUserAllInformation(requireContext())
                     val intent = Intent(activity, MainActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
