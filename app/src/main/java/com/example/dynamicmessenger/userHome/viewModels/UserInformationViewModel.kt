@@ -11,6 +11,9 @@ import retrofit2.Response
 
 class UserInformationViewModel : ViewModel() {
 
+
+
+
     fun logoutNetwork(token: String, context: Context?, closure: (Boolean) -> Unit) {
         val getProperties: Call<Void> = LogoutApi.retrofitService.logoutResponse(token)
         try {

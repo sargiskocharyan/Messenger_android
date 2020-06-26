@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/languageEn"
+        android:icon="@drawable/ic_united_kingdom"
+        android:title="English" />
+
+    <item
+        android:id="@+id/languageRu"
+        android:icon="@drawable/ic_russia"
+        android:title="Russia" />
+
+    <item
+        android:id="@+id/languageAm"
+        android:icon="@drawable/ic_armenia"
+        android:title="Armenia" />
+</menu>

@@ -175,6 +175,7 @@
                 style="@style/BlackLineStyle"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/contactConstraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:padding="10dp">
@@ -197,18 +198,10 @@
                 style="@style/BlackLineStyle"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/languageConstraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:padding="10dp">
-
-                <Spinner
-                    android:id="@+id/languageSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.615" />
 
                 <TextView
                     android:id="@+id/textView4"
@@ -220,6 +213,19 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/languageImage"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_united_kingdom"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="w,1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/textView4"
+                    app:layout_constraintTop_toTopOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
@@ -257,6 +263,7 @@
                 style="@style/BlackLineStyle"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/logoutConstraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:padding="10dp">

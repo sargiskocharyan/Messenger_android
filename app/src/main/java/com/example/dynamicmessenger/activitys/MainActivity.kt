@@ -15,6 +15,7 @@ import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.ActivityMainBinding
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.UserDataManager
+import com.example.dynamicmessenger.utils.LocalizationUtil
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,6 +42,11 @@ class MainActivity : AppCompatActivity() {
 
         val navController = this.findNavController(R.id.myNavHostFragment)
         NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
+    }
+
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value))
+//        applyLanguage(base!!, SharedConfigs.appLang.value))
     }
 
     private fun changeDarkMode() {

@@ -11,22 +11,21 @@ import java.net.UnknownServiceException
 object SharedConfigs {
     private lateinit var sharedPrefs: SharedPreferences
 
-    init {
-        println("Singleton class invoked.")
-    }
-
-    fun init(context: Context): SharedPreferences {
-        return context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
+    fun init(context: Context) {
+        sharedPrefs =  context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
     }
     var shared = SharedConfigs
 
     var signedUser: User? = null
 
-    var appLang : String  = AppLangKeys.EN
+    var appLang: AppLangKeys
         get() {
             //todo get shared preferences app lang value
             // if lang from shared pref is null get OS preferred language and save it in shared preferences
-             return AppLangKeys.EN
+            return AppLangKeys.valueOf(getAppLanguage())
+        }
+        set(value) {
+            setAppLanguage(value.name)
         }
 
 
@@ -48,6 +47,17 @@ object SharedConfigs {
 
     fun getDarkMode(): Boolean {
         return sharedPrefs.getBoolean(SharedPrefConstants.sharedPrefDarkMode, false)
+    }
+
+    private fun setAppLanguage(appLang: String) {
+        sharedPrefs
+            .edit()
+            .putString(SharedPrefConstants.sharedPrefAppLang, appLang)
+            .apply()
+    }
+
+    private fun getAppLanguage(): String {
+        return sharedPrefs.getString(SharedPrefConstants.sharedPrefAppLang, "EN") ?: "EN"
     }
 
 }

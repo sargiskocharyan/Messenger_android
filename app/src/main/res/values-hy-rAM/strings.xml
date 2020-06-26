@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="language">Language</string>
+    <string name="app_name">Dynamic Messenger</string>
+    <string name="first_page_asking_text">Enter your email for login or register</string>
+    <string name="sms_comment">In this phone number will be sent SMS with the code</string>
+    <string name="email_comment">Email will be used to confirm</string>
+    <string name="continue_button">Շարունակել</string>
+    <string name="phone_number">Հեռախոսահամար</string>
+    <string name="email">Email</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="registration">Գրանցում</string>
+    <string name="login">Մուտք</string>
+    <string name="resend_verification_code">Ուղարկե՞լ հաստատման կոդը</string>
+    <string name="congratulations_you_are_registered">Congratulations, you are registered</string>
+    <string name="next">Հաջորդը</string>
+    <string name="verification_code">Ստուգման կոդ</string>
+    <string name="name">Անուն</string>
+    <string name="last_name">Ազգանուն</string>
+    <string name="username">Օգտագործողի անունը</string>
+    <string name="skip">Բաց թողնել</string>
+    <string name="language">Լեզու</string>
+    <string name="phone">Հեռախոս</string>
+    <string name="dark_mode">Մութ ռեժիմ</string>
+    <string name="contacts">Կոնտակտներ</string>
+    <string name="update_your_information">Թարմացրեք ձեր տեղեկատվությունը</string>
+    <string name="long_time_ago">Long time ago</string>
 </resources>

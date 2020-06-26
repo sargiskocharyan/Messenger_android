@@ -34,6 +34,7 @@ class SharedPrefConstants {
         const val sharedPrefDarkMode = "darkMode"
         const val sharedPrefReceiverID = "receiverID"
         const val sharedPrefIsContacts = "isContacts"
+        const val sharedPrefAppLang = "appLanguage"
     }
 }
 
@@ -59,14 +60,19 @@ class IntentExtra {
     }
 }
 
-class AppLangKeys {
-    companion object {
-        val EN = "en"
-        val RU = "ru"
-        val AM = "hy"
-    }
+//class AppLangKeys {
+//    companion object {
+//        val EN = "en"
+//        val RU = "ru"
+//        val AM = "hy"
+//    }
+//}
+enum class AppLangKeys(val value: String) {
+    EN("en"),
+    RU("ru"),
+    AM("hy")
 }
 
-enum  class AppMode {
+enum class AppMode {
     dark, light
 }
