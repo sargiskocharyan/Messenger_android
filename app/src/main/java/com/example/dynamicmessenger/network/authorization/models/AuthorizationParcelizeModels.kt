@@ -61,6 +61,9 @@ data class Sender(val id: String, val name: String) : Parcelable
 @Parcelize
 data class ChatRoom(val sender: Sender, val text: String, val reciever: String) : Parcelable
 
+//@Parcelize
+//data class ImageURI(val avatar: Data)
+
 //{
 //    "sender": {
 //    "id": "5ee76c90bfa0980017a39013",

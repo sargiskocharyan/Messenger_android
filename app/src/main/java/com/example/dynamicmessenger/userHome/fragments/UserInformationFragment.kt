@@ -3,15 +3,12 @@ package com.example.dynamicmessenger.userHome.fragments
 //import com.example.dynamicmessenger.activitys.App
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageInstaller
-import android.content.res.Configuration
-import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
-import android.se.omapi.Session
-import android.util.DisplayMetrics
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -33,12 +30,16 @@ import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
 import com.example.dynamicmessenger.utils.LocalizationUtil
-import java.util.*
-import kotlin.collections.ArrayList
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import java.io.*
 
 
 class UserInformationFragment : Fragment() {
     private lateinit var viewModel: UserInformationViewModel
+    private lateinit var binding: FragmentUserInformationBinding
     private var mCountryList: ArrayList<CountryItem> = ArrayList()
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -47,7 +48,7 @@ class UserInformationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding : FragmentUserInformationBinding =
+        binding =
             DataBindingUtil.inflate(inflater,
                 R.layout.fragment_user_information,
                 container, false)
@@ -101,6 +102,18 @@ class UserInformationFragment : Fragment() {
             }
         }
 
+        viewModel.getUserAvatarFromNetwork(requireContext(), SharedConfigs.signedUser!!._id) {
+            val bmp = BitmapFactory.decodeStream(it.byteStream())
+            binding.userProfileImageView.setImageBitmap(bmp)
+        }
+
+
+        binding.userProfileImageView.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            startActivityForResult(intent, 0)
+        }
+
         binding.updateUserInformationImageView.setOnClickListener {
             val selectedFragment = UpdateUserInformationFragment()
             activity?.supportFragmentManager?.beginTransaction()?.replace(
@@ -109,6 +122,44 @@ class UserInformationFragment : Fragment() {
             )?.commit()
         }
         return binding.root
+    }
+
+    @SuppressLint("Recycle")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 0 && resultCode == Activity.RESULT_OK && data != null) {
+            val uri = data.data
+            val bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri)
+            binding.userProfileImageView.setImageBitmap(bitmap)
+
+            val inputStream: InputStream = data.data?.let { requireActivity().contentResolver.openInputStream(it) }!!
+            /*
+//            val f = File(requireContext().cacheDir, "avatar.png")
+//            f.createNewFile()
+//            val bos = ByteArrayOutputStream()
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos)
+//            val bitmapData = bos.toByteArray()
+//            val fos = FileOutputStream(f)
+//            fos.write(bitmapData)
+//            fos.flush()
+//            fos.close()
+            */
+            val requestFile = RequestBody.create(MediaType.parse("image/jpg"), getBytes(inputStream)!!)
+            val body = MultipartBody.Part.createFormData("avatar", "avatar.jpg", requestFile)
+            viewModel.saveUserAvatarFromNetwork(requireContext(), body)
+        }
+    }
+
+    @Throws(IOException::class)
+    fun getBytes(inputStream: InputStream): ByteArray? {
+        val byteBuff = ByteArrayOutputStream()
+        val buffSize = 1024
+        val buff = ByteArray(buffSize)
+        var len = 0
+        while (inputStream.read(buff).also { len = it } != -1) {
+            byteBuff.write(buff, 0, len)
+        }
+        return byteBuff.toByteArray()
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)

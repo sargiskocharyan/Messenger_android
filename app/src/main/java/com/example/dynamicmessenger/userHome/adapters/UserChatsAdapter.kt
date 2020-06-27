@@ -68,9 +68,9 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
             e.printStackTrace()
         }
 
-        holder.name.text = item.name
+        holder.name.text = item.name ?: item.username
         holder.chat = item
-        holder.lastname.text = item.lastname ?: item.username
+        holder.lastname.text = item.lastname
         holder.lastMessage.text = item.message?.text
     }
 

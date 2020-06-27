@@ -4,8 +4,8 @@ import java.util.regex.Pattern
 
 class ResponseUrls {
     companion object {
-        const val ErosServerIP = "http://192.168.0.105:3000/"
-        const val ErosServerIPForSocket = "http://192.168.0.101:3000"
+        const val ErosServerIP = "http://192.168.0.103:3000/"
+        const val ErosServerIPForSocket = "http://192.168.0.103:3000"
         const val herokuIP = "https://messenger-dynamic.herokuapp.com/"
         const val herokuIPForSocket = "https://messenger-dynamic.herokuapp.com"
         const val reg = "register"
@@ -19,6 +19,11 @@ class ResponseUrls {
         const val addContact = "addcontact"
         const val logout = "user/logout"
         const val chats = "chats"
+        const val users = "users"
+        const val avatar = "avatar"
+        const val saveAvatar = "users/me/avatar"
+//        users/me/avatar
+//        users/5ee76c90bfa0980017a39013/avatar
     }
 }
 

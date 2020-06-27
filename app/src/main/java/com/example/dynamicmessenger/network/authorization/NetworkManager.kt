@@ -1,17 +1,22 @@
 package com.example.dynamicmessenger.network.authorization
 
+import android.graphics.Bitmap
 import com.example.dynamicmessenger.common.MyHeaders
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.network.authorization.models.*
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
 
 private val BASE_URL = ResponseUrls.herokuIP
+private val ERO_URL = ResponseUrls.ErosServerIP
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
@@ -21,6 +26,12 @@ private val retrofit = Retrofit.Builder()
     .addConverterFactory(MoshiConverterFactory.create(moshi))
     .addCallAdapterFactory(CoroutineCallAdapterFactory())
     .baseUrl(BASE_URL)
+    .build()
+
+private val retrofitEro = Retrofit.Builder()
+    .addConverterFactory(MoshiConverterFactory.create(moshi))
+    .addCallAdapterFactory(CoroutineCallAdapterFactory())
+    .baseUrl(ERO_URL)
     .build()
 
 //Email exist
@@ -209,6 +220,41 @@ object ChatRoomApi {
     val retrofitService : JsonPlaceHolderChatRoomApi by lazy {
         retrofit.create(
             JsonPlaceHolderChatRoomApi::class.java
+        )
+    }
+}
+
+//Receive Avatar
+interface JsonPlaceHolderGetAvatarApi {
+    @Headers(MyHeaders.accept)
+    @GET("${ResponseUrls.users}/{id}/${ResponseUrls.avatar}")
+    fun getAvatarResponse(@Header (MyHeaders.tokenAuthorization) header: String,
+                          @Path ("id") receiverId: String) :
+            Call<ResponseBody>
+}
+
+object GetAvatarApi {
+    val retrofitService : JsonPlaceHolderGetAvatarApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderGetAvatarApi::class.java
+        )
+    }
+}
+
+//Load Avatar
+interface JsonPlaceHolderSaveAvatarApi {
+    @Multipart
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.saveAvatar)
+    fun saveAvatarResponse(@Header (MyHeaders.tokenAuthorization) header: String,
+                           @Part avatar : MultipartBody.Part) :
+            Call<Void>
+}
+
+object SaveAvatarApi {
+    val retrofitService : JsonPlaceHolderSaveAvatarApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderSaveAvatarApi::class.java
         )
     }
 }
