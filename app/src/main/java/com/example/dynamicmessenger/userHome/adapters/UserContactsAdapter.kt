@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.ChatRoomActivity
@@ -17,13 +18,7 @@ import com.example.dynamicmessenger.network.authorization.models.UserContacts
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewModel): RecyclerView.Adapter<UserContactsAdapter.UserContactsViewHolder>() {
       var data = listOf<UserContacts>()
@@ -61,29 +56,18 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
                 val myToken = SaveToken.decrypt(myEncryptedToken)
                 val task = AddUserContactTask(userContact!!._id)
                 if (SharedPreferencesManager.getIsAddContacts(context)) {
-                    val getProperties: Call<Void> = AddContactApi.retrofitService.addContactResponse(myToken!!, task)
-                    try {
-                        getProperties.enqueue(object : Callback<Void> {
-                            override fun onResponse(
-                                call: Call<Void>,
-                                response: Response<Void>
-                            ) {
-                                if (response.isSuccessful) {
-                                    updateRecycleView()
-                                    SharedPreferencesManager.isAddContacts(context, false)
-                                } else {
-                                    Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
-                                }
+                    viewModel.viewModelScope.launch {
+                        try {
+                            val response = AddContactApi.retrofitService.addContactResponseAsync(myToken!!, task).await()
+                            if (response.isSuccessful) {
+                                updateRecycleView()
+                                SharedPreferencesManager.isAddContacts(context, false)
+                            } else {
+                                Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
                             }
-                            override fun onFailure(
-                                call: Call<Void>,
-                                t: Throwable
-                            ) {
-                                Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
-                            }
-                        })
-                    } catch (e: Exception) {
-                        Toast.makeText(context, "Something gone a wrong", Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 } else {
                     val intent = Intent(context, ChatRoomActivity::class.java)

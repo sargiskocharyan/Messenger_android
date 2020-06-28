@@ -46,7 +46,7 @@ object SharedConfigs {
     }
 
     fun getDarkMode(): Boolean {
-        return sharedPrefs.getBoolean(SharedPrefConstants.sharedPrefDarkMode, false)
+        return sharedPrefs.getBoolean(SharedPrefConstants.sharedPrefDarkMode, false) ?: false
     }
 
     private fun setAppLanguage(appLang: String) {

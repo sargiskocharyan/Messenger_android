@@ -17,11 +17,13 @@ import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 
 class UserContactsFragment : Fragment() {
     lateinit var viewModel: UserContactsViewModel
+    private var fragmentJob = Job()
+    private val coroutineScope = CoroutineScope(fragmentJob + Dispatchers.Main)
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,7 +44,7 @@ class UserContactsFragment : Fragment() {
 
         binding.addImageView.setOnClickListener {
             SharedPreferencesManager.isAddContacts(requireContext(), true)
-            val exampleDialog = ContactsSearchDialog {myList ->
+            val exampleDialog = ContactsSearchDialog(coroutineScope) {myList ->
                 adapter.data = myList
                 adapter.notifyDataSetChanged()
             }
@@ -57,6 +59,11 @@ class UserContactsFragment : Fragment() {
             )?.commit()
         }
         return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        fragmentJob.cancel()
     }
 
     private fun updateRecycleView(adapter: UserContactsAdapter) {
