@@ -1,22 +1,27 @@
 package com.example.dynamicmessenger.network.authorization
 
+import android.app.ProgressDialog
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.AsyncTask
 import com.example.dynamicmessenger.common.MyHeaders
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.network.authorization.models.*
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import kotlinx.coroutines.Deferred
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
+import java.io.InputStream
+
 
 private const val BASE_URL = ResponseUrls.herokuIP
 private const val ERO_URL = ResponseUrls.ErosServerIP
+//private const val ERO_URL = ""
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
@@ -25,7 +30,7 @@ private val moshi = Moshi.Builder()
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(MoshiConverterFactory.create(moshi))
     .addCallAdapterFactory(CoroutineCallAdapterFactory())
-    .baseUrl(BASE_URL)
+    .baseUrl(ERO_URL)
     .build()
 
 private val retrofitEro = Retrofit.Builder()
@@ -38,8 +43,8 @@ private val retrofitEro = Retrofit.Builder()
 interface JsonPlaceHolderMailExistApi {
     @Headers(MyHeaders.contentType)
     @POST(ResponseUrls.mailIsExist)
-    fun isMailExistAsync(@Body task: EmailExistTask):
-            Deferred<Response<MailExistProperty>>
+    suspend fun isMailExistAsync(@Body task: EmailExistTask):
+            Response<MailExistProperty>
 }
 
 object MailExistApi {
@@ -53,8 +58,8 @@ object MailExistApi {
 interface JsonPlaceHolderLoginApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.login)
-    fun loginResponseAsync(@Body task: LoginTask):
-            Deferred<Response<LoginProperty>>
+    suspend fun loginResponseAsync(@Body task: LoginTask):
+            Response<LoginProperty>
 
 }
 
@@ -69,8 +74,8 @@ object LoginApi {
 interface JsonPlaceHolderRegistrationApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.reg)
-    fun registrationResponseAsync(@Body loginTask: LoginTask):
-            Deferred<Response<RegistrationProperty>>
+    suspend fun registrationResponseAsync(@Body loginTask: LoginTask):
+            Response<RegistrationProperty>
 }
 
 object RegistrationApi {
@@ -84,9 +89,9 @@ object RegistrationApi {
 interface JsonPlaceHolderUpdateUserApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.updateUser)
-    fun updateUserResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
+    suspend fun updateUserResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
                                 @Body updateUserTask: UpdateUserTask):
-            Deferred<Response<UpdateUserProperty>>
+            Response<UpdateUserProperty>
 }
 
 object UpdateUserApi {
@@ -99,8 +104,8 @@ object UpdateUserApi {
 //User token verify
 interface JsonPlaceHolderUserTokenVerifyApi {
     @POST(ResponseUrls.verifyToken)
-    fun userTokenResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String):
-            Deferred<Response<UserTokenProperty>>
+    suspend fun userTokenResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String):
+            Response<UserTokenProperty>
 }
 
 object UserTokenVerifyApi {
@@ -114,8 +119,8 @@ object UserTokenVerifyApi {
 interface JsonPlaceHolderUniversityApi {
     @Headers(MyHeaders.accept)
     @GET(ResponseUrls.allUniversity)
-    fun universityResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String):
-            Deferred<Response<List<UniversityProperty>>>
+    suspend fun universityResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String):
+            Response<List<UniversityProperty>>
 }
 
 object UniversityApi {
@@ -129,8 +134,8 @@ object UniversityApi {
 interface JsonPlaceHolderContactsApi {
     @Headers(MyHeaders.accept)
     @GET(ResponseUrls.contacts)
-    fun contactsResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String):
-            Deferred<Response<List<UserContacts>>>
+    suspend fun contactsResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String):
+            Response<List<UserContacts>>
 }
 
 object ContactsApi {
@@ -145,9 +150,9 @@ object ContactsApi {
 interface JsonPlaceHolderSearchContactsApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.searchContacts)
-    fun contactsSearchResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
+    suspend fun contactsSearchResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
                                     @Body term: SearchTask) :
-            Deferred<Response<Users>>
+            Response<Users>
 }
 
 object SearchContactsApi {
@@ -162,9 +167,9 @@ object SearchContactsApi {
 interface JsonPlaceHolderAddContactApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.addContact)
-    fun addContactResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
+    suspend fun addContactResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
                                 @Body userID : AddUserContactTask) :
-            Deferred<Response<Void>>
+            Response<Void>
 }
 
 object AddContactApi {
@@ -179,8 +184,8 @@ object AddContactApi {
 interface JsonPlaceHolderLogoutApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.logout)
-    fun logoutResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
-            Deferred<Response<Void>>
+    suspend fun logoutResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
+            Response<Void>
 }
 
 object LogoutApi {
@@ -195,8 +200,8 @@ object LogoutApi {
 interface JsonPlaceHolderChatsApi {
     @Headers(MyHeaders.accept)
     @GET("${ResponseUrls.chats}/")
-    fun chatsResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
-            Deferred<Response<List<Chat>>>
+    suspend fun chatsResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
+            Response<List<Chat>>
 }
 
 object ChatsApi {
@@ -211,9 +216,9 @@ object ChatsApi {
 interface JsonPlaceHolderChatRoomApi {
     @Headers(MyHeaders.accept)
     @GET("${ResponseUrls.chats}/{id}")
-    fun chatRoomResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
+    suspend fun chatRoomResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
                               @Path ("id") receiverId: String) :
-            Deferred<Response<List<ChatRoom>>>
+            Response<List<ChatRoom>>
 }
 
 object ChatRoomApi {
@@ -224,31 +229,14 @@ object ChatRoomApi {
     }
 }
 
-//Receive Avatar
-interface JsonPlaceHolderGetAvatarApi {
-    @Headers(MyHeaders.accept)
-    @GET("${ResponseUrls.users}/{id}/${ResponseUrls.avatar}")
-    fun getAvatarResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                               @Path ("id") receiverId: String) :
-            Deferred<Response<ResponseBody>>
-}
-
-object GetAvatarApi {
-    val retrofitService : JsonPlaceHolderGetAvatarApi by lazy {
-        retrofit.create(
-            JsonPlaceHolderGetAvatarApi::class.java
-        )
-    }
-}
-
 //Load Avatar
 interface JsonPlaceHolderSaveAvatarApi {
     @Multipart
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.saveAvatar)
-    fun saveAvatarResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
+    suspend fun saveAvatarResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
                                 @Part avatar : MultipartBody.Part) :
-            Deferred<Response<Void>>
+            Response<Void>
 }
 
 object SaveAvatarApi {

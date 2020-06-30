@@ -1,22 +1,21 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
-import android.app.Notification
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
+import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomDiffUtilCallback
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.github.nkzawa.socketio.client.Socket
@@ -119,40 +118,15 @@ class ChatRoomFragment : Fragment() {
 
     private fun updateRecyclerView(receiverID: String) {
         viewModel.getMessagesFromNetwork(requireContext(), receiverID) {
+            val userChatDiffUtilCallback = ChatRoomDiffUtilCallback(adapter.data, it)
+            val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
             adapter.data = it
             scrollToBottom(binding, adapter)
-            adapter.notifyDataSetChanged()
+            authorDiffResult.dispatchUpdatesTo(adapter)
         }
     }
 
     private fun scrollToBottom(binding : FragmentChatRoomBinding, adapter: ChatRoomAdapter) {
         binding.chatRecyclerView.scrollToPosition(adapter.itemCount - 1)
     }
-
-/*
-//    private fun onMessage(adapter: ChatRoomAdapter): Emitter.Listener {
-//        return Emitter.Listener { args ->
-//            activity?.runOnUiThread(Runnable {
-//                val data = args[0] as JSONObject
-//                val gson = Gson()
-//                val gsonMessage = gson.fromJson(data.toString(), Message::class.java)
-//                val message = ChatRoom(gsonMessage.sender,gsonMessage.text)
-//                try {
-//                    Log.i("+++", gsonMessage.toString())
-//                    Log.i("+++", data.toString())
-////                    if (adapter.data.)
-//                    adapter.data += message
-//                    adapter.notifyDataSetChanged()
-//                } catch (e: JSONException) {
-//                    Log.i("+++", e.toString())
-//                    return@Runnable
-//                }
-//            })
-//        }
-//    }
-//    private fun sendMessage(receiverID: String, text: EditText) {
-//        mSocket.emit("sendMessage" , text.text.toString() , receiverID)
-//        text.text.clear()
-//    }
- */
 }

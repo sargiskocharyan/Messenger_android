@@ -4,12 +4,9 @@ package com.example.dynamicmessenger.userHome.fragments
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,24 +20,22 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.common.AppLangKeys
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.customViews.spinner.CountryAdapter
-import com.example.dynamicmessenger.customViews.spinner.CountryItem
 import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
+import com.example.dynamicmessenger.network.DownloadImageTask
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
 import com.example.dynamicmessenger.utils.LocalizationUtil
+import com.example.dynamicmessenger.utils.ToByteArray
 import okhttp3.MediaType
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
 import okhttp3.RequestBody
-import java.io.*
+import java.io.InputStream
 
 
 class UserInformationFragment : Fragment() {
     private lateinit var viewModel: UserInformationViewModel
     private lateinit var binding: FragmentUserInformationBinding
-    private var mCountryList: ArrayList<CountryItem> = ArrayList()
 
     @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("ResourceType")
@@ -56,17 +51,10 @@ class UserInformationFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        val userObject = SharedConfigs.signedUser
-        binding.username.text = userObject?.username ?: ""
-        binding.email.text = userObject?.email ?: ""
-        binding.name.text = userObject?.name ?: "Name"
-        binding.lastName.text = userObject?.lastname ?: "Last Name"
-        binding.university.text = userObject?.university?.name ?: "University"
-
-        val mAdapter = CountryAdapter(requireContext(), mCountryList)
+        binding.university.text = SharedConfigs.signedUser?.university?.toString() ?: "University"
 
         popupMenu(binding)
-        setLanguageImage(binding)
+//        setLanguageImage(binding)
 
         binding.contactConstraintLayout.setOnClickListener {
             val selectedFragment = UserContactsFragment()
@@ -90,7 +78,7 @@ class UserInformationFragment : Fragment() {
 
         binding.logoutConstraintLayout.setOnClickListener {
             val token = SaveToken.decrypt(SharedPreferencesManager.getUserToken(requireContext()))
-            viewModel.logoutNetwork(token!!, requireContext()) {
+            viewModel.logoutNetwork(token, requireContext()) {
                 if (it) {
                     SharedPreferencesManager.deleteUserAllInformation(requireContext())
                     val intent = Intent(activity, MainActivity::class.java)
@@ -101,12 +89,7 @@ class UserInformationFragment : Fragment() {
                 }
             }
         }
-
-        viewModel.getUserAvatarFromNetwork(requireContext(), SharedConfigs.signedUser!!._id) {
-            val bmp = BitmapFactory.decodeStream(it.byteStream())
-            binding.userProfileImageView.setImageBitmap(bmp)
-        }
-
+        setAvatar()
 
         binding.userProfileImageView.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
@@ -133,33 +116,10 @@ class UserInformationFragment : Fragment() {
             binding.userProfileImageView.setImageBitmap(bitmap)
 
             val inputStream: InputStream = data.data?.let { requireActivity().contentResolver.openInputStream(it) }!!
-            /*
-//            val f = File(requireContext().cacheDir, "avatar.png")
-//            f.createNewFile()
-//            val bos = ByteArrayOutputStream()
-//            bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos)
-//            val bitmapData = bos.toByteArray()
-//            val fos = FileOutputStream(f)
-//            fos.write(bitmapData)
-//            fos.flush()
-//            fos.close()
-            */
-            val requestFile = RequestBody.create(MediaType.parse("image/jpg"), getBytes(inputStream)!!)
+            val requestFile = RequestBody.create(MediaType.parse("image/jpg"), ToByteArray.getBytes(inputStream)!!)
             val body = MultipartBody.Part.createFormData("avatar", "avatar.jpg", requestFile)
             viewModel.saveUserAvatarFromNetwork(requireContext(), body)
         }
-    }
-
-    @Throws(IOException::class)
-    fun getBytes(inputStream: InputStream): ByteArray? {
-        val byteBuff = ByteArrayOutputStream()
-        val buffSize = 1024
-        val buff = ByteArray(buffSize)
-        var len = 0
-        while (inputStream.read(buff).also { len = it } != -1) {
-            byteBuff.write(buff, 0, len)
-        }
-        return byteBuff.toByteArray()
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -195,17 +155,9 @@ class UserInformationFragment : Fragment() {
         }
     }
 
-    private fun setLanguageImage(binding: FragmentUserInformationBinding) {
-        when (SharedConfigs.appLang) {
-            AppLangKeys.EN -> {
-                binding.languageImage.setImageResource(R.drawable.ic_united_kingdom)
-            }
-            AppLangKeys.RU -> {
-                binding.languageImage.setImageResource(R.drawable.ic_russia)
-            }
-            else -> {
-                binding.languageImage.setImageResource(R.drawable.ic_armenia)
-            }
+    private fun setAvatar() {
+        if (SharedConfigs.signedUser?.avatar != null) {
+            DownloadImageTask(binding.userProfileImageView).execute(SharedConfigs.signedUser?.avatar)
         }
     }
 }

@@ -1,10 +1,14 @@
 package com.example.dynamicmessenger.userHome.viewModels
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.UniversityApi
 import com.example.dynamicmessenger.network.authorization.UpdateUserApi
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
@@ -17,20 +21,22 @@ import kotlinx.coroutines.launch
 
 class UpdateUserInformationViewModel: ViewModel() {
 
-    fun updateUserNetwork(view: View, updateUserTask: UpdateUserTask, context: Context?, closure: (Boolean) -> Unit) {
+    fun updateUserNetwork(updateUserTask: UpdateUserTask, context: Context?, closure: (Boolean) -> Unit) {
         val myEncryptedToken = SharedPreferencesManager.getUserToken(context!!)
         val myToken = SaveToken.decrypt(myEncryptedToken)
         viewModelScope.launch {
             try {
-                val response = UpdateUserApi.retrofitService.updateUserResponseAsync(myToken!! ,updateUserTask).await()
+                val response = UpdateUserApi.retrofitService.updateUserResponseAsync(myToken!! ,updateUserTask)
                 if (response.isSuccessful) {
                     val user = User(response.body()!!.name,
                         response.body()!!.lastname,
                         response.body()!!._id,
                         response.body()!!.email,
                         response.body()!!.username,
-                        response.body()!!.university
+                        response.body()!!.university,
+                        response.body()!!.avatar
                     )
+                    SharedConfigs.signedUser = user
                     SharedPreferencesManager.saveUserObject(context,user)
                     closure(true)
                 } else {
@@ -45,13 +51,11 @@ class UpdateUserInformationViewModel: ViewModel() {
     fun getAllUniversity(context: Context?, closure: (List<UniversityProperty>) -> Unit) {
         val myToken = SharedPreferencesManager.getUserToken(context!!)
         val token = SaveToken.decrypt(myToken)
-        var allUniversity: List<UniversityProperty>? = null
         viewModelScope.launch {
             try {
-                val response = UniversityApi.retrofitService.universityResponseAsync(token!!).await()
+                val response = UniversityApi.retrofitService.universityResponseAsync(token!!)
                 if (response.isSuccessful) {
-                    allUniversity = response.body()
-                    closure(allUniversity!!)
+                    closure(response.body()!!)
                 } else {
                     Toast.makeText(context, "Cant get university's name", Toast.LENGTH_SHORT).show()
                 }

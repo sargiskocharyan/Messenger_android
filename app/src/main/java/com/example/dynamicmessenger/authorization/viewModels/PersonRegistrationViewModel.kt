@@ -23,14 +23,15 @@ class PersonRegistrationViewModel: ViewModel(){
         val myToken = SaveToken.decrypt(myEncryptedToken)
         viewModelScope.launch {
             try {
-                val response = UpdateUserApi.retrofitService.updateUserResponseAsync(myToken!! ,updateUserTask).await()
+                val response = UpdateUserApi.retrofitService.updateUserResponseAsync(myToken!! ,updateUserTask)
                 if (response.isSuccessful) {
                     val user = User(response.body()!!.name,
                         response.body()!!.lastname,
                         response.body()!!._id,
                         response.body()!!.email,
                         response.body()!!.username,
-                        response.body()!!.university
+                        response.body()!!.university,
+                        response.body()!!.avatar
                     )
                     SharedPreferencesManager.saveUserObject(context,user)
                     view.findNavController().navigate(R.id.action_personRegistrationFragment_to_finishRegistrationFragment)
@@ -49,7 +50,7 @@ class PersonRegistrationViewModel: ViewModel(){
         var allUniversity: List<UniversityProperty>? = null
         viewModelScope.launch {
             try {
-                val response = UniversityApi.retrofitService.universityResponseAsync(token!!).await()
+                val response = UniversityApi.retrofitService.universityResponseAsync(token!!)
                 if (response.isSuccessful) {
                     allUniversity = response.body()
                     closure(allUniversity!!)

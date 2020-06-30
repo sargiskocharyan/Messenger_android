@@ -7,20 +7,23 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
+import com.example.dynamicmessenger.userHome.adapters.UserChatDiffUtilCallback
 import com.example.dynamicmessenger.userHome.adapters.UserChatsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserChatViewModel
 
 
 class UserChatFragment : Fragment() {
     private lateinit var viewModel: UserChatViewModel
+    private lateinit var binding : FragmentUserChatBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding : FragmentUserChatBinding =
+        binding =
             DataBindingUtil.inflate(inflater,
                 R.layout.fragment_user_chat,
                 container,false)
@@ -32,6 +35,9 @@ class UserChatFragment : Fragment() {
         updateRecyclerView(adapter)
 
         binding.root.setHasTransientState(true)
+        binding.userChatSwipeRefreshLayout.setOnRefreshListener {
+            updateRecyclerView(adapter)
+        }
         binding.chatsRecyclerView.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatsRecyclerView.layoutManager = linearLayoutManager
@@ -40,9 +46,13 @@ class UserChatFragment : Fragment() {
     }
 
     private fun updateRecyclerView(adapter: UserChatsAdapter) {
+        binding.userChatSwipeRefreshLayout.isRefreshing = true
         viewModel.getUserChatsFromNetwork(requireContext()) {
+            val userChatDiffUtilCallback = UserChatDiffUtilCallback(adapter.data, it.sortedWith(compareBy { chat -> chat.message }).reversed())
+            val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
             adapter.data = it.sortedWith(compareBy { chat -> chat.message }).reversed()
-            adapter.notifyDataSetChanged()
+            binding.userChatSwipeRefreshLayout.isRefreshing = false
+            authorDiffResult.dispatchUpdatesTo(adapter)
         }
     }
 }

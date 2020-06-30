@@ -36,7 +36,7 @@ class ContactsSearchDialog(private val coroutineScope: CoroutineScope, val myClo
                     val task = SearchTask(name)
                     coroutineScope.launch {
                         try {
-                            val response = SearchContactsApi.retrofitService.contactsSearchResponseAsync(myToken!!, task).await()
+                            val response = SearchContactsApi.retrofitService.contactsSearchResponseAsync(myToken!!, task)
                             if (response.isSuccessful) {
                                 myClosure(response.body()!!.users)
                             } else {

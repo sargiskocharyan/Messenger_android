@@ -2,6 +2,8 @@ package com.example.dynamicmessenger.network.authorization.models
 
 import android.annotation.SuppressLint
 import android.os.Parcelable
+import com.example.dynamicmessenger.common.AppLangKeys
+import com.example.dynamicmessenger.common.SharedConfigs
 import kotlinx.android.parcel.Parcelize
 import java.text.SimpleDateFormat
 
@@ -15,16 +17,24 @@ data class LoginProperty(val token: String, val user: User) : Parcelable
 data class RegistrationProperty(val token: String, val user: User) : Parcelable //TODO
 
 @Parcelize
-data class UpdateUserProperty(val _id: String, val name: String, val lastname: String, val university: University, val email: String, val username: String) : Parcelable
+data class UpdateUserProperty(val _id: String, val name: String, val lastname: String, val university: University, val email: String, val username: String, val avatar: String?) : Parcelable
 
 @Parcelize
-data class University(val _id: String, val name: String ) : Parcelable
+data class University(val _id: String, val name: String, val nameRU: String, val nameEN: String) : Parcelable {
+    override fun toString(): String {
+        return when (SharedConfigs.appLang) {
+            AppLangKeys.AM ->  name
+            AppLangKeys.RU ->  nameRU
+            else -> nameEN
+        }
+    }
+}
 
 @Parcelize
 data class UserTokenProperty(val tokenExists: Boolean) : Parcelable
 
 @Parcelize
-data class User(val name: String? = null, val lastname: String? = null, val _id: String, val email: String, val username: String, val university: University? = null) : Parcelable
+data class User(val name: String? = null, val lastname: String? = null, val _id: String, val email: String, val username: String, val university: University? = null, val avatar: String?) : Parcelable
 
 @Parcelize
 data class UserInfo(val name: String? = null, val lastname: String? = null, val _id: String, val email: String, val username: String) : Parcelable
@@ -61,26 +71,14 @@ data class Sender(val id: String, val name: String) : Parcelable
 @Parcelize
 data class ChatRoom(val sender: Sender, val text: String, val reciever: String) : Parcelable
 
-//@Parcelize
-//data class ImageURI(val avatar: Data)
-
-//{
-//    "sender": {
-//    "id": "5ee76c90bfa0980017a39013",
-//    "name": "David"
-//},
-//    "_id": "5ee77bb63a69520017c21f7c",
-//    "reciever": "5ee76d13bfa0980017a39018",
-//    "owner": "5ee77bb03a69520017c21f7b",
-//    "text": "privet",
-//    "createdAt": "2020-06-15T13:46:30.916Z",
-//    "updatedAt": "2020-06-15T13:46:30.916Z",
-//    "__v": 0
-//},
 @Parcelize
-data class UniversityProperty(val _id: String, val name: String) : Parcelable {
+data class UniversityProperty(val _id: String, val name: String, val nameRU: String , val nameEN: String) : Parcelable {
     override fun toString(): String {
-        return name
+        return when (SharedConfigs.appLang) {
+            AppLangKeys.AM ->  name
+            AppLangKeys.RU ->  nameRU
+            else -> nameEN
+        }
     }
 }
 

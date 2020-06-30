@@ -130,8 +130,7 @@ object SaveToken {
         c.init(Cipher.DECRYPT_MODE, key)
         val decodedValue: ByteArray = Base64.decode(outputString, Base64.DEFAULT)
         val decValue: ByteArray = c.doFinal(decodedValue)
-        val decryptedValue = String(decValue)
-        return decryptedValue
+        return String(decValue)
     }
 
     fun encrypt(data: String): String  {
@@ -139,8 +138,7 @@ object SaveToken {
         val c = Cipher.getInstance("AES")
         c.init(Cipher.ENCRYPT_MODE,key)
         val encVal:ByteArray = c.doFinal(data.toByteArray())
-        val encryptedValue = Base64.encodeToString(encVal, Base64.DEFAULT)
-        return encryptedValue
+        return Base64.encodeToString(encVal, Base64.DEFAULT)
     }
 
     private fun generateKey(password: String): SecretKeySpec  {
@@ -148,8 +146,7 @@ object SaveToken {
         val bytes :ByteArray = password.toByteArray()
         digest.update(bytes, 0, bytes.size)
         val key:ByteArray = digest.digest()
-        val secretKeySpec =  SecretKeySpec(key, "AES")
-        return secretKeySpec
+        return SecretKeySpec(key, "AES")
     }
 }
 

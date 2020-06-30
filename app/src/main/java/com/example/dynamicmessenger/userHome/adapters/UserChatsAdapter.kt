@@ -4,25 +4,19 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.startActivity
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.ChatRoomActivity
-import com.example.dynamicmessenger.activitys.HomeActivity
-import com.example.dynamicmessenger.common.IntentExtra
 import com.example.dynamicmessenger.network.authorization.models.Chat
-import com.example.dynamicmessenger.network.authorization.models.UserContacts
-import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -90,4 +84,18 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
             }
         }
     }
+}
+
+class UserChatDiffUtilCallback(private val oldList: List<Chat>, private val newList: List<Chat>): DiffUtil.Callback() {
+    override fun getOldListSize() = oldList.size
+    override fun getNewListSize() = newList.size
+
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition].id == newList[newItemPosition].id
+    }
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition] == newList[newItemPosition]
+    }
+
 }

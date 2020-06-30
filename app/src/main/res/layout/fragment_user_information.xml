@@ -21,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/userProfileImageView"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:lines="1"
-                    android:text="Username"
+                    android:text="@{viewModel.username}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline3"
                     app:layout_constraintTop_toBottomOf="@+id/textView8" />
@@ -53,7 +53,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:text="Email"
+                    android:text="@{viewModel.email}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/guideline3"
@@ -85,7 +85,7 @@
                     style="@style/UserInformationTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Name"
+                    android:text="@{viewModel.name}"
                     app:layout_constraintStart_toStartOf="@+id/guideline3"
                     app:layout_constraintTop_toTopOf="@+id/textView6" />
 
@@ -94,7 +94,7 @@
                     style="@style/UserInformationTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Lastname"
+                    android:text="@{viewModel.lastName}"
                     app:layout_constraintStart_toStartOf="@+id/guideline3"
                     app:layout_constraintTop_toTopOf="@+id/textView7" />
 
@@ -220,6 +220,7 @@
                     android:layout_width="0dp"
                     android:layout_height="30dp"
                     android:src="@drawable/ic_united_kingdom"
+                    languageIMG="@{viewModel.setLanguageImage()}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="w,1:1"
                     app:layout_constraintEnd_toEndOf="parent"

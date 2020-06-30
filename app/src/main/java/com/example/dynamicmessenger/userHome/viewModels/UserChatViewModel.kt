@@ -16,7 +16,7 @@ class UserChatViewModel : ViewModel() {
         val myToken = SaveToken.decrypt(myEncryptedToken)
         viewModelScope.launch {
             try {
-                val response = ChatsApi.retrofitService.chatsResponseAsync(myToken!!).await()
+                val response = ChatsApi.retrofitService.chatsResponseAsync(myToken!!)
                 if (response.isSuccessful) {
                     closure(response.body()!!)
                 } else {

@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.widget.EditText
+import androidx.recyclerview.widget.DiffUtil
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 import com.example.dynamicmessenger.network.authorization.models.Message
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
+import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomDiffUtilCallback
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.github.nkzawa.emitter.Emitter
@@ -61,8 +63,12 @@ class SocketManager(val context: Context) {
                 val message = ChatRoom(gsonMessage.sender,gsonMessage.text,gsonMessage.reciever)
                 try {
                     if (message.sender.id == chatID || message.reciever == chatID) {
+                        val newData = adapter.data.toMutableList()
+                        newData += message
+                        val userChatDiffUtilCallback = ChatRoomDiffUtilCallback(adapter.data, newData)
+                        val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
                         adapter.data += message
-                        adapter.notifyDataSetChanged()
+                        authorDiffResult.dispatchUpdatesTo(adapter)
                     }
                 } catch (e: JSONException) {
                     Log.i("+++", e.toString())

@@ -16,7 +16,7 @@ class UserContactsViewModel: ViewModel() {
         val myToken = SaveToken.decrypt(myEncryptedToken)
         viewModelScope.launch {
             try {
-                val response = ContactsApi.retrofitService.contactsResponseAsync(myToken!!).await()
+                val response = ContactsApi.retrofitService.contactsResponseAsync(myToken!!)
                 if (response.isSuccessful) {
                     closure(response.body()!!)
                 } else {

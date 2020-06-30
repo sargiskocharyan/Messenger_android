@@ -3,18 +3,26 @@ package com.example.dynamicmessenger.common
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.dynamicmessenger.network.authorization.models.User
+import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import java.util.*
 
 
 object SharedConfigs {
     private lateinit var sharedPrefs: SharedPreferences
-
+    private lateinit var context: Context
     fun init(context: Context) {
-        sharedPrefs =  context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
+        this.context = context
+        sharedPrefs = context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
     }
     var shared = SharedConfigs
 
     var signedUser: User? = null
+//        get() {
+//            return SharedPreferencesManager.loadUserObject(context)
+//        }
+//        set(value) {
+//            SharedPreferencesManager.saveUserObject(context, value!!)
+//        }
 
     var appLang: AppLangKeys
         get() {

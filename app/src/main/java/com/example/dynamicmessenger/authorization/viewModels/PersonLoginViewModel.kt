@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentPersonLoginBinding
 import com.example.dynamicmessenger.network.authorization.LoginApi
 import com.example.dynamicmessenger.network.authorization.MailExistApi
@@ -32,7 +33,7 @@ class PersonLoginViewModel: ViewModel() {
             if (isExist) {
                 binding.progressBar.visibility = View.INVISIBLE
                 try {
-                    val response = LoginApi.retrofitService.loginResponseAsync(task).await()
+                    val response = LoginApi.retrofitService.loginResponseAsync(task)
                     if (response.isSuccessful) {
                         binding.progressBar.visibility = View.INVISIBLE
                         SharedPreferencesManager.setUserToken(context!!, SaveToken.encrypt(response.body()!!.token))
@@ -48,7 +49,7 @@ class PersonLoginViewModel: ViewModel() {
             } else {
                 binding.progressBar.visibility = View.INVISIBLE
                 try {
-                    val response = RegistrationApi.retrofitService.registrationResponseAsync(task).await()
+                    val response = RegistrationApi.retrofitService.registrationResponseAsync(task)
                         if (response.isSuccessful) {
                             binding.progressBar.visibility = View.INVISIBLE
                             SharedPreferencesManager.setUserToken(context!!, SaveToken.encrypt(response.body()!!.token))
@@ -67,7 +68,7 @@ class PersonLoginViewModel: ViewModel() {
     fun emailNetwork(task: EmailExistTask, context: Context?, binding: FragmentPersonLoginBinding) {
         viewModelScope.launch {
             try {
-                val response = MailExistApi.retrofitService.isMailExistAsync(task).await()
+                val response = MailExistApi.retrofitService.isMailExistAsync(task)
                 binding.progressBar.visibility = View.INVISIBLE
                 if (response.isSuccessful) {
                     SharedPreferencesManager.setUserMailExists(context!!, response.body()!!.mailExist)

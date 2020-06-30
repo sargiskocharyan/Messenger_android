@@ -69,7 +69,7 @@ class HomeActivity : AppCompatActivity() {
     private fun tokenCheck(context: Context?, token: String) {
         coroutineScope.launch {
             try {
-                val response = UserTokenVerifyApi.retrofitService.userTokenResponseAsync(token).await()
+                val response = UserTokenVerifyApi.retrofitService.userTokenResponseAsync(token)
                 if (response.isSuccessful) {
                     if (!response.body()!!.tokenExists) {
                         SharedPreferencesManager.setUserToken(context!!, "")

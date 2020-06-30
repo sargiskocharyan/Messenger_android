@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.ChatRoomActivity
@@ -58,7 +59,7 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
                 if (SharedPreferencesManager.getIsAddContacts(context)) {
                     viewModel.viewModelScope.launch {
                         try {
-                            val response = AddContactApi.retrofitService.addContactResponseAsync(myToken!!, task).await()
+                            val response = AddContactApi.retrofitService.addContactResponseAsync(myToken!!, task)
                             if (response.isSuccessful) {
                                 updateRecycleView()
                                 SharedPreferencesManager.isAddContacts(context, false)
@@ -87,4 +88,17 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         }
     }
 
+}
+
+class UserContactsDiffUtilCallback(private val oldList: List<UserContacts>, private val newList: List<UserContacts>): DiffUtil.Callback() {
+    override fun getOldListSize() = oldList.size
+    override fun getNewListSize() = newList.size
+
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition]._id == newList[newItemPosition]._id
+    }
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition] == newList[newItemPosition]
+    }
 }

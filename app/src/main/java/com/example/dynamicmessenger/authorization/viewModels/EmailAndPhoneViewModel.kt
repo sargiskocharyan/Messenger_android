@@ -19,7 +19,7 @@ class EmailAndPhoneViewModel : ViewModel() {
     fun emailNetwork(view: View, task: EmailExistTask, context: Context?, binding: FragmentEmailAndPhoneBinding) {
         viewModelScope.launch {
             try {
-                val response = MailExistApi.retrofitService.isMailExistAsync(task).await()
+                val response = MailExistApi.retrofitService.isMailExistAsync(task)
                 Log.i("+++", "$response")
                 if (response.isSuccessful) {
                     SharedPreferencesManager.setUserMailExists(context!!, response.body()!!.mailExist)
