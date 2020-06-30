@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,10 +20,6 @@ import com.example.dynamicmessenger.network.authorization.models.UniversityPrope
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.userHome.viewModels.UpdateUserInformationViewModel
 import com.example.dynamicmessenger.utils.Validations
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class UpdateUserInformationFragment : Fragment() {
     private lateinit var viewModel: UpdateUserInformationViewModel
@@ -58,9 +55,9 @@ class UpdateUserInformationFragment : Fragment() {
         })
         var university: String = ""
         (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-        val allUniversity: MutableList<UniversityProperty> = mutableListOf(UniversityProperty("404", "Choose your university"))
+        var allUniversity: List<UniversityProperty>
         viewModel.getAllUniversity(requireContext()){
-            allUniversity += it
+            allUniversity = it
             val adapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
@@ -77,6 +74,7 @@ class UpdateUserInformationFragment : Fragment() {
                     id: Long
                 ) {
                     val allUniver = parent.selectedItem as UniversityProperty
+                    Log.i("+++", allUniver._id)
                     university = allUniver._id
                 }
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -88,7 +86,7 @@ class UpdateUserInformationFragment : Fragment() {
             val lastname = binding.editTextLastname.text.toString()
             val username = binding.editTextUsername.text.toString()
             val updateUserTask = UpdateUserTask(name, lastname, username, university)
-            viewModel.updateUserNetwork(it, updateUserTask, context){closure ->
+            viewModel.updateUserNetwork(updateUserTask, context){closure ->
                 if (closure) {
                     val selectedFragment = UserInformationFragment()
                     activity?.supportFragmentManager?.beginTransaction()?.replace(

@@ -1,26 +1,25 @@
 package com.example.dynamicmessenger.userHome.adapters
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.activitys.ChatRoomActivity
 import com.example.dynamicmessenger.network.authorization.AddContactApi
 import com.example.dynamicmessenger.network.authorization.models.AddUserContactTask
 import com.example.dynamicmessenger.network.authorization.models.UserContacts
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewModel): RecyclerView.Adapter<UserContactsAdapter.UserContactsViewHolder>() {
       var data = listOf<UserContacts>()
@@ -57,28 +56,26 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
                 val myEncryptedToken = SharedPreferencesManager.getUserToken(context)
                 val myToken = SaveToken.decrypt(myEncryptedToken)
                 val task = AddUserContactTask(userContact!!._id)
-                val getProperties: Call<Void> = AddContactApi.retrofitService.addContactResponse(myToken, task)
-                try {
-                    getProperties.enqueue(object : Callback<Void> {
-                        override fun onResponse(
-                            call: Call<Void>,
-                            response: Response<Void>
-                        ) {
+                if (SharedPreferencesManager.getIsAddContacts(context)) {
+                    viewModel.viewModelScope.launch {
+                        try {
+                            val response = AddContactApi.retrofitService.addContactResponseAsync(myToken!!, task)
                             if (response.isSuccessful) {
                                 updateRecycleView()
+                                SharedPreferencesManager.isAddContacts(context, false)
                             } else {
                                 Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
                             }
-                        }
-                        override fun onFailure(
-                            call: Call<Void>,
-                            t: Throwable
-                        ) {
+                        } catch (e: Exception) {
                             Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
                         }
-                    })
-                } catch (e: Exception) {
-                    Toast.makeText(context, "Something gone a wrong", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    val intent = Intent(context, ChatRoomActivity::class.java)
+//                intent.putExtra(IntentExtra.receiverId, chat!!.id)
+                    SharedPreferencesManager.setReceiverID(context, userContact!!._id)
+                    context.startActivity(intent)
+                    (context as Activity?)!!.overridePendingTransition(1, 1)
                 }
             }
         }
@@ -91,4 +88,17 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         }
     }
 
+}
+
+class UserContactsDiffUtilCallback(private val oldList: List<UserContacts>, private val newList: List<UserContacts>): DiffUtil.Callback() {
+    override fun getOldListSize() = oldList.size
+    override fun getNewListSize() = newList.size
+
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition]._id == newList[newItemPosition]._id
+    }
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition] == newList[newItemPosition]
+    }
 }

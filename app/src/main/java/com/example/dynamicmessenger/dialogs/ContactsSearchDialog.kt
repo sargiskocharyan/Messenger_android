@@ -13,15 +13,13 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.network.authorization.SearchContactsApi
 import com.example.dynamicmessenger.network.authorization.models.SearchTask
 import com.example.dynamicmessenger.network.authorization.models.UserContacts
-import com.example.dynamicmessenger.network.authorization.models.Users
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
-class ContactsSearchDialog(val myClosure: (List<UserContacts>) -> Unit): AppCompatDialogFragment() {
+class ContactsSearchDialog(private val coroutineScope: CoroutineScope, val myClosure: (List<UserContacts>) -> Unit): AppCompatDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireContext())
@@ -36,28 +34,17 @@ class ContactsSearchDialog(val myClosure: (List<UserContacts>) -> Unit): AppComp
                     val myEncryptedToken = SharedPreferencesManager.getUserToken(requireContext())
                     val myToken = SaveToken.decrypt(myEncryptedToken)
                     val task = SearchTask(name)
-                    val getProperties: Call<Users> = SearchContactsApi.retrofitService.contactsSearchResponse(myToken, task)
-                    try {
-                        getProperties.enqueue(object : Callback<Users?> {
-                            override fun onResponse(
-                                call: Call<Users?>,
-                                response: Response<Users?>
-                            ) {
-                                if (response.isSuccessful) {
-                                    myClosure(response.body()!!.users)
-                                } else {
-                                    Toast.makeText(context, "Something gone a wrong", Toast.LENGTH_SHORT).show()
-                                }
+                    coroutineScope.launch {
+                        try {
+                            val response = SearchContactsApi.retrofitService.contactsSearchResponseAsync(myToken!!, task)
+                            if (response.isSuccessful) {
+                                myClosure(response.body()!!.users)
+                            } else {
+                                Toast.makeText(context, "Something gone a wrong", Toast.LENGTH_SHORT).show()
                             }
-                            override fun onFailure(
-                                call: Call<Users?>,
-                                t: Throwable
-                            ) {
-                                Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
-                            }
-                        })
-                    } catch (e: Exception) {
-                        Toast.makeText(context, "Something gone a wrong", Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 })
         return builder.create()

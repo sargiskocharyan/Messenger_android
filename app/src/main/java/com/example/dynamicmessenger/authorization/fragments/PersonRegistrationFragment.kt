@@ -66,9 +66,9 @@ class PersonRegistrationFragment : Fragment() {
         })
         var university: String = ""
         (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-        val allUniversity: MutableList<UniversityProperty> = mutableListOf(UniversityProperty("404", "Choose your university"))
+        var allUniversity: List<UniversityProperty>
         viewModel.getAllUniversity(requireContext()){
-            allUniversity += it
+            allUniversity = it
             val adapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_spinner_item,

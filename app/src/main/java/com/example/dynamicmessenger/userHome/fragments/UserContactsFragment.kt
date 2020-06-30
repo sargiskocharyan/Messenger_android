@@ -7,20 +7,26 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.databinding.FragmentUserContactsBinding
 import com.example.dynamicmessenger.dialogs.ContactsSearchDialog
+import com.example.dynamicmessenger.network.authorization.models.UserContacts
+import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.adapters.UserContactsAdapter
+import com.example.dynamicmessenger.userHome.adapters.UserContactsDiffUtilCallback
 import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 
 class UserContactsFragment : Fragment() {
     lateinit var viewModel: UserContactsViewModel
+    private var fragmentJob = Job()
+    private val coroutineScope = CoroutineScope(fragmentJob + Dispatchers.Main)
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,20 +39,19 @@ class UserContactsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         val adapter = UserContactsAdapter(requireContext(), viewModel)
-        updateRecycleView(adapter)
-
-        binding.addImageView.setOnClickListener {
-            val exampleDialog = ContactsSearchDialog {myList ->
-                adapter.data = myList
-                adapter.notifyDataSetChanged()
-            }
-            exampleDialog.show(requireActivity().supportFragmentManager, "Dialog")
-        }
-
+        updateRecycleViewFromNetwork(adapter)
         binding.root.setHasTransientState(true)
         binding.contactsRecyclerView.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.contactsRecyclerView.layoutManager = linearLayoutManager
+
+        binding.addImageView.setOnClickListener {
+            SharedPreferencesManager.isAddContacts(requireContext(), true)
+            val exampleDialog = ContactsSearchDialog(coroutineScope) {myList ->
+                updateRecycleView(adapter, myList)
+            }
+            exampleDialog.show(requireActivity().supportFragmentManager, "Dialog")
+        }
 
         binding.backImageView.setOnClickListener {
             val selectedFragment = UserInformationFragment()
@@ -58,10 +63,21 @@ class UserContactsFragment : Fragment() {
         return binding.root
     }
 
-    private fun updateRecycleView(adapter: UserContactsAdapter) {
+    override fun onDestroy() {
+        super.onDestroy()
+        fragmentJob.cancel()
+    }
+
+    private fun updateRecycleViewFromNetwork(adapter: UserContactsAdapter) {
         viewModel.getUserContactsFromNetwork(requireContext()) {
-            adapter.data = it
-            adapter.notifyDataSetChanged()
+            updateRecycleView(adapter, it)
         }
+    }
+
+    private fun updateRecycleView(adapter: UserContactsAdapter, data: List<UserContacts>) {
+        val userChatDiffUtilCallback = UserContactsDiffUtilCallback(adapter.data, data)
+        val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
+        adapter.data = data
+        authorDiffResult.dispatchUpdatesTo(adapter)
     }
 }

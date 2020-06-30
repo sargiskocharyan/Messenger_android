@@ -16,7 +16,11 @@
     <string name="last_name">Фамилия</string>
     <string name="username">Имя пользователя</string>
     <string name="skip">Пропустить</string>
-    <string name="language">Language</string>
-    <string name="phone">Phone</string>
+    <string name="language">язык</string>
+    <string name="phone">Телефон</string>
+    <string name="dark_mode">Темный режим</string>
+    <string name="contacts">контакты</string>
+    <string name="update_your_information">Обновите вашу информацию</string>
+    <string name="long_time_ago">Long time ago</string>
 
 </resources>
