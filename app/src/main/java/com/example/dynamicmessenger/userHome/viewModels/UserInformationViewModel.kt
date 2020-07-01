@@ -1,6 +1,7 @@
 package com.example.dynamicmessenger.userHome.viewModels
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -41,11 +42,18 @@ class UserInformationViewModel : ViewModel() {
             try {
                 val response = SaveAvatarApi.retrofitService.saveAvatarResponseAsync(myToken!!, avatar)
                 if (response.isSuccessful) {
+                    val user = SharedPreferencesManager.loadUserObject(context)
+                    response.body()
+                    user!!.avatarURL = response.body()!!
+                    user
+                    Log.i("+++upload", response.body()!!)
+                    SharedPreferencesManager.saveUserObject(context, user)
                     Toast.makeText(context, "Avatar uploaded", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(context, "getUserAvatarFromNetwork else ", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
+                Log.i("+++exception", e.toString())
                 Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
             }
         }

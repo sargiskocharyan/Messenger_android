@@ -1,22 +1,20 @@
 package com.example.dynamicmessenger.network.authorization
 
-import android.app.ProgressDialog
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.os.AsyncTask
 import com.example.dynamicmessenger.common.MyHeaders
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.network.authorization.models.*
+import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.MultipartBody
-import okhttp3.ResponseBody
+import retrofit2.Converter
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
-import java.io.InputStream
+import java.lang.reflect.Type
 
 
 private const val BASE_URL = ResponseUrls.herokuIP
@@ -27,12 +25,26 @@ private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()
 
+private val gson = GsonBuilder()
+    .setLenient()
+    .create()
+
 private val retrofit = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
+    .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
+//    .addConverterFactory(LENIENT_FACTORY.create(moshi))
     .addCallAdapterFactory(CoroutineCallAdapterFactory())
-    .baseUrl(ERO_URL)
+    .baseUrl(BASE_URL)
     .build()
 
+//val LENIENT_FACTORY: JsonAdapter.Factory = object : JsonAdapter.Factory {
+//    override fun create(
+//        type: Type?,
+//        annotations: Set<Annotation?>?,
+//        moshi: Moshi
+//    ): JsonAdapter<*>? {
+//        return moshi.nextAdapter<Any>(this, type, annotations).lenient()
+//    }
+//}
 private val retrofitEro = Retrofit.Builder()
     .addConverterFactory(MoshiConverterFactory.create(moshi))
     .addCallAdapterFactory(CoroutineCallAdapterFactory())
@@ -151,7 +163,7 @@ interface JsonPlaceHolderSearchContactsApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.searchContacts)
     suspend fun contactsSearchResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                                    @Body term: SearchTask) :
+                                            @Body term: SearchTask) :
             Response<Users>
 }
 
@@ -168,7 +180,7 @@ interface JsonPlaceHolderAddContactApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.addContact)
     suspend fun addContactResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                                @Body userID : AddUserContactTask) :
+                                        @Body userID : AddUserContactTask) :
             Response<Void>
 }
 
@@ -217,7 +229,7 @@ interface JsonPlaceHolderChatRoomApi {
     @Headers(MyHeaders.accept)
     @GET("${ResponseUrls.chats}/{id}")
     suspend fun chatRoomResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                              @Path ("id") receiverId: String) :
+                                      @Path ("id") receiverId: String) :
             Response<List<ChatRoom>>
 }
 
@@ -235,8 +247,8 @@ interface JsonPlaceHolderSaveAvatarApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.saveAvatar)
     suspend fun saveAvatarResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                                @Part avatar : MultipartBody.Part) :
-            Response<Void>
+                                        @Part avatar : MultipartBody.Part) :
+            Response<String>
 }
 
 object SaveAvatarApi {

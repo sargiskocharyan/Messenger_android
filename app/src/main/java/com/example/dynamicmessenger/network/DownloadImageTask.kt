@@ -24,6 +24,6 @@ open class DownloadImageTask(bmImage: ImageView) :
     }
 
     override fun onPostExecute(result: Bitmap?) {
-        bmImage.setImageBitmap(result)
+        if (result != null) bmImage.setImageBitmap(result)
     }
 }

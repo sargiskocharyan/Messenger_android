@@ -1,14 +1,18 @@
 package com.example.dynamicmessenger.userChatRoom.adapters
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.network.DownloadImageTask
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
+import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 
 class ChatRoomAdapter(val context: Context, private val myID: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var data = listOf<ChatRoom>()
@@ -16,7 +20,7 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
             field = value
             notifyDataSetChanged()
         }
-
+    val receiverUrl = SharedPreferencesManager.getReceiverAvatarUrl(context)
 
     override fun getItemCount(): Int {
         return data.size
@@ -53,8 +57,14 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
     inner class ChatRoomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val chatRoom: ChatRoom? = null
         private val message: TextView = itemView.findViewById(R.id.receiverTextView)
+        private val receiverImageView: ImageView = itemView.findViewById(R.id.receiverImageView)
         internal fun bind(position: Int) {
             message.text = data[position].text
+            if (receiverUrl != "") {
+                DownloadImageTask(receiverImageView).execute(receiverUrl)
+            } else  {
+                receiverImageView.setImageResource(R.drawable.ic_user_image)
+            }
         }
     }
 

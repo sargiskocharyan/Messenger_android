@@ -80,7 +80,6 @@ class PersonLoginViewModel: ViewModel() {
                 }
             } catch (e: Exception) {
                 binding.progressBar.visibility = View.INVISIBLE
-                Log.i("+++", "$e")
                 MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
             }
         }

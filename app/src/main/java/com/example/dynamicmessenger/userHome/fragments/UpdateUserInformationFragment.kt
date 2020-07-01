@@ -74,7 +74,6 @@ class UpdateUserInformationFragment : Fragment() {
                     id: Long
                 ) {
                     val allUniver = parent.selectedItem as UniversityProperty
-                    Log.i("+++", allUniver._id)
                     university = allUniver._id
                 }
                 override fun onNothingSelected(parent: AdapterView<*>?) {}

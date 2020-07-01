@@ -21,7 +21,7 @@
         app:layout_constraintStart_toStartOf="@+id/guideline" />
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/chatUserImageView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"

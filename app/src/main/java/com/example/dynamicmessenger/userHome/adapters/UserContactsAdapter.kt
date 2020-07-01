@@ -6,6 +6,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.ChatRoomActivity
+import com.example.dynamicmessenger.network.DownloadImageTask
 import com.example.dynamicmessenger.network.authorization.AddContactApi
 import com.example.dynamicmessenger.network.authorization.models.AddUserContactTask
 import com.example.dynamicmessenger.network.authorization.models.UserContacts
@@ -38,6 +40,11 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         holder.username.text = item.username
         holder.name.text = item.name
         holder.lastname.text = item.lastname
+        if (item.avatarURL != null) {
+            DownloadImageTask(holder.contactsUserImageView).execute(item.avatarURL)
+        } else  {
+            holder.contactsUserImageView.setImageResource(R.drawable.ic_user_image)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserContactsViewHolder {
@@ -51,6 +58,7 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         val username: TextView = itemView.findViewById(R.id.usernameTextView)
         val name: TextView = itemView.findViewById(R.id.userNameTextView)
         val lastname: TextView = itemView.findViewById(R.id.userLastnameTextView)
+        val contactsUserImageView: ImageView = itemView.findViewById(R.id.contactsUserImageView)
         init {
             itemView.setOnClickListener {
                 val myEncryptedToken = SharedPreferencesManager.getUserToken(context)

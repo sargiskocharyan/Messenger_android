@@ -156,8 +156,8 @@ class UserInformationFragment : Fragment() {
     }
 
     private fun setAvatar() {
-        if (SharedConfigs.signedUser?.avatar != null) {
-            DownloadImageTask(binding.userProfileImageView).execute(SharedConfigs.signedUser?.avatar)
+        if (SharedConfigs.signedUser?.avatarURL != null) {
+            DownloadImageTask(binding.userProfileImageView).execute(SharedConfigs.signedUser!!.avatarURL)
         }
     }
 }

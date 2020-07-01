@@ -57,6 +57,7 @@ object SharedPreferencesManager {
             .edit()
             .putString(SharedPrefConstants.sharedPrefUser, jsonString)
             .apply()
+        loadUserObjectToSharedConfigs(context)
     }
 
     fun loadUserObject(context: Context): User? {
@@ -118,6 +119,18 @@ object SharedPreferencesManager {
 
     fun getUserToken(context: Context): String {
         return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefToken, "")!!
+    }
+
+    fun setReceiverAvatarUrl(context: Context, url: String?) {
+        if (url == null) return
+        getSharedPreferences(context)
+            .edit()
+            .putString(SharedPrefConstants.sharedPrefReceiverAvatar, url)
+            .apply()
+    }
+
+    fun getReceiverAvatarUrl(context: Context): String {
+        return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefReceiverAvatar, "") ?: ""
     }
 
 }

@@ -4,16 +4,20 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.ChatRoomActivity
+import com.example.dynamicmessenger.common.SharedConfigs
+import com.example.dynamicmessenger.network.DownloadImageTask
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import java.text.SimpleDateFormat
@@ -66,6 +70,11 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
         holder.chat = item
         holder.lastname.text = item.lastname
         holder.lastMessage.text = item.message?.text
+        if (item.recipientAvatarURL != null) {
+            DownloadImageTask(holder.chatUserImageView).execute(item.recipientAvatarURL)
+        } else  {
+            holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
+        }
     }
 
     inner class UserChatsViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView){
@@ -74,11 +83,13 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
         val lastname: TextView = itemView.findViewById(R.id.chatsUserLastname)
         val lastMessage: TextView = itemView.findViewById(R.id.chatsLastMessage)
         val messageTime: TextView = itemView.findViewById(R.id.messageTime)
+        val chatUserImageView: ImageView = itemView.findViewById(R.id.chatUserImageView)
         init {
             itemView.setOnClickListener {
                 val intent = Intent(context, ChatRoomActivity::class.java)
 //                intent.putExtra(IntentExtra.receiverId, chat!!.id)
                 SharedPreferencesManager.setReceiverID(context, chat!!.id)
+                SharedPreferencesManager.setReceiverAvatarUrl(context, chat!!.recipientAvatarURL)
                 context.startActivity(intent)
                 (context as Activity?)!!.overridePendingTransition(1, 1)
             }

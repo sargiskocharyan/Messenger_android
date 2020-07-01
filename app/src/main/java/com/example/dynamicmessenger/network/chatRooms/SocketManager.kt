@@ -2,6 +2,7 @@ package com.example.dynamicmessenger.network.chatRooms
 
 import android.app.Activity
 import android.content.Context
+import android.text.BoringLayout
 import android.util.Log
 import android.widget.EditText
 import androidx.recyclerview.widget.DiffUtil
@@ -12,6 +13,7 @@ import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomDiffUtilCallback
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userHome.adapters.UserChatsAdapter
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
@@ -70,6 +72,36 @@ class SocketManager(val context: Context) {
                         adapter.data += message
                         authorDiffResult.dispatchUpdatesTo(adapter)
                     }
+                } catch (e: JSONException) {
+                    Log.i("+++", e.toString())
+                    return@Runnable
+                }
+            })
+        }
+    }
+
+    fun onMessageForAllChats(activity: Activity?, closure: (Boolean) -> Unit): Emitter.Listener {
+        return Emitter.Listener {
+            activity?.runOnUiThread(Runnable {
+                try {
+                    closure(true)
+                } catch (e: JSONException) {
+                    Log.i("+++", e.toString())
+                    return@Runnable
+                }
+            })
+        }
+    }
+
+    fun onMessageForNotification(activity: Activity?, closure: (ChatRoom) -> Unit): Emitter.Listener {
+        return Emitter.Listener { args ->
+            activity?.runOnUiThread(Runnable {
+                try {
+                    val data = args[0] as JSONObject
+                    val gson = Gson()
+                    val gsonMessage = gson.fromJson(data.toString(), Message::class.java)
+                    val message = ChatRoom(gsonMessage.sender,gsonMessage.text,gsonMessage.reciever)
+                    closure(message)
                 } catch (e: JSONException) {
                     Log.i("+++", e.toString())
                     return@Runnable

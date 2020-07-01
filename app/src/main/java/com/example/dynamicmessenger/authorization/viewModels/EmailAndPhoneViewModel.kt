@@ -20,7 +20,6 @@ class EmailAndPhoneViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = MailExistApi.retrofitService.isMailExistAsync(task)
-                Log.i("+++", "$response")
                 if (response.isSuccessful) {
                     SharedPreferencesManager.setUserMailExists(context!!, response.body()!!.mailExist)
                     SharedPreferencesManager.setUserCode(context, response.body()!!.code)
@@ -32,7 +31,6 @@ class EmailAndPhoneViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 binding.progressBar.visibility = View.INVISIBLE
-                Log.i("+++", "$e")
                 MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
             }
         }

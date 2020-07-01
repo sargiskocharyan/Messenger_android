@@ -31,7 +31,7 @@ class PersonRegistrationViewModel: ViewModel(){
                         response.body()!!.email,
                         response.body()!!.username,
                         response.body()!!.university,
-                        response.body()!!.avatar
+                        response.body()!!.avatarURL
                     )
                     SharedPreferencesManager.saveUserObject(context,user)
                     view.findNavController().navigate(R.id.action_personRegistrationFragment_to_finishRegistrationFragment)

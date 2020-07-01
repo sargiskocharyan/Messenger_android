@@ -1,11 +1,7 @@
 package com.example.dynamicmessenger.userHome.viewModels
 
 import android.content.Context
-import android.util.Log
-import android.view.View
 import android.widget.Toast
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dynamicmessenger.common.SharedConfigs
@@ -34,7 +30,7 @@ class UpdateUserInformationViewModel: ViewModel() {
                         response.body()!!.email,
                         response.body()!!.username,
                         response.body()!!.university,
-                        response.body()!!.avatar
+                        response.body()!!.avatarURL
                     )
                     SharedConfigs.signedUser = user
                     SharedPreferencesManager.saveUserObject(context,user)

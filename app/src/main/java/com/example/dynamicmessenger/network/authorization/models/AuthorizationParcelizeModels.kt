@@ -14,10 +14,10 @@ data class MailExistProperty(val mailExist: Boolean, val code: String) : Parcela
 data class LoginProperty(val token: String, val user: User) : Parcelable
 
 @Parcelize
-data class RegistrationProperty(val token: String, val user: User) : Parcelable //TODO
+data class RegistrationProperty(val token: String, val user: User) : Parcelable
 
 @Parcelize
-data class UpdateUserProperty(val _id: String, val name: String, val lastname: String, val university: University, val email: String, val username: String, val avatar: String?) : Parcelable
+data class UpdateUserProperty(val _id: String, val name: String, val lastname: String, val university: University, val email: String, val username: String, val avatarURL: String?) : Parcelable
 
 @Parcelize
 data class University(val _id: String, val name: String, val nameRU: String, val nameEN: String) : Parcelable {
@@ -34,19 +34,19 @@ data class University(val _id: String, val name: String, val nameRU: String, val
 data class UserTokenProperty(val tokenExists: Boolean) : Parcelable
 
 @Parcelize
-data class User(val name: String? = null, val lastname: String? = null, val _id: String, val email: String, val username: String, val university: University? = null, val avatar: String?) : Parcelable
+data class User(val name: String? = null, val lastname: String? = null, val _id: String, val email: String, val username: String, val university: University? = null, var avatarURL: String?) : Parcelable
 
 @Parcelize
 data class UserInfo(val name: String? = null, val lastname: String? = null, val _id: String, val email: String, val username: String) : Parcelable
 
 @Parcelize
-data class UserContacts(val  _id: String, val name: String?, val lastname: String?, val username: String) : Parcelable
+data class UserContacts(val  _id: String, val name: String?, val lastname: String?, val username: String, val avatarURL: String?) : Parcelable
 
 @Parcelize
 data class Users(val users: List<UserContacts>) : Parcelable
 
 @Parcelize
-data class Chat(val id: String, val name: String?, val lastname: String?, val username: String, val message: Message?) : Parcelable
+data class Chat(val id: String, val name: String?, val lastname: String?, val username: String, val message: Message?, val recipientAvatarURL: String?) : Parcelable
 
 @Parcelize
 data class Message(val sender: Sender, val text: String, var createdAt: String, val reciever: String) : Parcelable, Comparable<Message> {
@@ -88,4 +88,7 @@ data class UniversityPropertyList(val list: List<UniversityProperty>) : Parcelab
         return list.toString()
     }
 }
+
+@Parcelize
+data class AvatarModel(val avatar: String) : Parcelable
 

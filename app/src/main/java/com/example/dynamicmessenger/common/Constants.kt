@@ -4,7 +4,7 @@ import java.util.regex.Pattern
 
 class ResponseUrls {
     companion object {
-        const val ErosServerIP = "http://192.168.0.106:3000/"
+        const val ErosServerIP = "http://192.168.0.105:3000/"
         const val ErosServerIPForSocket = "http://192.168.0.103:3000"
         const val herokuIP = "https://messenger-dynamic.herokuapp.com/"
         const val herokuIPForSocket = "https://messenger-dynamic.herokuapp.com"
@@ -40,6 +40,7 @@ class SharedPrefConstants {
         const val sharedPrefReceiverID = "receiverID"
         const val sharedPrefIsContacts = "isContacts"
         const val sharedPrefAppLang = "appLanguage"
+        const val sharedPrefReceiverAvatar = "receiverAvatar"
     }
 }
 

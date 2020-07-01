@@ -1,21 +1,28 @@
 package com.example.dynamicmessenger.activitys
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.app.NotificationManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.UserTokenVerifyApi
+import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.fragments.*
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.MyAlertMessage
+import com.example.dynamicmessenger.utils.NotificationMessages
+import com.github.nkzawa.socketio.client.Socket
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,18 +33,40 @@ import kotlinx.coroutines.launch
 class HomeActivity : AppCompatActivity() {
     private var activityJob = Job()
     private val coroutineScope = CoroutineScope(activityJob + Dispatchers.Main)
+    private lateinit var selectedFragment: Fragment
+    private lateinit var socketManager: SocketManager
+    private lateinit var mSocket: Socket
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         SharedPreferencesManager.loadUserObjectToSharedConfigs(this)
         setContentView(R.layout.activity_home)
-        (this as AppCompatActivity?)!!.supportActionBar!!.hide()
+        this.supportActionBar!!.hide()
         val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavBar.setOnNavigationItemSelectedListener(navListener)
         val myEncryptedToken = SharedPreferencesManager.getUserToken(this)
         val myToken = SaveToken.decrypt(myEncryptedToken)
         val context = this
         if (myToken != null) tokenCheck(context, myToken)
+
+        socketManager = SocketManager(this)
+        try {
+            mSocket = socketManager.getSocketInstance()!!
+        } catch (e: Exception){
+            Log.i("+++", e.toString())
+        }
+        mSocket.connect()
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        mSocket.on("message", socketManager.onMessageForNotification(Activity()){
+            try {
+                Log.i("+++mSocket", selectedFragment.toString())
+                if (selectedFragment != UserChatFragment() && it.sender.id != SharedConfigs.signedUser?._id ?: true){
+                    NotificationMessages.setNotificationMessage(it.sender.name, it.text, this, manager)
+                }
+            } catch (e: Exception) {
+                Log.i("+++catch", e.toString())
+            }
+        })
     }
 
     override fun attachBaseContext(base: Context?) {
@@ -46,12 +75,12 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        socketManager.closeSocket()
         activityJob.cancel()
     }
 
     private val navListener: BottomNavigationView.OnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { item ->
-            var selectedFragment: Fragment? = null
             when (item.itemId) {
                 R.id.call -> selectedFragment = UserCallFragment()
                 R.id.chanel -> selectedFragment = UserChanelFragment()
@@ -59,9 +88,10 @@ class HomeActivity : AppCompatActivity() {
                 R.id.group -> selectedFragment = UserGroupFragment()
                 R.id.user -> selectedFragment = UserInformationFragment()
             }
+            Log.i("+++BottomNavigationView", selectedFragment.toString())
             supportFragmentManager.beginTransaction().replace(
                 R.id.fragmentContainer,
-                selectedFragment!!
+                selectedFragment
             ).commit()
             true
         }
