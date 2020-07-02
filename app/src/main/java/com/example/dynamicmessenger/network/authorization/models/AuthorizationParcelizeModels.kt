@@ -15,8 +15,8 @@ data class MailExistProperty(val mailExist: Boolean, val code: String) : Parcela
 @Parcelize
 data class LoginProperty(val token: String, val user: User) : Parcelable
 
-@Parcelize
-data class RegistrationProperty(val token: String, val user: User) : Parcelable
+//@Parcelize
+//data class RegistrationProperty(val token: String, val user: User) : Parcelable
 
 @Parcelize
 data class UpdateUserProperty(val _id: String, val name: String, val lastname: String, val university: University, val email: String, val username: String, val avatarURL: String?) : Parcelable

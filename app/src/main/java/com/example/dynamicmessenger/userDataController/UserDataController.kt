@@ -50,30 +50,6 @@ object SharedPreferencesManager {
         return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefCode, "")!!
     }
 
-
-    fun saveUserObject(context: Context, user: SignedUser) {
-        val gson = Gson()
-        val jsonString = gson.toJson(user)
-        getSharedPreferences(context)
-            .edit()
-            .putString(SharedPrefConstants.sharedPrefUser, jsonString)
-            .apply()
-        loadUserObjectToSharedConfigs(context)
-    }
-
-    fun loadUserObject(context: Context): SignedUser? {
-        val jsonString = getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefUser, "")!!
-        val gson = Gson()
-        if (jsonString.isEmpty()) {
-            return null
-        }
-        return gson.fromJson(jsonString, SignedUser::class.java)
-    }
-
-    fun loadUserObjectToSharedConfigs(context: Context) {
-        SharedConfigs.signedUser = loadUserObject(context)
-    }
-
     fun setReceiverID(context: Context, id: String) {
         getSharedPreferences(context)
             .edit()
@@ -115,8 +91,8 @@ object SharedPreferencesManager {
 }
 
 object SaveToken {
-    fun decrypt(outputString: String?): String? {
-        if (outputString == null || outputString == "") return null
+    fun decrypt(outputString: String?): String {
+        if (outputString == null || outputString == "") return ""
         val key = generateKey(SharedPrefConstants.sharedPrefToken)
         val c = Cipher.getInstance("AES")
         c.init(Cipher.DECRYPT_MODE, key)

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
@@ -40,7 +41,7 @@ class ChatRoomFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         val receiverID = SharedPreferencesManager.getReceiverID(requireContext())
-        val myID = SharedPreferencesManager.loadUserObject(requireContext())!!._id
+        val myID = SharedConfigs.signedUser!!._id
         adapter = ChatRoomAdapter(requireContext(), myID)
         val linearLayoutManager = LinearLayoutManager(requireContext())
 //        linearLayoutManager.stackFromEnd = true

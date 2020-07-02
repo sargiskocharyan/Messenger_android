@@ -2,6 +2,7 @@ package com.example.dynamicmessenger.userHome.viewModels
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,7 +22,8 @@ class UserChatViewModel(application: Application) : AndroidViewModel(application
     fun getUserChatsFromNetwork(context: Context?, swipeRefreshLayout: SwipeRefreshLayout, closure: (List<Chat>) -> Unit) {
         viewModelScope.launch {
             try {
-                val response = ChatsApi.retrofitService.chatsResponseAsync(SharedConfigs.token!!)
+                val response = ChatsApi.retrofitService.chatsResponseAsync(SharedConfigs.token)
+                Log.i("+++responseToken", SharedConfigs.token)
                 if (response.isSuccessful) {
                     closure(response.body()!!)
                 } else {

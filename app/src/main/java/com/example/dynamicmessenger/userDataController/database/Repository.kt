@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import com.example.dynamicmessenger.userDataController.SaveToken
 
 class SignedUserRepository(private val signedUserDao: SignedUserDao) {
-    val signedUser: LiveData<SignedUser> = signedUserDao.getSignedUser()
+    val signedUser: SignedUser = signedUserDao.getSignedUser()
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
@@ -19,7 +19,7 @@ class SignedUserRepository(private val signedUserDao: SignedUserDao) {
 }
 
 class UserTokenRepository(private val userTokenDao: UserTokenDao) {
-    fun getToken() = SaveToken.decrypt(userTokenDao.getUserToken().token)
+    fun getToken() = SaveToken.decrypt(userTokenDao.getUserToken()?.token)
 
 
     @Suppress("RedundantSuspendModifier")

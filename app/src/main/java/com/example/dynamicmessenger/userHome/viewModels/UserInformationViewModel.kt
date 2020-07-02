@@ -21,8 +21,6 @@ import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 
 class UserInformationViewModel(application: Application) : AndroidViewModel(application) {
-    private val tokenDao = SignedUserDatabase.getSignedUserDatabase(application)!!.userTokenDao()
-    private val tokenRep = UserTokenRepository(tokenDao)
     private val _username = MutableLiveData<String>()
     val username: LiveData<String> get() = _username
 
@@ -43,11 +41,11 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
         binding.imageUploadProgressBar.visibility = View.VISIBLE
         viewModelScope.launch {
             try {
-                val response = SaveAvatarApi.retrofitService.saveAvatarResponseAsync(SharedConfigs.token!!, avatar)
+                val response = SaveAvatarApi.retrofitService.saveAvatarResponseAsync(SharedConfigs.token, avatar)
                 if (response.isSuccessful) {
-                    val user = SharedPreferencesManager.loadUserObject(context!!)
+                    val user = SharedConfigs.signedUser
                     user!!.avatarURL = response.body()!!.string()
-                    SharedPreferencesManager.saveUserObject(context, user)
+                    SharedConfigs.signedUser = user
                     Toast.makeText(context, "Avatar uploaded", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(context, "getUserAvatarFromNetwork else ", Toast.LENGTH_SHORT).show()
@@ -75,8 +73,8 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
                     closure(true)
                 }
             } catch (e: Exception) {
-                closure(true)
                 MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
+                closure(true)
             }
         }
     }

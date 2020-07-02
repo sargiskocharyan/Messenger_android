@@ -98,7 +98,7 @@ interface JsonPlaceHolderRegistrationApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.reg)
     suspend fun registrationResponseAsync(@Body loginTask: LoginTask):
-            Response<RegistrationProperty>
+            Response<LoginProperty>
 }
 
 object RegistrationApi {

@@ -15,6 +15,8 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.ActivityMainBinding
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import java.util.*
 
@@ -22,15 +24,18 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SharedPreferencesManager.loadUserObjectToSharedConfigs(this)
+//        SharedPreferencesManager.loadUserObjectToSharedConfigs(this)
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this,
             R.layout.activity_main
         )
         changeDarkMode()
+        val tokenDao = SignedUserDatabase.getSignedUserDatabase(application)!!.userTokenDao()
+        val tokenRep = UserTokenRepository(tokenDao)
 
-        if (false) {
+        if (tokenRep.getToken() != "") {
             val intent = Intent(this,HomeActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

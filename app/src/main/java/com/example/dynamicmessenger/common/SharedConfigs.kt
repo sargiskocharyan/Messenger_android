@@ -2,10 +2,9 @@ package com.example.dynamicmessenger.common
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
-import com.example.dynamicmessenger.network.authorization.models.User
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import android.util.Log
 import com.example.dynamicmessenger.userDataController.database.*
+import kotlinx.coroutines.*
 import java.util.*
 
 
@@ -22,51 +21,59 @@ object SharedConfigs {
         tokenDao = SignedUserDatabase.getSignedUserDatabase(context)!!.userTokenDao()
         userRep = SignedUserRepository(userDao)
         tokenRep = UserTokenRepository(tokenDao)
+        signedUser = userRep.signedUser
+        Log.i("+++userRep", userRep.signedUser.toString())
+//        Log.i("+++tokenRep", tokenRep.getToken())
+        token = tokenRep.getToken()
         sharedPrefs = context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
+        appLang = setLang()
     }
 
-    var signedUser: SignedUser?
-        get() {
-            return userRep.signedUser.value
-        }
+    var signedUser: SignedUser? = null
         set(value) {
             if (value != null) {
+                field = value
+                Log.i("+++userInsertIF", value.toString())
                 userRep.insert(value)
+                Log.i("+++userInsertrep", userRep.signedUser.toString())
             }
         }
 
-    var token: String?
-        get() {
-            return tokenRep.getToken()
-        }
+    var token: String = ""
         set(value) {
-            if (value != null) {
-                tokenRep.insert(value)
-            }
+            field = value
+            tokenRep.insert(value)
         }
 
-    var appLang: AppLangKeys
-        get() {
-            return (if (getAppLanguage() == null || getAppLanguage() == "") {
-                AppLangKeys.fromValue(Locale.getDefault().language)
-            } else {
-                AppLangKeys.valueOf(getAppLanguage()!!)
-            })
-        }
+    var appLang: AppLangKeys = AppLangKeys.EN
         set(value) {
+            field = value
             setAppLanguage(value.name)
         }
 
 
-    fun setLang(key: String) {
-        //1 set key to appLang
-        // 2.  save in shared preferences
+    private fun setLang(): AppLangKeys {
+        return (if (getAppLanguage() == null || getAppLanguage() == "") {
+            AppLangKeys.fromValue(Locale.getDefault().language)
+        } else {
+            AppLangKeys.valueOf(getAppLanguage()!!)
+        })
     }
 //    var appMode: AppMode = when (getDarkMode()) {
 //        true -> AppMode.dark
 //        else -> AppMode.light
 //    }
 //
+    fun deleteSignedUser() {
+        signedUser = null
+        userRep.delete()
+    }
+
+    fun deleteToken() {
+        token = ""
+        tokenRep.delete()
+    }
+
     fun setDarkMode(enabled: Boolean) {
         sharedPrefs
             .edit()

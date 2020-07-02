@@ -84,7 +84,8 @@ class UserInformationFragment : Fragment() {
             viewModel.logoutNetwork(SharedConfigs.token, requireContext()) {
                 if (it) {
                     SharedPreferencesManager.deleteUserAllInformation(requireContext())
-                    tokenRep.delete()
+                    SharedConfigs.deleteToken()
+                    SharedConfigs.deleteSignedUser()
                     val intent = Intent(activity, MainActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

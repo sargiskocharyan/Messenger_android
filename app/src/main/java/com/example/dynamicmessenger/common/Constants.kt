@@ -30,12 +30,10 @@ class ResponseUrls {
 class SharedPrefConstants {
     companion object {
         const val sharedPrefCreate = "messengerAuth"
-        const val sharedPrefUniversity = "university"
         const val sharedPrefMail = "mail"
         const val sharedPrefIsMailExist = "isMailExist"
         const val sharedPrefToken = "sharedToken"
         const val sharedPrefCode = "code"
-        const val sharedPrefUser = "user"
         const val sharedPrefDarkMode = "darkMode"
         const val sharedPrefReceiverID = "receiverID"
         const val sharedPrefIsContacts = "isContacts"

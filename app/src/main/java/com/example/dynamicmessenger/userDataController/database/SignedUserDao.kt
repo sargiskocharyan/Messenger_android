@@ -9,7 +9,7 @@ import androidx.room.Query
 @Dao
 interface SignedUserDao {
     @Query("SELECT * from signed_user")
-    fun getSignedUser(): LiveData<SignedUser>
+    fun getSignedUser(): SignedUser
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(signedUser: SignedUser)
@@ -21,7 +21,7 @@ interface SignedUserDao {
 @Dao
 interface UserTokenDao {
     @Query("SELECT * FROM user_token")
-    fun getUserToken(): UserToken
+    fun getUserToken(): UserToken?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(token: UserToken)

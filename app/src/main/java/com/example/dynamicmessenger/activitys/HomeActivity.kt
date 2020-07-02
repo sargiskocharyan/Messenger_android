@@ -43,7 +43,7 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val tokenDao = SignedUserDatabase.getSignedUserDatabase(this)!!.userTokenDao()
         val userRep = UserTokenRepository(tokenDao)
-        SharedPreferencesManager.loadUserObjectToSharedConfigs(this)
+//        SharedPreferencesManager.loadUserObjectToSharedConfigs(this)
         setContentView(R.layout.activity_home)
         this.supportActionBar!!.hide()
         val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)

@@ -52,7 +52,8 @@ class PersonLoginViewModel(application: Application) : AndroidViewModel(applicat
                                                     response.body()!!.user.email,
                                                     response.body()!!.user.university,
                                                     response.body()!!.user.avatarURL)
-                        userRep.insert(signedUSer)
+                        Log.i("+++userResponse", signedUSer.toString())
+                        SharedConfigs.signedUser = signedUSer
 //                        tokenRep.insert(response.body()!!.token)
                         SharedConfigs.token = response.body()!!.token
 //                        SharedPreferencesManager.saveUserObject(context, response.body()!!.user)

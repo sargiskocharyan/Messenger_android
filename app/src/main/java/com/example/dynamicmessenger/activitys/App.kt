@@ -7,7 +7,6 @@ import com.example.dynamicmessenger.common.SharedConfigs
 class App: Application() {
     override fun onCreate() {
         super.onCreate()
-        Log.i("+++called App  ", "called")
         SharedConfigs.init(this)
     }
 

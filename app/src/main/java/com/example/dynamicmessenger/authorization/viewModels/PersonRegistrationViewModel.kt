@@ -2,6 +2,7 @@ package com.example.dynamicmessenger.authorization.viewModels
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,7 +29,7 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
     fun updateUserNetwork(view: View, updateUserTask: UpdateUserTask, context: Context?) {
         viewModelScope.launch {
             try {
-                val response = UpdateUserApi.retrofitService.updateUserResponseAsync(SharedConfigs.token!! ,updateUserTask)
+                val response = UpdateUserApi.retrofitService.updateUserResponseAsync(SharedConfigs.token ,updateUserTask)
                 if (response.isSuccessful) {
                     val user = SignedUser(response.body()!!._id,
                         response.body()!!.name,
@@ -37,6 +38,7 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
                         response.body()!!.email,
                         response.body()!!.university,
                         response.body()!!.avatarURL)
+                    Log.i("+++userResponse", user.toString())
                     SharedConfigs.signedUser = user
 //                    SharedPreferencesManager.saveUserObject(context!!,user)
                     view.findNavController().navigate(R.id.action_personRegistrationFragment_to_finishRegistrationFragment)

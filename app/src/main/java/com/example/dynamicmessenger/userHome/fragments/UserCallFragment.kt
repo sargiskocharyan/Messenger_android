@@ -28,17 +28,11 @@ class UserCallFragment : Fragment() {
         val userRep = SignedUserRepository(userDao)
         val tokenDao = SignedUserDatabase.getSignedUserDatabase(requireContext())!!.userTokenDao()
         val tokenRep = UserTokenRepository(tokenDao)
-        Log.i("+++", tokenRep.getToken())
-        Log.i("+++", SharedConfigs.signedUser.toString())
-        userRep.signedUser.observe(requireActivity(), Observer {
-            it.let {
-                Log.i("+++", it.toString())
-            }
-        })
+        Log.i("+++token", tokenRep.getToken())
+        Log.i("+++SharedConfigsToken", SharedConfigs.token)
+        Log.i("+++SharedConfigs", SharedConfigs.signedUser.toString())
+        Log.i("+++userRepo", userRep.signedUser.toString())
 
-//            requireActivity(), Observer { words ->
-            // Update the cached copy of the words in the adapter.
-//            words?.let { adapter.setWords(it) }))
         return inflater.inflate(R.layout.fragment_user_call, container, false)
     }
 
