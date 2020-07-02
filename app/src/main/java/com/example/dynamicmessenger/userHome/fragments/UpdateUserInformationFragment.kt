@@ -15,6 +15,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUpdateUserInformationBinding
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
@@ -54,6 +55,9 @@ class UpdateUserInformationFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
         var university: String = ""
+        binding.editTextName.text.append(SharedConfigs.signedUser?.name ?: "")
+        binding.editTextLastname.text.append(SharedConfigs.signedUser?.lastname ?: "")
+        binding.editTextUsername.text.append(SharedConfigs.signedUser?.username ?: "")
         (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
         var allUniversity: List<UniversityProperty>
         viewModel.getAllUniversity(requireContext()){

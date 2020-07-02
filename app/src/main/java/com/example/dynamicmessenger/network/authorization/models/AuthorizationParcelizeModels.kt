@@ -89,6 +89,4 @@ data class UniversityPropertyList(val list: List<UniversityProperty>) : Parcelab
     }
 }
 
-@Parcelize
-data class AvatarModel(val avatar: String) : Parcelable
 

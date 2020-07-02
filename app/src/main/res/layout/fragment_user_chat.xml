@@ -67,7 +67,8 @@
                 android:layout_height="match_parent"
                 android:layout_below="@+id/contactsListConstraintLayout"
                 android:padding="4dp"
-                android:scrollbars="vertical" />
+                android:scrollbars="vertical"
+                tools:listitem="@layout/chats_item_view"/>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </RelativeLayout>

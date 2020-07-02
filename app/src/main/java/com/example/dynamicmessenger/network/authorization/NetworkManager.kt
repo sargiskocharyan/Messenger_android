@@ -9,7 +9,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.MultipartBody
-import retrofit2.Converter
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -21,9 +21,20 @@ private const val BASE_URL = ResponseUrls.herokuIP
 private const val ERO_URL = ResponseUrls.ErosServerIP
 //private const val ERO_URL = ""
 
+val LENIENT_FACTORY: JsonAdapter.Factory =
+    object : JsonAdapter.Factory {
+        override fun create(
+            type: Type,
+            annotations: Set<Annotation?>,
+            moshi: Moshi
+        ): JsonAdapter<*>? {
+            return moshi.nextAdapter<Any>(this, type, annotations).lenient()
+        }
+    }
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()
+
 
 private val gson = GsonBuilder()
     .setLenient()
@@ -31,7 +42,7 @@ private val gson = GsonBuilder()
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
-//    .addConverterFactory(LENIENT_FACTORY.create(moshi))
+//    .addConverterFactory(LENIENT_FACTORY.create(moshi = moshi))
     .addCallAdapterFactory(CoroutineCallAdapterFactory())
     .baseUrl(BASE_URL)
     .build()
@@ -248,7 +259,7 @@ interface JsonPlaceHolderSaveAvatarApi {
     @POST(ResponseUrls.saveAvatar)
     suspend fun saveAvatarResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
                                         @Part avatar : MultipartBody.Part) :
-            Response<String>
+            Response<ResponseBody>
 }
 
 object SaveAvatarApi {

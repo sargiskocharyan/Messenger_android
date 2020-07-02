@@ -3,13 +3,14 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'androidx.navigation.safeargs'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "com.example.dynamicmessenger"
+        applicationId "am.dynamic.messenger"
         minSdkVersion 22
         targetSdkVersion 29
         versionCode 1
@@ -54,6 +55,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.google.firebase:firebase-analytics:17.4.3'
 //    implementation 'com.google.android.material:material:1.1.0'
     //ViewModel and LiveData
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
@@ -76,7 +78,7 @@ dependencies {
     //Gson
     implementation 'com.google.code.gson:gson:2.8.6'
     //Lotie
-    implementation "com.airbnb.android:lottie:3.4.0"
+    implementation 'com.airbnb.android:lottie:3.4.1'
     //socket io
     implementation 'com.github.nkzawa:socket.io-client:0.6.0'
     //circle image view

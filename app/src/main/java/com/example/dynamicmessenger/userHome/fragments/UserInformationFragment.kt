@@ -118,7 +118,7 @@ class UserInformationFragment : Fragment() {
             val inputStream: InputStream = data.data?.let { requireActivity().contentResolver.openInputStream(it) }!!
             val requestFile = RequestBody.create(MediaType.parse("image/jpg"), ToByteArray.getBytes(inputStream)!!)
             val body = MultipartBody.Part.createFormData("avatar", "avatar.jpg", requestFile)
-            viewModel.saveUserAvatarFromNetwork(requireContext(), body)
+            viewModel.saveUserAvatarFromNetwork(requireContext(), body, binding)
         }
     }
 
@@ -131,26 +131,26 @@ class UserInformationFragment : Fragment() {
             when (it.itemId) {
                 R.id.languageEn -> {
                     SharedConfigs.appLang = AppLangKeys.EN
-                    binding.languageImage.setImageResource(R.drawable.ic_united_kingdom)
+                    binding.languageImage?.setImageResource(R.drawable.ic_united_kingdom)
                     LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
                     requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
                 }
                 R.id.languageRu -> {
                     SharedConfigs.appLang = AppLangKeys.RU
-                    binding.languageImage.setImageResource(R.drawable.ic_russia)
+                    binding.languageImage?.setImageResource(R.drawable.ic_russia)
                     LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
                     requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
                 }
                 else -> {
                     SharedConfigs.appLang = AppLangKeys.AM
-                    binding.languageImage.setImageResource(R.drawable.ic_armenia)
+                    binding.languageImage?.setImageResource(R.drawable.ic_armenia)
                     LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
                     requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
                 }
             }
             true
         }
-        binding.languageConstraintLayout.setOnClickListener {
+        binding.languageConstraintLayout?.setOnClickListener {
             popup.show()
         }
     }

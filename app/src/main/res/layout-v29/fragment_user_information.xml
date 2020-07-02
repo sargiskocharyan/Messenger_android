@@ -21,19 +21,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/userProfileImageView"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="20dp"
-                        android:src="@drawable/ic_user_image"
-                        android:background="@drawable/foreground_for_image"
-                        app:layout_constraintDimensionRatio="w,1:1"
-                        app:layout_constraintEnd_toStartOf="@+id/guideline3"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/userProfileImageView"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:src="@drawable/ic_user_image"
+                    android:background="@drawable/foreground_for_image"
+                    app:layout_constraintDimensionRatio="w,1:1"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline3"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
                 <ProgressBar
                     android:id="@+id/imageUploadProgressBar"
@@ -193,7 +193,6 @@
                     app:srcCompat="@drawable/ic_baseline_edit_24" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
             <View
                 android:id="@+id/blackView1"
                 style="@style/BlackLineStyle"/>
@@ -216,6 +215,43 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/blackView2"
+                style="@style/BlackLineStyle"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/languageConstraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/language"
+                    android:textSize="17sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/languageImage"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_united_kingdom"
+                    languageIMG="@{viewModel.setLanguageImage()}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="w,1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/textView4"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <View
                 android:id="@+id/blackView3"
