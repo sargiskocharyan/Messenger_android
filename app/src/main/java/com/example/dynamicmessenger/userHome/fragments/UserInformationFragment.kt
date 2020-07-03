@@ -24,6 +24,8 @@ import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
 import com.example.dynamicmessenger.network.DownloadImageTask
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.ToByteArray
@@ -47,6 +49,8 @@ class UserInformationFragment : Fragment() {
             DataBindingUtil.inflate(inflater,
                 R.layout.fragment_user_information,
                 container, false)
+        val tokenDao = SignedUserDatabase.getSignedUserDatabase(requireContext())!!.userTokenDao()
+        val tokenRep = UserTokenRepository(tokenDao)
         viewModel = ViewModelProvider(this).get(UserInformationViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -77,10 +81,10 @@ class UserInformationFragment : Fragment() {
         }
 
         binding.logoutConstraintLayout.setOnClickListener {
-            val token = SaveToken.decrypt(SharedPreferencesManager.getUserToken(requireContext()))
-            viewModel.logoutNetwork(token, requireContext()) {
+            viewModel.logoutNetwork(SharedConfigs.token, requireContext()) {
                 if (it) {
                     SharedPreferencesManager.deleteUserAllInformation(requireContext())
+                    tokenRep.delete()
                     val intent = Intent(activity, MainActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

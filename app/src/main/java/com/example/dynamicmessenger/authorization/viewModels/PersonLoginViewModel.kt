@@ -1,9 +1,10 @@
 package com.example.dynamicmessenger.authorization.viewModels
 
+import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.view.View
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
@@ -15,10 +16,18 @@ import com.example.dynamicmessenger.network.authorization.RegistrationApi
 import com.example.dynamicmessenger.network.authorization.models.*
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.*
 import com.example.dynamicmessenger.utils.MyAlertMessage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PersonLoginViewModel: ViewModel() {
+class PersonLoginViewModel(application: Application) : AndroidViewModel(application) {
+    private val userDao = SignedUserDatabase.getSignedUserDatabase(application)!!.signedUserDao()
+    private val tokenDao = SignedUserDatabase.getSignedUserDatabase(application)!!.userTokenDao()
+    private val userRep = SignedUserRepository(userDao)
+    private val tokenRep = UserTokenRepository(tokenDao)
+    private val context = application
+
 
     fun loginRegisterVisibilityChange(isExist: Boolean, binding: FragmentPersonLoginBinding) {
         if (isExist) {
@@ -28,22 +37,32 @@ class PersonLoginViewModel: ViewModel() {
         }
     }
 
-    fun loginNetwork(view: View, isExist: Boolean, task: LoginTask, context: Context?, binding: FragmentPersonLoginBinding, closure: (Boolean) -> Unit) {
-        viewModelScope.launch {
+    fun loginNetwork(view: View, isExist: Boolean, task: LoginTask, binding: FragmentPersonLoginBinding, closure: (Boolean) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
             if (isExist) {
                 binding.progressBar.visibility = View.INVISIBLE
                 try {
                     val response = LoginApi.retrofitService.loginResponseAsync(task)
                     if (response.isSuccessful) {
                         binding.progressBar.visibility = View.INVISIBLE
-                        SharedPreferencesManager.setUserToken(context!!, SaveToken.encrypt(response.body()!!.token))
-                        SharedPreferencesManager.saveUserObject(context, response.body()!!.user)
+                        val signedUSer = SignedUser(response.body()!!.user._id,
+                                                    response.body()!!.user.name,
+                                                    response.body()!!.user.lastname,
+                                                    response.body()!!.user.username,
+                                                    response.body()!!.user.email,
+                                                    response.body()!!.user.university,
+                                                    response.body()!!.user.avatarURL)
+                        userRep.insert(signedUSer)
+//                        tokenRep.insert(response.body()!!.token)
+                        SharedConfigs.token = response.body()!!.token
+//                        SharedPreferencesManager.saveUserObject(context, response.body()!!.user)
                         closure(true)
                     } else {
                         MyAlertMessage.showAlertDialog(context, "Enter correct code")
                     }
                 } catch (e: Exception) {
                     binding.progressBar.visibility = View.INVISIBLE
+                    Log.i("+++", e.toString())
                     MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
                 }
             } else {
@@ -52,8 +71,17 @@ class PersonLoginViewModel: ViewModel() {
                     val response = RegistrationApi.retrofitService.registrationResponseAsync(task)
                         if (response.isSuccessful) {
                             binding.progressBar.visibility = View.INVISIBLE
-                            SharedPreferencesManager.setUserToken(context!!, SaveToken.encrypt(response.body()!!.token))
-                            SharedPreferencesManager.saveUserObject(context, response.body()!!.user)
+                            val signedUSer = SignedUser(response.body()!!.user._id,
+                                                        response.body()!!.user.name,
+                                                        response.body()!!.user.lastname,
+                                                        response.body()!!.user.username,
+                                                        response.body()!!.user.email,
+                                                        response.body()!!.user.university,
+                                                        response.body()!!.user.avatarURL)
+                            userRep.insert(signedUSer)
+//                            tokenRep.insert(response.body()!!.token)
+                            SharedConfigs.token = response.body()!!.token
+//                            SharedPreferencesManager.saveUserObject(context, response.body()!!.user)
                             view.findNavController().navigate(R.id.action_personLoginFragment_to_personRegistrationFragment)
                         } else {
                             MyAlertMessage.showAlertDialog(context, "Enter correct code")
@@ -65,13 +93,13 @@ class PersonLoginViewModel: ViewModel() {
         }
     }
 
-    fun emailNetwork(task: EmailExistTask, context: Context?, binding: FragmentPersonLoginBinding) {
+    fun emailNetwork(task: EmailExistTask, binding: FragmentPersonLoginBinding) {
         viewModelScope.launch {
             try {
                 val response = MailExistApi.retrofitService.isMailExistAsync(task)
                 binding.progressBar.visibility = View.INVISIBLE
                 if (response.isSuccessful) {
-                    SharedPreferencesManager.setUserMailExists(context!!, response.body()!!.mailExist)
+                    SharedPreferencesManager.setUserMailExists(context, response.body()!!.mailExist)
                     SharedPreferencesManager.setUserCode(context, response.body()!!.code)
                     SharedPreferencesManager.setUserMail(context, task.email)
                     binding.verificationCode.setText(response.body()!!.code)

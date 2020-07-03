@@ -1,13 +1,11 @@
 package com.example.dynamicmessenger.userHome.viewModels
 
+import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.AppLangKeys
 import com.example.dynamicmessenger.common.SharedConfigs
@@ -16,11 +14,15 @@ import com.example.dynamicmessenger.network.authorization.LogoutApi
 import com.example.dynamicmessenger.network.authorization.SaveAvatarApi
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 
-class UserInformationViewModel : ViewModel() {
+class UserInformationViewModel(application: Application) : AndroidViewModel(application) {
+    private val tokenDao = SignedUserDatabase.getSignedUserDatabase(application)!!.userTokenDao()
+    private val tokenRep = UserTokenRepository(tokenDao)
     private val _username = MutableLiveData<String>()
     val username: LiveData<String> get() = _username
 
@@ -39,13 +41,11 @@ class UserInformationViewModel : ViewModel() {
 
     fun saveUserAvatarFromNetwork(context: Context?, avatar: MultipartBody.Part, binding: FragmentUserInformationBinding) {
         binding.imageUploadProgressBar.visibility = View.VISIBLE
-        val myEncryptedToken = SharedPreferencesManager.getUserToken(context!!)
-        val myToken = SaveToken.decrypt(myEncryptedToken)
         viewModelScope.launch {
             try {
-                val response = SaveAvatarApi.retrofitService.saveAvatarResponseAsync(myToken!!, avatar)
+                val response = SaveAvatarApi.retrofitService.saveAvatarResponseAsync(SharedConfigs.token!!, avatar)
                 if (response.isSuccessful) {
-                    val user = SharedPreferencesManager.loadUserObject(context)
+                    val user = SharedPreferencesManager.loadUserObject(context!!)
                     user!!.avatarURL = response.body()!!.string()
                     SharedPreferencesManager.saveUserObject(context, user)
                     Toast.makeText(context, "Avatar uploaded", Toast.LENGTH_SHORT).show()
@@ -75,6 +75,7 @@ class UserInformationViewModel : ViewModel() {
                     closure(true)
                 }
             } catch (e: Exception) {
+                closure(true)
                 MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
             }
         }

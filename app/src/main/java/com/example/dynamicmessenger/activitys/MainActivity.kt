@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         )
         changeDarkMode()
 
-        if (SharedConfigs.signedUser != null) {
+        if (false) {
             val intent = Intent(this,HomeActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

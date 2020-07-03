@@ -21,6 +21,8 @@ import com.example.dynamicmessenger.databinding.FragmentPersonLoginBinding
 import com.example.dynamicmessenger.network.authorization.models.EmailExistTask
 import com.example.dynamicmessenger.network.authorization.models.LoginTask
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -82,7 +84,7 @@ class PersonLoginFragment : Fragment() {
         binding.button.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
             val loginTask = LoginTask(personEmail, binding.verificationCode.text.toString())
-            viewModel.loginNetwork(it, isEmailExists, loginTask, context, binding){closure ->
+            viewModel.loginNetwork(it, isEmailExists, loginTask, binding){closure ->
                 if (closure) {
                     val intent = Intent(requireActivity(), HomeActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -95,7 +97,7 @@ class PersonLoginFragment : Fragment() {
 
         binding.resendVerificationCodeTextView.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
-            viewModel.emailNetwork(EmailExistTask(personEmail), context, binding)
+            viewModel.emailNetwork(EmailExistTask(personEmail),  binding)
         }
         return binding.root
     }

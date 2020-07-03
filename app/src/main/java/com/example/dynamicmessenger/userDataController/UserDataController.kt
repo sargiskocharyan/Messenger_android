@@ -6,6 +6,7 @@ import android.util.Base64
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.common.SharedPrefConstants
 import com.example.dynamicmessenger.network.authorization.models.User
+import com.example.dynamicmessenger.userDataController.database.SignedUser
 import com.google.gson.Gson
 import java.security.MessageDigest
 import javax.crypto.Cipher
@@ -50,7 +51,7 @@ object SharedPreferencesManager {
     }
 
 
-    fun saveUserObject(context: Context, user: User) {
+    fun saveUserObject(context: Context, user: SignedUser) {
         val gson = Gson()
         val jsonString = gson.toJson(user)
         getSharedPreferences(context)
@@ -60,28 +61,17 @@ object SharedPreferencesManager {
         loadUserObjectToSharedConfigs(context)
     }
 
-    fun loadUserObject(context: Context): User? {
+    fun loadUserObject(context: Context): SignedUser? {
         val jsonString = getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefUser, "")!!
         val gson = Gson()
         if (jsonString.isEmpty()) {
             return null
         }
-        return gson.fromJson(jsonString, User::class.java)
+        return gson.fromJson(jsonString, SignedUser::class.java)
     }
 
     fun loadUserObjectToSharedConfigs(context: Context) {
         SharedConfigs.signedUser = loadUserObject(context)
-    }
-
-    fun setDarkMode(context: Context, enabled: Boolean) {
-        getSharedPreferences(context)
-            .edit()
-            .putBoolean(SharedPrefConstants.sharedPrefDarkMode, enabled)
-            .apply()
-    }
-
-    fun getDarkMode(context: Context): Boolean {
-        return getSharedPreferences(context).getBoolean(SharedPrefConstants.sharedPrefDarkMode, false)
     }
 
     fun setReceiverID(context: Context, id: String) {
@@ -108,17 +98,6 @@ object SharedPreferencesManager {
 
     fun deleteUserAllInformation(context: Context) {
         getSharedPreferences(context).edit().clear().apply()
-    }
-
-    fun setUserToken(context: Context, token: String) {
-        getSharedPreferences(context)
-            .edit()
-            .putString(SharedPrefConstants.sharedPrefToken, token)
-            .apply()
-    }
-
-    fun getUserToken(context: Context): String {
-        return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefToken, "")!!
     }
 
     fun setReceiverAvatarUrl(context: Context, url: String?) {

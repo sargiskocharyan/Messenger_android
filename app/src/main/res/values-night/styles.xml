@@ -5,7 +5,7 @@
         <item name="colorPrimary">@color/appMainColour</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="backgroundColor">@color/appMainBlack</item>
+<!--        <item name="backgroundColor">@color/appMainBlack</item>-->
         <item name="android:textColor">@android:color/white</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>

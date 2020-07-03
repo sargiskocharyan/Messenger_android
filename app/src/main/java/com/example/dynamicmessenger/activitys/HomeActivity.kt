@@ -18,6 +18,8 @@ import com.example.dynamicmessenger.network.authorization.UserTokenVerifyApi
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.userHome.fragments.*
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.MyAlertMessage
@@ -39,15 +41,15 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val tokenDao = SignedUserDatabase.getSignedUserDatabase(this)!!.userTokenDao()
+        val userRep = UserTokenRepository(tokenDao)
         SharedPreferencesManager.loadUserObjectToSharedConfigs(this)
         setContentView(R.layout.activity_home)
         this.supportActionBar!!.hide()
         val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavBar.setOnNavigationItemSelectedListener(navListener)
-        val myEncryptedToken = SharedPreferencesManager.getUserToken(this)
-        val myToken = SaveToken.decrypt(myEncryptedToken)
         val context = this
-        if (myToken != null) tokenCheck(context, myToken)
+        if (SharedConfigs.token != null || SharedConfigs.token == "") tokenCheck(context, SharedConfigs.token!!)
 
         socketManager = SocketManager(this)
         try {
@@ -102,7 +104,7 @@ class HomeActivity : AppCompatActivity() {
                 val response = UserTokenVerifyApi.retrofitService.userTokenResponseAsync(token)
                 if (response.isSuccessful) {
                     if (!response.body()!!.tokenExists) {
-                        SharedPreferencesManager.setUserToken(context!!, "")
+                        SharedConfigs.token = ""
                         AlertDialog.Builder(context)
                             .setTitle("Error")
                             .setMessage("Your seans is out of time")

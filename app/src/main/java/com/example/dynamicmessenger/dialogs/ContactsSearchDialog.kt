@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.SearchContactsApi
 import com.example.dynamicmessenger.network.authorization.models.SearchTask
 import com.example.dynamicmessenger.network.authorization.models.UserContacts
@@ -31,12 +32,10 @@ class ContactsSearchDialog(private val coroutineScope: CoroutineScope, val myClo
             .setPositiveButton("Search",
                 DialogInterface.OnClickListener { _, _ ->
                     val name = view.findViewById<EditText>(R.id.searchUsername).text.toString()
-                    val myEncryptedToken = SharedPreferencesManager.getUserToken(requireContext())
-                    val myToken = SaveToken.decrypt(myEncryptedToken)
                     val task = SearchTask(name)
                     coroutineScope.launch {
                         try {
-                            val response = SearchContactsApi.retrofitService.contactsSearchResponseAsync(myToken!!, task)
+                            val response = SearchContactsApi.retrofitService.contactsSearchResponseAsync(SharedConfigs.token!!, task)
                             if (response.isSuccessful) {
                                 myClosure(response.body()!!.users)
                             } else {

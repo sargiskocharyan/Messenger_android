@@ -2,27 +2,48 @@ package com.example.dynamicmessenger.common
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.LiveData
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.*
 import java.util.*
 
 
 object SharedConfigs {
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var context: Context
+    private lateinit var userDao: SignedUserDao
+    private lateinit var tokenDao: UserTokenDao
+    private lateinit var tokenRep: UserTokenRepository
+    private lateinit var userRep: SignedUserRepository
     fun init(context: Context) {
         this.context = context
+        userDao = SignedUserDatabase.getSignedUserDatabase(context)!!.signedUserDao()
+        tokenDao = SignedUserDatabase.getSignedUserDatabase(context)!!.userTokenDao()
+        userRep = SignedUserRepository(userDao)
+        tokenRep = UserTokenRepository(tokenDao)
         sharedPrefs = context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
     }
-    var shared = SharedConfigs
 
-    var signedUser: User? = null
-//        get() {
-//            return SharedPreferencesManager.loadUserObject(context)
-//        }
-//        set(value) {
-//            SharedPreferencesManager.saveUserObject(context, value!!)
-//        }
+    var signedUser: SignedUser?
+        get() {
+            return userRep.signedUser.value
+        }
+        set(value) {
+            if (value != null) {
+                userRep.insert(value)
+            }
+        }
+
+    var token: String?
+        get() {
+            return tokenRep.getToken()
+        }
+        set(value) {
+            if (value != null) {
+                tokenRep.insert(value)
+            }
+        }
 
     var appLang: AppLangKeys
         get() {

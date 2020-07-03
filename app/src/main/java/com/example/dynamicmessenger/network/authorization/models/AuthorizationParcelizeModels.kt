@@ -2,6 +2,8 @@ package com.example.dynamicmessenger.network.authorization.models
 
 import android.annotation.SuppressLint
 import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.PrimaryKey
 import com.example.dynamicmessenger.common.AppLangKeys
 import com.example.dynamicmessenger.common.SharedConfigs
 import kotlinx.android.parcel.Parcelize
@@ -20,7 +22,11 @@ data class RegistrationProperty(val token: String, val user: User) : Parcelable
 data class UpdateUserProperty(val _id: String, val name: String, val lastname: String, val university: University, val email: String, val username: String, val avatarURL: String?) : Parcelable
 
 @Parcelize
-data class University(val _id: String, val name: String, val nameRU: String, val nameEN: String) : Parcelable {
+data class University(@PrimaryKey
+                      @ColumnInfo(name = "universityId") val _id: String,
+                      @ColumnInfo(name = "universityName") val name: String,
+                      @ColumnInfo(name = "universityNameRU") val nameRU: String,
+                      @ColumnInfo(name = "universityNameEN") val nameEN: String) : Parcelable {
     override fun toString(): String {
         return when (SharedConfigs.appLang) {
             AppLangKeys.AM ->  name

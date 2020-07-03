@@ -1,22 +1,25 @@
 package com.example.dynamicmessenger.userChatRoom.viewModels
 
+import android.app.Application
 import android.content.Context
 import android.widget.Toast
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.ChatRoomApi
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
-import com.example.dynamicmessenger.userDataController.SaveToken
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import kotlinx.coroutines.launch
 
-class ChatRoomViewModel : ViewModel() {
+class ChatRoomViewModel(application: Application) : AndroidViewModel(application) {
+    private val tokenDao = SignedUserDatabase.getSignedUserDatabase(application)!!.userTokenDao()
+    private val tokenRep = UserTokenRepository(tokenDao)
+
     fun getMessagesFromNetwork(context: Context?, receiverID: String, closure: (List<ChatRoom>) -> Unit) {
-        val myEncryptedToken = SharedPreferencesManager.getUserToken(context!!)
-        val myToken = SaveToken.decrypt(myEncryptedToken)
         viewModelScope.launch {
             try {
-                val response = ChatRoomApi.retrofitService.chatRoomResponseAsync(myToken!!, receiverID)
+                val response = ChatRoomApi.retrofitService.chatRoomResponseAsync(SharedConfigs.token!!, receiverID)
                 if (response.isSuccessful) {
                     closure(response.body()!!)
                 } else {

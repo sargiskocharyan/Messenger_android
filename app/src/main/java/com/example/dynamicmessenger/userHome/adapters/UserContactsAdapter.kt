@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.ChatRoomActivity
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.DownloadImageTask
 import com.example.dynamicmessenger.network.authorization.AddContactApi
 import com.example.dynamicmessenger.network.authorization.models.AddUserContactTask
@@ -61,13 +62,12 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         val contactsUserImageView: ImageView = itemView.findViewById(R.id.contactsUserImageView)
         init {
             itemView.setOnClickListener {
-                val myEncryptedToken = SharedPreferencesManager.getUserToken(context)
-                val myToken = SaveToken.decrypt(myEncryptedToken)
                 val task = AddUserContactTask(userContact!!._id)
                 if (SharedPreferencesManager.getIsAddContacts(context)) {
                     viewModel.viewModelScope.launch {
                         try {
-                            val response = AddContactApi.retrofitService.addContactResponseAsync(myToken!!, task)
+                            val response = AddContactApi.retrofitService.addContactResponseAsync(
+                                SharedConfigs.token!!, task)
                             if (response.isSuccessful) {
                                 updateRecycleView()
                                 SharedPreferencesManager.isAddContacts(context, false)

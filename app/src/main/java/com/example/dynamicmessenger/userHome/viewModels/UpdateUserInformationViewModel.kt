@@ -1,39 +1,46 @@
 package com.example.dynamicmessenger.userHome.viewModels
 
+import android.app.Application
 import android.content.Context
 import android.widget.Toast
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.Embedded
+import androidx.room.PrimaryKey
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.UniversityApi
 import com.example.dynamicmessenger.network.authorization.UpdateUserApi
+import com.example.dynamicmessenger.network.authorization.models.University
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.SignedUser
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 
-class UpdateUserInformationViewModel: ViewModel() {
-
+class UpdateUserInformationViewModel(application: Application) : AndroidViewModel(application) {
+    private val tokenDao = SignedUserDatabase.getSignedUserDatabase(application)!!.userTokenDao()
+    private val tokenRep = UserTokenRepository(tokenDao)
     fun updateUserNetwork(updateUserTask: UpdateUserTask, context: Context?, closure: (Boolean) -> Unit) {
-        val myEncryptedToken = SharedPreferencesManager.getUserToken(context!!)
-        val myToken = SaveToken.decrypt(myEncryptedToken)
         viewModelScope.launch {
             try {
-                val response = UpdateUserApi.retrofitService.updateUserResponseAsync(myToken!! ,updateUserTask)
+                val response = UpdateUserApi.retrofitService.updateUserResponseAsync(SharedConfigs.token!! ,updateUserTask)
                 if (response.isSuccessful) {
-                    val user = User(response.body()!!.name,
-                        response.body()!!.lastname,
+                    val user = SignedUser(
                         response.body()!!._id,
-                        response.body()!!.email,
+                        response.body()!!.name,
+                        response.body()!!.lastname,
                         response.body()!!.username,
+                        response.body()!!.email,
                         response.body()!!.university,
                         response.body()!!.avatarURL
                     )
                     SharedConfigs.signedUser = user
-                    SharedPreferencesManager.saveUserObject(context,user)
+//                    SharedPreferencesManager.saveUserObject(context!!,user)
                     closure(true)
                 } else {
                     MyAlertMessage.showAlertDialog(context, "Enter correct email")
@@ -45,11 +52,9 @@ class UpdateUserInformationViewModel: ViewModel() {
     }
 
     fun getAllUniversity(context: Context?, closure: (List<UniversityProperty>) -> Unit) {
-        val myToken = SharedPreferencesManager.getUserToken(context!!)
-        val token = SaveToken.decrypt(myToken)
         viewModelScope.launch {
             try {
-                val response = UniversityApi.retrofitService.universityResponseAsync(token!!)
+                val response = UniversityApi.retrofitService.universityResponseAsync(SharedConfigs.token!!)
                 if (response.isSuccessful) {
                     closure(response.body()!!)
                 } else {

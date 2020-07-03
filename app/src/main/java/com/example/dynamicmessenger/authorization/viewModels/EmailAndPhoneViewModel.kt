@@ -1,9 +1,9 @@
 package com.example.dynamicmessenger.authorization.viewModels
 
+import android.app.Application
 import android.content.Context
-import android.util.Log
 import android.view.View
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
@@ -14,7 +14,7 @@ import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 
-class EmailAndPhoneViewModel : ViewModel() {
+class EmailAndPhoneViewModel(application: Application) : AndroidViewModel(application) {
 
     fun emailNetwork(view: View, task: EmailExistTask, context: Context?, binding: FragmentEmailAndPhoneBinding) {
         viewModelScope.launch {

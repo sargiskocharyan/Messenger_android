@@ -2,7 +2,6 @@ package com.example.dynamicmessenger.network.chatRooms
 
 import android.app.Activity
 import android.content.Context
-import android.text.BoringLayout
 import android.util.Log
 import android.widget.EditText
 import androidx.recyclerview.widget.DiffUtil
@@ -11,9 +10,8 @@ import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 import com.example.dynamicmessenger.network.authorization.models.Message
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomDiffUtilCallback
-import com.example.dynamicmessenger.userDataController.SaveToken
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import com.example.dynamicmessenger.userHome.adapters.UserChatsAdapter
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
@@ -23,17 +21,16 @@ import org.json.JSONObject
 
 
 class SocketManager(val context: Context) {
-
-     private var mSocket: Socket? = null
+    private val tokenDao = SignedUserDatabase.getSignedUserDatabase(context)!!.userTokenDao()
+    private val tokenRep = UserTokenRepository(tokenDao)
+    private var mSocket: Socket? = null
 
     fun getSocketInstance(): Socket? {
         val opts =
             IO.Options()
             opts.forceNew = true
             opts.reconnection = false
-        val myEncryptedToken = SharedPreferencesManager.getUserToken(context)
-        val myToken = SaveToken.decrypt(myEncryptedToken)
-        mSocket = IO.socket(ResponseUrls.herokuIPForSocket + "?token=" + myToken, opts)
+        mSocket = IO.socket(ResponseUrls.herokuIPForSocket + "?token=" + tokenRep.getToken(), opts)
 
         return mSocket
     }
