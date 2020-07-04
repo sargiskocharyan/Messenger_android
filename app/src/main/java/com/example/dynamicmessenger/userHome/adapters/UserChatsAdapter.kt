@@ -25,11 +25,26 @@ import java.util.*
 
 
 class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
-    var data = listOf<Chat>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+    var data = mutableListOf<Chat>()
+
+    fun setAdapterData(newList: List<Chat>) {
+        data.clear()
+        data.addAll(newList)
+    }
+
+    fun setAdapterDataNotify(newList: List<Chat>) {
+        data.clear()
+        data.addAll(newList)
+        notifyDataSetChanged()
+    }
+
+    fun submitList(newList: List<Chat>) {
+        val userChatDiffUtilCallback = UserChatDiffUtilCallback(data, newList)
+        val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
+        authorDiffResult.dispatchUpdatesTo(this)
+        data.clear()
+        data.addAll(newList)
+    }
 
     override fun getItemCount(): Int {
         return data.size
@@ -71,7 +86,9 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
         holder.lastname.text = item.lastname
         holder.lastMessage.text = item.message?.text
         if (item.recipientAvatarURL != null) {
+
             DownloadImageTask(holder.chatUserImageView).execute(item.recipientAvatarURL)
+
         } else  {
             holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
         }
@@ -106,7 +123,7 @@ class UserChatDiffUtilCallback(private val oldList: List<Chat>, private val newL
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition] == newList[newItemPosition]
+        return oldList[oldItemPosition].message?.createdAt == newList[newItemPosition].message?.createdAt
     }
 
 }

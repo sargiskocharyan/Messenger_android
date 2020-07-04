@@ -21,7 +21,7 @@ import org.json.JSONObject
 
 
 class SocketManager(val context: Context) {
-    private val tokenDao = SignedUserDatabase.getSignedUserDatabase(context)!!.userTokenDao()
+    private val tokenDao = SignedUserDatabase.getUserDatabase(context)!!.userTokenDao()
     private val tokenRep = UserTokenRepository(tokenDao)
     private var mSocket: Socket? = null
 

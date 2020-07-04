@@ -269,3 +269,26 @@ object SaveAvatarApi {
         )
     }
 }
+
+private val retrofitImage = Retrofit.Builder()
+    .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
+//    .addConverterFactory(LENIENT_FACTORY.create(moshi = moshi))
+    .addCallAdapterFactory(CoroutineCallAdapterFactory())
+    .baseUrl("https://storage.googleapis.com/")//39
+    .build()
+
+//Load Avatar
+interface JsonPlaceHolderLoadAvatarApi {
+    @GET
+    @Streaming
+    suspend fun loadAvatarResponseAsync(@Url avatarUrl: String) :
+            Response<ResponseBody>
+}
+
+object LoadAvatarApi {
+    val retrofitService : JsonPlaceHolderLoadAvatarApi by lazy {
+        retrofitImage.create(
+            JsonPlaceHolderLoadAvatarApi::class.java
+        )
+    }
+}

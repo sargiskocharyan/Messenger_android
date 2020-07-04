@@ -4,13 +4,17 @@ package com.example.dynamicmessenger.userHome.fragments
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
@@ -22,13 +26,18 @@ import com.example.dynamicmessenger.common.AppLangKeys
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
 import com.example.dynamicmessenger.network.DownloadImageTask
-import com.example.dynamicmessenger.userDataController.SaveToken
+import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.LruBitmapCache
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
-import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
+import com.example.dynamicmessenger.userDataController.database.UserChatRepository
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.ToByteArray
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -38,6 +47,9 @@ import java.io.InputStream
 class UserInformationFragment : Fragment() {
     private lateinit var viewModel: UserInformationViewModel
     private lateinit var binding: FragmentUserInformationBinding
+    private var activityJob = Job()
+    private val coroutineScope = CoroutineScope(activityJob + Dispatchers.Main)
+    private val lruBitmapCache = LruBitmapCache()
 
     @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("ResourceType")
@@ -49,8 +61,8 @@ class UserInformationFragment : Fragment() {
             DataBindingUtil.inflate(inflater,
                 R.layout.fragment_user_information,
                 container, false)
-        val tokenDao = SignedUserDatabase.getSignedUserDatabase(requireContext())!!.userTokenDao()
-        val tokenRep = UserTokenRepository(tokenDao)
+        val chatDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userChatDao()
+        val chatRep = UserChatRepository(chatDao)
         viewModel = ViewModelProvider(this).get(UserInformationViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -86,6 +98,7 @@ class UserInformationFragment : Fragment() {
                     SharedPreferencesManager.deleteUserAllInformation(requireContext())
                     SharedConfigs.deleteToken()
                     SharedConfigs.deleteSignedUser()
+                    chatRep.delete()
                     val intent = Intent(activity, MainActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -94,7 +107,34 @@ class UserInformationFragment : Fragment() {
                 }
             }
         }
-        setAvatar()
+//        setAvatar()
+        coroutineScope.launch {
+            if (SharedConfigs.signedUser?.avatarURL != null) {
+                var bitmap: Bitmap? = lruBitmapCache.getBitmapFromMemCache(SharedConfigs.signedUser!!.avatarURL!!)
+                if (bitmap != null) {
+                    binding.userProfileImageView.setImageBitmap(bitmap)
+                        Log.i("+++if bitmap", "")
+                } else {
+                    try {
+                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(SharedConfigs.signedUser!!.avatarURL!!)
+                        Log.i("+++avatara", SharedConfigs.signedUser!!.avatarURL!!)
+    //                    Log.i("+++avatara", response.errorBody()?.string())
+                        if (response.isSuccessful) {
+                            val inputStream = response.body()!!.byteStream()
+                            bitmap = BitmapFactory.decodeStream(inputStream)
+                            lruBitmapCache.addBitmapToMemoryCache(SharedConfigs.signedUser!!.avatarURL!!, bitmap)
+                            binding.userProfileImageView.setImageBitmap(bitmap)
+                            Toast.makeText(context, "Avatar uploaded", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "getUserAvatarFromNetwork else ", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Log.i("+++exception", e.toString())
+                        Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
 
         binding.userProfileImageView.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
@@ -110,6 +150,11 @@ class UserInformationFragment : Fragment() {
             )?.commit()
         }
         return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        activityJob.cancel()
     }
 
     @SuppressLint("Recycle")

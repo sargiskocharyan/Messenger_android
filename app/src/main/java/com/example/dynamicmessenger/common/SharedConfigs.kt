@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.example.dynamicmessenger.userDataController.database.*
-import kotlinx.coroutines.*
 import java.util.*
 
 
@@ -12,17 +11,17 @@ object SharedConfigs {
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var context: Context
     private lateinit var userDao: SignedUserDao
+    private lateinit var userRep: SignedUserRepository
     private lateinit var tokenDao: UserTokenDao
     private lateinit var tokenRep: UserTokenRepository
-    private lateinit var userRep: SignedUserRepository
     fun init(context: Context) {
         this.context = context
-        userDao = SignedUserDatabase.getSignedUserDatabase(context)!!.signedUserDao()
-        tokenDao = SignedUserDatabase.getSignedUserDatabase(context)!!.userTokenDao()
+        userDao = SignedUserDatabase.getUserDatabase(context)!!.signedUserDao()
+        tokenDao = SignedUserDatabase.getUserDatabase(context)!!.userTokenDao()
         userRep = SignedUserRepository(userDao)
         tokenRep = UserTokenRepository(tokenDao)
         signedUser = userRep.signedUser
-        Log.i("+++userRep", userRep.signedUser.toString())
+//        Log.i("+++userRep", userRep.signedUser.toString())
 //        Log.i("+++tokenRep", tokenRep.getToken())
         token = tokenRep.getToken()
         sharedPrefs = context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)

@@ -65,42 +65,6 @@ class ChatRoomFragment : Fragment() {
             socketManager.sendMessage(receiverID, binding.sendMessageEditText)
         }
 
-/*
-//        binding.sendMessageEditText.addTextChangedListener(object : TextWatcher {
-//            @SuppressLint("ResourceAsColor")
-//            override fun afterTextChanged(s: Editable?) {
-//                scrollToBottom(binding, adapter)
-//            }
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-////                scrollToBottom(binding, adapter)
-//            }
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-////                scrollToBottom(binding, adapter)
-//            }
-//        })
-
-        binding.sendMessageEditText.setOnFocusChangeListener { _, hasFocus ->
-            Log.i("+++", hasFocus.toString())
-            if (hasFocus) {
-                scrollToBottom(binding, adapter)
-            }
-        }
-        var mLastContentHeight = 0
-        val keyboardLayoutListener = OnGlobalLayoutListener {
-            val currentContentHeight: Int = binding.messagesRelativeLayout.height
-            if (mLastContentHeight > currentContentHeight + 100) {
-                mLastContentHeight = currentContentHeight
-            } else if (currentContentHeight > mLastContentHeight + 100) {
-                mLastContentHeight = currentContentHeight
-            }
-        }
-
-
-//        binding.sendMessageEditText.setOnClickListener {
-//            scrollToBottom(binding, adapter)
-//        }
-*/ 
-
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
             override fun onChanged() {
                 super.onChanged()

@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
@@ -14,11 +13,9 @@ import androidx.navigation.ui.NavigationUI
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.ActivityMainBinding
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.utils.LocalizationUtil
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,7 +29,7 @@ class MainActivity : AppCompatActivity() {
             R.layout.activity_main
         )
         changeDarkMode()
-        val tokenDao = SignedUserDatabase.getSignedUserDatabase(application)!!.userTokenDao()
+        val tokenDao = SignedUserDatabase.getUserDatabase(application)!!.userTokenDao()
         val tokenRep = UserTokenRepository(tokenDao)
 
         if (tokenRep.getToken() != "") {

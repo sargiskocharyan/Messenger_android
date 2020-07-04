@@ -1,7 +1,6 @@
 package com.example.dynamicmessenger.authorization.viewModels
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
@@ -14,7 +13,6 @@ import com.example.dynamicmessenger.network.authorization.LoginApi
 import com.example.dynamicmessenger.network.authorization.MailExistApi
 import com.example.dynamicmessenger.network.authorization.RegistrationApi
 import com.example.dynamicmessenger.network.authorization.models.*
-import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.*
 import com.example.dynamicmessenger.utils.MyAlertMessage
@@ -22,10 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PersonLoginViewModel(application: Application) : AndroidViewModel(application) {
-    private val userDao = SignedUserDatabase.getSignedUserDatabase(application)!!.signedUserDao()
-    private val tokenDao = SignedUserDatabase.getSignedUserDatabase(application)!!.userTokenDao()
-    private val userRep = SignedUserRepository(userDao)
-    private val tokenRep = UserTokenRepository(tokenDao)
     private val context = application
 
 
@@ -54,9 +48,7 @@ class PersonLoginViewModel(application: Application) : AndroidViewModel(applicat
                                                     response.body()!!.user.avatarURL)
                         Log.i("+++userResponse", signedUSer.toString())
                         SharedConfigs.signedUser = signedUSer
-//                        tokenRep.insert(response.body()!!.token)
                         SharedConfigs.token = response.body()!!.token
-//                        SharedPreferencesManager.saveUserObject(context, response.body()!!.user)
                         closure(true)
                     } else {
                         MyAlertMessage.showAlertDialog(context, "Enter correct code")
@@ -64,7 +56,7 @@ class PersonLoginViewModel(application: Application) : AndroidViewModel(applicat
                 } catch (e: Exception) {
                     binding.progressBar.visibility = View.INVISIBLE
                     Log.i("+++", e.toString())
-                    MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
+//                    MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
                 }
             } else {
                 binding.progressBar.visibility = View.INVISIBLE
@@ -79,10 +71,8 @@ class PersonLoginViewModel(application: Application) : AndroidViewModel(applicat
                                                         response.body()!!.user.email,
                                                         response.body()!!.user.university,
                                                         response.body()!!.user.avatarURL)
-                            userRep.insert(signedUSer)
-//                            tokenRep.insert(response.body()!!.token)
+                            SharedConfigs.signedUser = signedUSer
                             SharedConfigs.token = response.body()!!.token
-//                            SharedPreferencesManager.saveUserObject(context, response.body()!!.user)
                             view.findNavController().navigate(R.id.action_personLoginFragment_to_personRegistrationFragment)
                         } else {
                             MyAlertMessage.showAlertDialog(context, "Enter correct code")

@@ -8,14 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.ContactsApi
 import com.example.dynamicmessenger.network.authorization.models.UserContacts
-import com.example.dynamicmessenger.userDataController.SaveToken
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import kotlinx.coroutines.launch
 
 class UserContactsViewModel(application: Application) : AndroidViewModel(application) {
-    private val tokenDao = SignedUserDatabase.getSignedUserDatabase(application)!!.userTokenDao()
+    private val tokenDao = SignedUserDatabase.getUserDatabase(application)!!.userTokenDao()
     private val tokenRep = UserTokenRepository(tokenDao)
     fun getUserContactsFromNetwork(context: Context?, closure: (List<UserContacts>) -> Unit) {
         viewModelScope.launch {

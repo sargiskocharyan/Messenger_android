@@ -1,10 +1,10 @@
 package com.example.dynamicmessenger.userDataController.database
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.dynamicmessenger.network.authorization.models.Chat
 
 @Dao
 interface SignedUserDao {
@@ -27,5 +27,17 @@ interface UserTokenDao {
     fun insert(token: UserToken)
 
     @Query("DELETE FROM user_token")
+    fun deleteAll()
+}
+
+@Dao
+interface UserChatDao {
+    @Query("SELECT * FROM user_chat")
+    fun getUserChat(): List<Chat>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(chat: List<Chat>)
+
+    @Query("DELETE FROM user_chat")
     fun deleteAll()
 }

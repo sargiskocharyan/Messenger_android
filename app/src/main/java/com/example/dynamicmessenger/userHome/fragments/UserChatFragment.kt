@@ -9,12 +9,11 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
-import com.example.dynamicmessenger.userHome.adapters.UserChatDiffUtilCallback
+import com.example.dynamicmessenger.userDataController.database.*
 import com.example.dynamicmessenger.userHome.adapters.UserChatsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserChatViewModel
 import com.github.nkzawa.socketio.client.Socket
@@ -25,6 +24,8 @@ class UserChatFragment : Fragment() {
     private lateinit var binding : FragmentUserChatBinding
     private lateinit var socketManager: SocketManager
     private lateinit var mSocket: Socket
+    private lateinit var chatDao: UserChatDao
+    private lateinit var chatRep: UserChatRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,8 +39,11 @@ class UserChatFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        chatDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userChatDao()
+        chatRep = UserChatRepository(chatDao)
+
         val adapter = UserChatsAdapter(requireContext())
-        updateRecyclerView(adapter)
+        updateRecyclerViewFromDatabase(adapter)
 
         binding.root.setHasTransientState(true)
         binding.userChatSwipeRefreshLayout.setOnRefreshListener {
@@ -71,11 +75,23 @@ class UserChatFragment : Fragment() {
     private fun updateRecyclerView(adapter: UserChatsAdapter) {
         binding.userChatSwipeRefreshLayout.isRefreshing = true
         viewModel.getUserChatsFromNetwork(requireContext(), binding.userChatSwipeRefreshLayout) {
-            val userChatDiffUtilCallback = UserChatDiffUtilCallback(adapter.data, it.sortedWith(compareBy { chat -> chat.message }).reversed())
-            val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
-            adapter.data = it.sortedWith(compareBy { chat -> chat.message }).reversed()
+            val list = it.sortedWith(compareBy { chat -> chat.message }).reversed()
+            adapter.setAdapterData(list)
+            adapter.submitList(list)
             binding.userChatSwipeRefreshLayout.isRefreshing = false
-            authorDiffResult.dispatchUpdatesTo(adapter)
+            chatRep.insert(it)
+        }
+    }
+
+    private fun updateRecyclerViewFromDatabase(adapter: UserChatsAdapter) {
+        chatRep.getChat().let {
+            adapter.setAdapterDataNotify(it.sortedWith(compareBy { chat -> chat.message }).reversed())
+        }
+        viewModel.getUserChatsFromNetwork(requireContext(), binding.userChatSwipeRefreshLayout) {
+            val list = it.sortedWith(compareBy { chat -> chat.message }).reversed()
+            adapter.setAdapterData(list)
+            adapter.submitList(list)
+            chatRep.insert(it)
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.example.dynamicmessenger.userDataController.database
 
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
+import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userDataController.SaveToken
 
 class SignedUserRepository(private val signedUserDao: SignedUserDao) {
@@ -30,5 +30,17 @@ class UserTokenRepository(private val userTokenDao: UserTokenDao) {
 
     fun delete() {
         userTokenDao.deleteAll()
+    }
+}
+
+class UserChatRepository(private val userChatDao: UserChatDao) {
+    fun getChat() = userChatDao.getUserChat()
+
+    fun insert(chat: List<Chat>) {
+        userChatDao.insert(chat)
+    }
+
+    fun delete() {
+        userChatDao.deleteAll()
     }
 }

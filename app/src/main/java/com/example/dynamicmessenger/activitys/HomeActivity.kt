@@ -10,14 +10,11 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.UserTokenVerifyApi
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
-import com.example.dynamicmessenger.userDataController.SaveToken
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.userHome.fragments.*
@@ -41,7 +38,7 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val tokenDao = SignedUserDatabase.getSignedUserDatabase(this)!!.userTokenDao()
+        val tokenDao = SignedUserDatabase.getUserDatabase(this)!!.userTokenDao()
         val userRep = UserTokenRepository(tokenDao)
 //        SharedPreferencesManager.loadUserObjectToSharedConfigs(this)
         setContentView(R.layout.activity_home)
@@ -49,7 +46,7 @@ class HomeActivity : AppCompatActivity() {
         val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavBar.setOnNavigationItemSelectedListener(navListener)
         val context = this
-        if (SharedConfigs.token != null || SharedConfigs.token == "") tokenCheck(context, SharedConfigs.token!!)
+        if (SharedConfigs.token == "") tokenCheck(context, SharedConfigs.token)
 
         socketManager = SocketManager(this)
         try {

@@ -6,12 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.userDataController.SaveToken
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import com.example.dynamicmessenger.userDataController.database.SignedUser
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.SignedUserRepository
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
@@ -24,9 +20,9 @@ class UserCallFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val userDao = SignedUserDatabase.getSignedUserDatabase(requireContext())!!.signedUserDao()
+        val userDao = SignedUserDatabase.getUserDatabase(requireContext())!!.signedUserDao()
         val userRep = SignedUserRepository(userDao)
-        val tokenDao = SignedUserDatabase.getSignedUserDatabase(requireContext())!!.userTokenDao()
+        val tokenDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userTokenDao()
         val tokenRep = UserTokenRepository(tokenDao)
         Log.i("+++token", tokenRep.getToken())
         Log.i("+++SharedConfigsToken", SharedConfigs.token)

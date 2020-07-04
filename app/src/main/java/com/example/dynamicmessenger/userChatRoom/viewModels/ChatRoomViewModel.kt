@@ -13,7 +13,7 @@ import com.example.dynamicmessenger.userDataController.database.UserTokenReposit
 import kotlinx.coroutines.launch
 
 class ChatRoomViewModel(application: Application) : AndroidViewModel(application) {
-    private val tokenDao = SignedUserDatabase.getSignedUserDatabase(application)!!.userTokenDao()
+    private val tokenDao = SignedUserDatabase.getUserDatabase(application)!!.userTokenDao()
     private val tokenRep = UserTokenRepository(tokenDao)
 
     fun getMessagesFromNetwork(context: Context?, receiverID: String, closure: (List<ChatRoom>) -> Unit) {

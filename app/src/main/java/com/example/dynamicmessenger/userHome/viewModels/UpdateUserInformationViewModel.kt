@@ -5,17 +5,11 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.Embedded
-import androidx.room.PrimaryKey
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.UniversityApi
 import com.example.dynamicmessenger.network.authorization.UpdateUserApi
-import com.example.dynamicmessenger.network.authorization.models.University
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
-import com.example.dynamicmessenger.network.authorization.models.User
-import com.example.dynamicmessenger.userDataController.SaveToken
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.SignedUser
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
@@ -23,7 +17,7 @@ import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 
 class UpdateUserInformationViewModel(application: Application) : AndroidViewModel(application) {
-    private val tokenDao = SignedUserDatabase.getSignedUserDatabase(application)!!.userTokenDao()
+    private val tokenDao = SignedUserDatabase.getUserDatabase(application)!!.userTokenDao()
     private val tokenRep = UserTokenRepository(tokenDao)
     fun updateUserNetwork(updateUserTask: UpdateUserTask, context: Context?, closure: (Boolean) -> Unit) {
         viewModelScope.launch {

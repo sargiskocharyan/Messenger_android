@@ -3,6 +3,8 @@ package com.example.dynamicmessenger.network.authorization.models
 import android.annotation.SuppressLint
 import android.os.Parcelable
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.dynamicmessenger.common.AppLangKeys
 import com.example.dynamicmessenger.common.SharedConfigs
@@ -52,10 +54,24 @@ data class UserContacts(val  _id: String, val name: String?, val lastname: Strin
 data class Users(val users: List<UserContacts>) : Parcelable
 
 @Parcelize
-data class Chat(val id: String, val name: String?, val lastname: String?, val username: String, val message: Message?, val recipientAvatarURL: String?) : Parcelable
+@Entity(tableName = "user_chat")
+data class Chat(
+    @PrimaryKey
+    val id: String,
+    val name: String?,
+    val lastname: String?,
+    val username: String,
+    @Embedded
+    val message: Message?,
+    val recipientAvatarURL: String?) : Parcelable
 
 @Parcelize
-data class Message(val sender: Sender, val text: String, var createdAt: String, val reciever: String) : Parcelable, Comparable<Message> {
+data class Message(
+                @Embedded
+                val sender: Sender,
+                val text: String,
+                var createdAt: String,
+                val reciever: String) : Parcelable, Comparable<Message> {
     @SuppressLint("SimpleDateFormat")
     override fun compareTo(other: Message): Int {
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -72,7 +88,10 @@ data class Message(val sender: Sender, val text: String, var createdAt: String, 
 }
 
 @Parcelize
-data class Sender(val id: String, val name: String) : Parcelable
+data class Sender(
+                @PrimaryKey
+                @ColumnInfo(name = "senderId") val id: String,
+                @ColumnInfo(name = "senderName")val name: String) : Parcelable
 
 @Parcelize
 data class ChatRoom(val sender: Sender, val text: String, val reciever: String) : Parcelable
