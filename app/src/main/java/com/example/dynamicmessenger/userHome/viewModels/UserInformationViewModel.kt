@@ -2,6 +2,8 @@ package com.example.dynamicmessenger.userHome.viewModels
 
 import android.app.Application
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -61,7 +63,7 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
     }
 
     fun logoutNetwork(token: String?, context: Context?, closure: (Boolean) -> Unit) {
-        if (token == null) {
+        if (token == null || token == "") {
             closure(true)
             return
         }
@@ -76,6 +78,24 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
             } catch (e: Exception) {
                 MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
                 closure(true)
+            }
+        }
+    }
+
+    fun getAvatar(closure: (Bitmap) -> Unit) {
+        viewModelScope.launch {
+            if (SharedConfigs.signedUser?.avatarURL != null) {
+                try {
+                    val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(SharedConfigs.signedUser!!.avatarURL!!)
+                    Log.i("+++avatara", SharedConfigs.signedUser!!.avatarURL!!)
+                    if (response.isSuccessful) {
+                        val inputStream = response.body()!!.byteStream()
+                        val bitmap = BitmapFactory.decodeStream(inputStream)
+                        closure(bitmap)
+                    }
+                } catch (e: Exception) {
+                    Log.i("+++exception", e.toString())
+                }
             }
         }
     }

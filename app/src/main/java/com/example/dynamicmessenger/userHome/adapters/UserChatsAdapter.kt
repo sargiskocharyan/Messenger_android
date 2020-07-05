@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,20 +14,27 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.ChatRoomActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.DownloadImageTask
+import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
+class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
     var data = mutableListOf<Chat>()
+    private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
 
     fun setAdapterData(newList: List<Chat>) {
         data.clear()
@@ -86,11 +95,28 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
         holder.lastname.text = item.lastname
         holder.lastMessage.text = item.message?.text
         if (item.recipientAvatarURL != null) {
-
-            DownloadImageTask(holder.chatUserImageView).execute(item.recipientAvatarURL)
-
+//            DownloadImageTask(holder.chatUserImageView).execute(item.recipientAvatarURL)
+            getAvatar(holder.chatUserImageView, item.recipientAvatarURL)
         } else  {
             holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
+        }
+    }
+
+    private fun getAvatar(imageView: ImageView, recipientAvatarURL: String?) {
+        coroutineScope.launch {
+            if (recipientAvatarURL != null) {
+                try {
+                    val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(recipientAvatarURL)
+                    if (response.isSuccessful) {
+                        val inputStream = response.body()!!.byteStream()
+                        val bitmap = BitmapFactory.decodeStream(inputStream)
+                        imageView.setImageBitmap(bitmap)
+                    }
+                } catch (e: Exception) {
+                    Log.i("+++exception", e.toString())
+//                    Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

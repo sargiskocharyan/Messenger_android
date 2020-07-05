@@ -32,15 +32,3 @@ class UserTokenRepository(private val userTokenDao: UserTokenDao) {
         userTokenDao.deleteAll()
     }
 }
-
-class UserChatRepository(private val userChatDao: UserChatDao) {
-    fun getChat() = userChatDao.getUserChat()
-
-    fun insert(chat: List<Chat>) {
-        userChatDao.insert(chat)
-    }
-
-    fun delete() {
-        userChatDao.deleteAll()
-    }
-}

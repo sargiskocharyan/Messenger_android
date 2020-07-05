@@ -1,40 +1,61 @@
 package com.example.dynamicmessenger.network.authorization
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
+import android.os.Looper
+import android.renderscript.RenderScript.Priority
+import android.webkit.DownloadListener
 import com.example.dynamicmessenger.common.MyHeaders
 import com.example.dynamicmessenger.common.ResponseUrls
+import com.example.dynamicmessenger.common.SharedConfigs.myContext
 import com.example.dynamicmessenger.network.authorization.models.*
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.Cache
 import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
-import java.lang.reflect.Type
 
 
 private const val BASE_URL = ResponseUrls.herokuIP
 private const val ERO_URL = ResponseUrls.ErosServerIP
 //private const val ERO_URL = ""
 
-val LENIENT_FACTORY: JsonAdapter.Factory =
-    object : JsonAdapter.Factory {
-        override fun create(
-            type: Type,
-            annotations: Set<Annotation?>,
-            moshi: Moshi
-        ): JsonAdapter<*>? {
-            return moshi.nextAdapter<Any>(this, type, annotations).lenient()
-        }
+private var cacheSize: Long = 10 * 1024 * 1024 // 10 MB
+
+private var cache = Cache(myContext.cacheDir, cacheSize)
+
+fun hasNetwork(context: Context): Boolean? {
+    var isConnected: Boolean? = false // Initial Value
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+    if (activeNetwork != null && activeNetwork.isConnected)
+        isConnected = true
+    return isConnected
+}
+
+val okHttpClient: OkHttpClient = OkHttpClient.Builder()
+    .cache(cache)
+    .addInterceptor { chain ->
+        var request = chain.request()
+        request = if (hasNetwork(myContext)!!)
+            request.newBuilder().header("Cache-Control", "public, max-age=" + 10).build()
+        else
+            request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build()
+        chain.proceed(request)
     }
+    .build()
+
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()
-
 
 private val gson = GsonBuilder()
     .setLenient()
@@ -45,17 +66,9 @@ private val retrofit = Retrofit.Builder()
 //    .addConverterFactory(LENIENT_FACTORY.create(moshi = moshi))
     .addCallAdapterFactory(CoroutineCallAdapterFactory())
     .baseUrl(BASE_URL)
+    .client(okHttpClient)
     .build()
 
-//val LENIENT_FACTORY: JsonAdapter.Factory = object : JsonAdapter.Factory {
-//    override fun create(
-//        type: Type?,
-//        annotations: Set<Annotation?>?,
-//        moshi: Moshi
-//    ): JsonAdapter<*>? {
-//        return moshi.nextAdapter<Any>(this, type, annotations).lenient()
-//    }
-//}
 private val retrofitEro = Retrofit.Builder()
     .addConverterFactory(MoshiConverterFactory.create(moshi))
     .addCallAdapterFactory(CoroutineCallAdapterFactory())

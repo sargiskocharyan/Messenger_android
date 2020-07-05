@@ -9,13 +9,13 @@ import java.util.*
 
 object SharedConfigs {
     private lateinit var sharedPrefs: SharedPreferences
-    private lateinit var context: Context
+    lateinit var myContext: Context
     private lateinit var userDao: SignedUserDao
     private lateinit var userRep: SignedUserRepository
     private lateinit var tokenDao: UserTokenDao
     private lateinit var tokenRep: UserTokenRepository
     fun init(context: Context) {
-        this.context = context
+        this.myContext = context
         userDao = SignedUserDatabase.getUserDatabase(context)!!.signedUserDao()
         tokenDao = SignedUserDatabase.getUserDatabase(context)!!.userTokenDao()
         userRep = SignedUserRepository(userDao)

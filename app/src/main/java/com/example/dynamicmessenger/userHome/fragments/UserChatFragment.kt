@@ -17,6 +17,9 @@ import com.example.dynamicmessenger.userDataController.database.*
 import com.example.dynamicmessenger.userHome.adapters.UserChatsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserChatViewModel
 import com.github.nkzawa.socketio.client.Socket
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 
 
 class UserChatFragment : Fragment() {
@@ -24,8 +27,7 @@ class UserChatFragment : Fragment() {
     private lateinit var binding : FragmentUserChatBinding
     private lateinit var socketManager: SocketManager
     private lateinit var mSocket: Socket
-    private lateinit var chatDao: UserChatDao
-    private lateinit var chatRep: UserChatRepository
+    private var activityJob = Job()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,10 +41,7 @@ class UserChatFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        chatDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userChatDao()
-        chatRep = UserChatRepository(chatDao)
-
-        val adapter = UserChatsAdapter(requireContext())
+        val adapter = UserChatsAdapter(requireContext(), activityJob)
         updateRecyclerViewFromDatabase(adapter)
 
         binding.root.setHasTransientState(true)
@@ -72,6 +71,11 @@ class UserChatFragment : Fragment() {
         return binding.root
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        activityJob.cancel()
+    }
+
     private fun updateRecyclerView(adapter: UserChatsAdapter) {
         binding.userChatSwipeRefreshLayout.isRefreshing = true
         viewModel.getUserChatsFromNetwork(requireContext(), binding.userChatSwipeRefreshLayout) {
@@ -79,19 +83,13 @@ class UserChatFragment : Fragment() {
             adapter.setAdapterData(list)
             adapter.submitList(list)
             binding.userChatSwipeRefreshLayout.isRefreshing = false
-            chatRep.insert(it)
         }
     }
 
     private fun updateRecyclerViewFromDatabase(adapter: UserChatsAdapter) {
-        chatRep.getChat().let {
-            adapter.setAdapterDataNotify(it.sortedWith(compareBy { chat -> chat.message }).reversed())
-        }
         viewModel.getUserChatsFromNetwork(requireContext(), binding.userChatSwipeRefreshLayout) {
             val list = it.sortedWith(compareBy { chat -> chat.message }).reversed()
-            adapter.setAdapterData(list)
-            adapter.submitList(list)
-            chatRep.insert(it)
+            adapter.setAdapterDataNotify(list)
         }
     }
 }

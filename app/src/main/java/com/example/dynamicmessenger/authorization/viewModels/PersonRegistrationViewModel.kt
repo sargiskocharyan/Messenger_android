@@ -50,7 +50,7 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
         var allUniversity: List<UniversityProperty>? = null
         viewModelScope.launch {
             try {
-                val response = UniversityApi.retrofitService.universityResponseAsync(SharedConfigs.token!!)
+                val response = UniversityApi.retrofitService.universityResponseAsync(SharedConfigs.token)
                 if (response.isSuccessful) {
                     allUniversity = response.body()
                     closure(allUniversity!!)

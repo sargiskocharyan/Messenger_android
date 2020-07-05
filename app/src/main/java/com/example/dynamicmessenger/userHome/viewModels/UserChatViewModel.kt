@@ -15,8 +15,6 @@ import com.example.dynamicmessenger.userDataController.database.UserTokenReposit
 import kotlinx.coroutines.launch
 
 class UserChatViewModel(application: Application) : AndroidViewModel(application) {
-    private val tokenDao = SignedUserDatabase.getUserDatabase(application)!!.userTokenDao()
-    private val tokenRep = UserTokenRepository(tokenDao)
     fun getUserChatsFromNetwork(context: Context?, swipeRefreshLayout: SwipeRefreshLayout, closure: (List<Chat>) -> Unit) {
         viewModelScope.launch {
             try {

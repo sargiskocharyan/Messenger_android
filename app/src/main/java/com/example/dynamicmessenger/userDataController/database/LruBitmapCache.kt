@@ -46,5 +46,5 @@ class LruBitmapCache: LruCache<String, Bitmap>(cacheSize) {
         return get(key)
     }
 
-};
+}
 

@@ -1,5 +1,7 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,18 +10,24 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
+import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomDiffUtilCallback
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.github.nkzawa.socketio.client.Socket
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 
 class ChatRoomFragment : Fragment() {
@@ -42,15 +50,21 @@ class ChatRoomFragment : Fragment() {
         binding.viewModel = viewModel
         val receiverID = SharedPreferencesManager.getReceiverID(requireContext())
         val myID = SharedConfigs.signedUser!!._id
+        val receiverAvatar = SharedPreferencesManager.getReceiverAvatarUrl(requireContext())
         adapter = ChatRoomAdapter(requireContext(), myID)
         val linearLayoutManager = LinearLayoutManager(requireContext())
+        binding.chatRecyclerView.adapter = adapter
+        viewModel.getAvatar(receiverAvatar){
+            adapter.receiverImage = it
+        }
+
 //        linearLayoutManager.stackFromEnd = true
         val firstVisibleItemPosition =  linearLayoutManager.findFirstVisibleItemPosition()
         binding.chatRecyclerView.layoutManager = linearLayoutManager
 
         updateRecyclerView(receiverID)
         binding.root.setHasTransientState(true)
-        binding.chatRecyclerView.adapter = adapter
+
         //socket
         socketManager = SocketManager(requireContext())
 
@@ -78,7 +92,7 @@ class ChatRoomFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         socketManager.closeSocket()
-
+        SharedPreferencesManager.setReceiverAvatarUrl(requireContext(), "")
     }
 
     private fun updateRecyclerView(receiverID: String) {

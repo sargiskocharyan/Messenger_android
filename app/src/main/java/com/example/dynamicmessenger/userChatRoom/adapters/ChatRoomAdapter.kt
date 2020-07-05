@@ -2,6 +2,8 @@ package com.example.dynamicmessenger.userChatRoom.adapters
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,16 +13,25 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.network.DownloadImageTask
+import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class ChatRoomAdapter(val context: Context, private val myID: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
+
     var data = listOf<ChatRoom>()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
-    val receiverUrl = SharedPreferencesManager.getReceiverAvatarUrl(context)
+
+    var receiverImage: Bitmap? = null
+
 
     override fun getItemCount(): Int {
         return data.size
@@ -60,8 +71,8 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
         private val receiverImageView: ImageView = itemView.findViewById(R.id.receiverImageView)
         internal fun bind(position: Int) {
             message.text = data[position].text
-            if (receiverUrl != "") {
-                DownloadImageTask(receiverImageView).execute(receiverUrl)
+            if (receiverImage != null) {
+                receiverImageView.setImageBitmap(receiverImage)
             } else  {
                 receiverImageView.setImageResource(R.drawable.ic_user_image)
             }
