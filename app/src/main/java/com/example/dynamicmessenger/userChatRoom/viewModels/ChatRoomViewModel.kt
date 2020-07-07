@@ -12,11 +12,13 @@ import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.ChatRoomApi
 import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
+import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import kotlinx.coroutines.launch
 
 class ChatRoomViewModel(application: Application) : AndroidViewModel(application) {
+    private val diskLruCache = DiskCache.getInstance(application)
 
     fun getMessagesFromNetwork(context: Context?, receiverID: String, closure: (List<ChatRoom>) -> Unit) {
         viewModelScope.launch {
@@ -37,12 +39,15 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             if (receiverURL != null) {
                 try {
-                    val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(receiverURL)
-                    Log.i("+++avatara", SharedConfigs.signedUser!!.avatarURL!!)
-                    if (response.isSuccessful) {
-                        val inputStream = response.body()!!.byteStream()
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        closure(bitmap)
+                    if (diskLruCache.get(receiverURL) != null) {
+                        closure(diskLruCache.get(receiverURL)!!)
+                    } else {
+                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(receiverURL)
+                        if (response.isSuccessful) {
+                            val inputStream = response.body()!!.byteStream()
+                            val bitmap = BitmapFactory.decodeStream(inputStream)
+                            closure(bitmap)
+                        }
                     }
                 } catch (e: Exception) {
                     Log.i("+++exception", e.toString())

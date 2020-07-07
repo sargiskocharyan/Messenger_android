@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -54,6 +55,8 @@ class ChatRoomFragment : Fragment() {
         adapter = ChatRoomAdapter(requireContext(), myID)
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatRecyclerView.adapter = adapter
+
+//        (activity as AppCompatActivity).supportActionBar?.title = "Title"
         viewModel.getAvatar(receiverAvatar){
             adapter.receiverImage = it
         }

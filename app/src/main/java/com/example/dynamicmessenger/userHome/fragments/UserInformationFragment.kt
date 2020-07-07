@@ -28,7 +28,6 @@ import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
 import com.example.dynamicmessenger.network.DownloadImageTask
 import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import com.example.dynamicmessenger.userDataController.database.LruBitmapCache
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
 import com.example.dynamicmessenger.utils.LocalizationUtil
@@ -48,7 +47,6 @@ class UserInformationFragment : Fragment() {
     private lateinit var binding: FragmentUserInformationBinding
     private var activityJob = Job()
     private val coroutineScope = CoroutineScope(activityJob + Dispatchers.Main)
-    private val lruBitmapCache = LruBitmapCache()
 
     @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("ResourceType")
@@ -67,7 +65,7 @@ class UserInformationFragment : Fragment() {
 
         binding.university.text = SharedConfigs.signedUser?.university?.toString() ?: "University"
 
-        popupMenu(binding)
+//        popupMenu(binding)
 //        setLanguageImage(binding)
 
         binding.contactConstraintLayout.setOnClickListener {
@@ -105,6 +103,7 @@ class UserInformationFragment : Fragment() {
             }
         }
 
+//        SharedConfigs.signedUser?.avatarURL?.let { imageLoader.display(it, binding.userProfileImageView, R.drawable.ic_user_image) }
         viewModel.getAvatar {
             binding.userProfileImageView.setImageBitmap(it)
         }

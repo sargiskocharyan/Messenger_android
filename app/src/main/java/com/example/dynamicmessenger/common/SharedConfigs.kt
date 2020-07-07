@@ -21,8 +21,6 @@ object SharedConfigs {
         userRep = SignedUserRepository(userDao)
         tokenRep = UserTokenRepository(tokenDao)
         signedUser = userRep.signedUser
-//        Log.i("+++userRep", userRep.signedUser.toString())
-//        Log.i("+++tokenRep", tokenRep.getToken())
         token = tokenRep.getToken()
         sharedPrefs = context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
         appLang = setLang()
@@ -34,7 +32,7 @@ object SharedConfigs {
                 field = value
                 Log.i("+++userInsertIF", value.toString())
                 userRep.insert(value)
-                Log.i("+++userInsertrep", userRep.signedUser.toString())
+//                Log.i("+++userInsertrep", userRep.signedUser.toString())
             }
         }
 

@@ -3,9 +3,6 @@ package com.example.dynamicmessenger.network.authorization
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.os.Looper
-import android.renderscript.RenderScript.Priority
-import android.webkit.DownloadListener
 import com.example.dynamicmessenger.common.MyHeaders
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs.myContext
@@ -14,14 +11,13 @@ import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.Cache
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
+import okhttp3.*
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
+import retrofit2.http.Headers
+import java.util.concurrent.TimeUnit
 
 
 private const val BASE_URL = ResponseUrls.herokuIP
@@ -30,7 +26,7 @@ private const val ERO_URL = ResponseUrls.ErosServerIP
 
 private var cacheSize: Long = 10 * 1024 * 1024 // 10 MB
 
-private var cache = Cache(myContext.cacheDir, cacheSize)
+private var cache = Cache(myContext.codeCacheDir, cacheSize)
 
 fun hasNetwork(context: Context): Boolean? {
     var isConnected: Boolean? = false // Initial Value

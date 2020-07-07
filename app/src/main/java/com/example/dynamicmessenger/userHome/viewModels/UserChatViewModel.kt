@@ -19,7 +19,6 @@ class UserChatViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch {
             try {
                 val response = ChatsApi.retrofitService.chatsResponseAsync(SharedConfigs.token)
-                Log.i("+++responseToken", SharedConfigs.token)
                 if (response.isSuccessful) {
                     closure(response.body()!!)
                 } else {

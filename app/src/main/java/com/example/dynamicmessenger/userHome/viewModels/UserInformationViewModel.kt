@@ -15,10 +15,7 @@ import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
 import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.LogoutApi
 import com.example.dynamicmessenger.network.authorization.SaveAvatarApi
-import com.example.dynamicmessenger.userDataController.SaveToken
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
-import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
+import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
@@ -35,6 +32,8 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
 
     private val _lastName = MutableLiveData<String>()
     val lastName: LiveData<String> get() = _lastName
+
+    private val diskLruCache = DiskCache.getInstance(application)
 
     init {
         setUserProperty()
@@ -56,7 +55,6 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
                 binding.imageUploadProgressBar.visibility = View.INVISIBLE
             } catch (e: Exception) {
                 binding.imageUploadProgressBar.visibility = View.INVISIBLE
-                Log.i("+++exception", e.toString())
                 Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
             }
         }
@@ -69,7 +67,7 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
         }
         viewModelScope.launch {
             try {
-                val response = LogoutApi.retrofitService.logoutResponseAsync(token!!)
+                val response = LogoutApi.retrofitService.logoutResponseAsync(token)
                 if (response.isSuccessful) {
                     closure(true)
                 } else {
@@ -82,19 +80,24 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
         }
     }
 
+
     fun getAvatar(closure: (Bitmap) -> Unit) {
         viewModelScope.launch {
             if (SharedConfigs.signedUser?.avatarURL != null) {
                 try {
-                    val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(SharedConfigs.signedUser!!.avatarURL!!)
-                    Log.i("+++avatara", SharedConfigs.signedUser!!.avatarURL!!)
-                    if (response.isSuccessful) {
-                        val inputStream = response.body()!!.byteStream()
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        closure(bitmap)
+                    if (diskLruCache.get(SharedConfigs.signedUser?.avatarURL!!) != null) {
+                        closure(diskLruCache.get(SharedConfigs.signedUser?.avatarURL!!)!!)
+                    } else {
+                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(SharedConfigs.signedUser!!.avatarURL!!)
+                        if (response.isSuccessful) {
+                            val inputStream = response.body()!!.byteStream()
+                            val bitmap = BitmapFactory.decodeStream(inputStream)
+                            diskLruCache.put(SharedConfigs.signedUser?.avatarURL!!, bitmap)
+                            closure(bitmap)
+                        }
                     }
                 } catch (e: Exception) {
-                    Log.i("+++exception", e.toString())
+                    Log.i("+++exception", "userInformationViewModel getAvatar $e")
                 }
             }
         }

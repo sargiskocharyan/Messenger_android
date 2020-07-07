@@ -24,6 +24,7 @@ import com.example.dynamicmessenger.network.DownloadImageTask
 import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.DiskCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -35,6 +36,7 @@ import java.util.*
 class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
     var data = mutableListOf<Chat>()
     private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
+    private val diskLruCache = DiskCache.getInstance(context)
 
     fun setAdapterData(newList: List<Chat>) {
         data.clear()
@@ -106,15 +108,19 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
         coroutineScope.launch {
             if (recipientAvatarURL != null) {
                 try {
-                    val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(recipientAvatarURL)
-                    if (response.isSuccessful) {
-                        val inputStream = response.body()!!.byteStream()
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        imageView.setImageBitmap(bitmap)
+                    if (diskLruCache.get(recipientAvatarURL) != null) {
+                        imageView.setImageBitmap(diskLruCache.get(recipientAvatarURL)!!)
+                    } else {
+                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(recipientAvatarURL)
+                        if (response.isSuccessful) {
+                            val inputStream = response.body()!!.byteStream()
+                            val bitmap = BitmapFactory.decodeStream(inputStream)
+                            diskLruCache.put(recipientAvatarURL, bitmap)
+                            imageView.setImageBitmap(bitmap)
+                        }
                     }
                 } catch (e: Exception) {
                     Log.i("+++exception", e.toString())
-//                    Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
                 }
             }
         }

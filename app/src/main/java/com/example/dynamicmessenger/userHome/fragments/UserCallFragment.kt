@@ -20,14 +20,14 @@ class UserCallFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val userDao = SignedUserDatabase.getUserDatabase(requireContext())!!.signedUserDao()
-        val userRep = SignedUserRepository(userDao)
-        val tokenDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userTokenDao()
-        val tokenRep = UserTokenRepository(tokenDao)
-        Log.i("+++token", tokenRep.getToken())
-        Log.i("+++SharedConfigsToken", SharedConfigs.token)
-        Log.i("+++SharedConfigs", SharedConfigs.signedUser.toString())
-        Log.i("+++userRepo", userRep.signedUser.toString())
+//        val userDao = SignedUserDatabase.getUserDatabase(requireContext())!!.signedUserDao()
+//        val userRep = SignedUserRepository(userDao)
+//        val tokenDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userTokenDao()
+//        val tokenRep = UserTokenRepository(tokenDao)
+//        Log.i("+++token", tokenRep.getToken())
+//        Log.i("+++SharedConfigsToken", SharedConfigs.token)
+//        Log.i("+++SharedConfigs", SharedConfigs.signedUser.toString())
+//        Log.i("+++userRepo", userRep.signedUser.toString())
 
         return inflater.inflate(R.layout.fragment_user_call, container, false)
     }

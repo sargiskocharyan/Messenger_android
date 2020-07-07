@@ -46,7 +46,6 @@ class PersonLoginViewModel(application: Application) : AndroidViewModel(applicat
                                                     response.body()!!.user.email,
                                                     response.body()!!.user.university,
                                                     response.body()!!.user.avatarURL)
-                        Log.i("+++userResponse", signedUSer.toString())
                         SharedConfigs.signedUser = signedUSer
                         SharedConfigs.token = response.body()!!.token
                         closure(true)
@@ -55,7 +54,7 @@ class PersonLoginViewModel(application: Application) : AndroidViewModel(applicat
                     }
                 } catch (e: Exception) {
                     binding.progressBar.visibility = View.INVISIBLE
-                    Log.i("+++", e.toString())
+                    Log.i("+++", "person login $e")
 //                    MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
                 }
             } else {
@@ -78,7 +77,8 @@ class PersonLoginViewModel(application: Application) : AndroidViewModel(applicat
                             MyAlertMessage.showAlertDialog(context, "Enter correct code")
                         }
                 } catch (e: Exception) {
-                    MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
+                    Log.i("+++", "person register $e")
+//                    MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
                 }
             }
         }

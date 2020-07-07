@@ -22,7 +22,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class ChatRoomAdapter(val context: Context, private val myID: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
 
     var data = listOf<ChatRoom>()
         set(value) {
