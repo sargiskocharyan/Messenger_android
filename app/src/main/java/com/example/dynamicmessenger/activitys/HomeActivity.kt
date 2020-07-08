@@ -8,8 +8,10 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
@@ -40,7 +42,6 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val tokenDao = SignedUserDatabase.getUserDatabase(this)!!.userTokenDao()
         val userRep = UserTokenRepository(tokenDao)
-//        SharedPreferencesManager.loadUserObjectToSharedConfigs(this)
         setContentView(R.layout.activity_home)
         this.supportActionBar!!.hide()
         val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)

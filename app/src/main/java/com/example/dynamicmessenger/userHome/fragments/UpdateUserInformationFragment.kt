@@ -21,6 +21,7 @@ import com.example.dynamicmessenger.network.authorization.models.UniversityPrope
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.userHome.viewModels.UpdateUserInformationViewModel
 import com.example.dynamicmessenger.utils.Validations
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class UpdateUserInformationFragment : Fragment() {
     private lateinit var viewModel: UpdateUserInformationViewModel
@@ -59,6 +60,9 @@ class UpdateUserInformationFragment : Fragment() {
         binding.editTextLastname.text.append(SharedConfigs.signedUser?.lastname ?: "")
         binding.editTextUsername.text.append(SharedConfigs.signedUser?.username ?: "")
         (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+        val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+        bottomNavBar.visibility = View.GONE
+
         var allUniversity: List<UniversityProperty>
         viewModel.getAllUniversity(requireContext()){
             allUniversity = it
@@ -92,20 +96,21 @@ class UpdateUserInformationFragment : Fragment() {
             viewModel.updateUserNetwork(updateUserTask, context){closure ->
                 if (closure) {
                     val selectedFragment = UserInformationFragment()
-                    activity?.supportFragmentManager?.beginTransaction()?.replace(
-                        R.id.fragmentContainer,
-                        selectedFragment
-                    )?.commit()
+                    activity?.supportFragmentManager
+                        ?.beginTransaction()
+                        ?.replace(R.id.fragmentContainer, selectedFragment)
+                        ?.addToBackStack(null)
+                        ?.commit()
                 }
             }
         }
 
         binding.updateUserBackImageView.setOnClickListener {
             val selectedFragment = UserInformationFragment()
-            activity?.supportFragmentManager?.beginTransaction()?.replace(
-                R.id.fragmentContainer,
-                selectedFragment
-            )?.commit()
+            activity?.supportFragmentManager
+                ?.beginTransaction()
+                ?.replace(R.id.fragmentContainer, selectedFragment)
+                ?.commit()
         }
 
         return binding.root

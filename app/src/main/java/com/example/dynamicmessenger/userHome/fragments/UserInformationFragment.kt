@@ -3,6 +3,7 @@ package com.example.dynamicmessenger.userHome.fragments
 //import com.example.dynamicmessenger.activitys.App
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -10,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +34,7 @@ import com.example.dynamicmessenger.userDataController.database.SignedUserDataba
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.ToByteArray
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -48,32 +51,45 @@ class UserInformationFragment : Fragment() {
     private var activityJob = Job()
     private val coroutineScope = CoroutineScope(activityJob + Dispatchers.Main)
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     @SuppressLint("ResourceType")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding =
-            DataBindingUtil.inflate(inflater,
+            DataBindingUtil.inflate(
+                inflater,
                 R.layout.fragment_user_information,
-                container, false)
+                container, false
+            )
         val chatDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userChatDao()
         viewModel = ViewModelProvider(this).get(UserInformationViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
         binding.university.text = SharedConfigs.signedUser?.university?.toString() ?: "University"
-
+        val bottomNavBar: BottomNavigationView =
+            requireActivity().findViewById(R.id.bottomNavigationView)
+        bottomNavBar.visibility = View.VISIBLE
+        changeDarkMode()
 //        popupMenu(binding)
+
+        binding.languageConstraintLayout.setOnClickListener {
+            binding.languagePopupMenuLinearLayout.visibility = View.VISIBLE
+            binding.darkModeConstraintLayout.visibility = View.INVISIBLE
+            binding.logoutConstraintLayout.visibility = View.INVISIBLE
+        }
+        popupMenu(binding)
+
 //        setLanguageImage(binding)
 
         binding.contactConstraintLayout.setOnClickListener {
             val selectedFragment = UserContactsFragment()
-            activity?.supportFragmentManager?.beginTransaction()?.replace(
-                R.id.fragmentContainer,
-                selectedFragment
-            )?.commit()
+            activity?.supportFragmentManager
+                ?.beginTransaction()
+                ?.replace(R.id.fragmentContainer, selectedFragment)
+                ?.addToBackStack(null)
+                ?.commit()
         }
 
         binding.darkModeSwitch.isChecked = SharedConfigs.getDarkMode()
@@ -108,7 +124,7 @@ class UserInformationFragment : Fragment() {
             binding.userProfileImageView.setImageBitmap(it)
         }
 
-        binding.userProfileImageView.setOnClickListener {
+        binding.uploadUserImageImageView.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
             startActivityForResult(intent, 0)
@@ -116,10 +132,11 @@ class UserInformationFragment : Fragment() {
 
         binding.updateUserInformationImageView.setOnClickListener {
             val selectedFragment = UpdateUserInformationFragment()
-            activity?.supportFragmentManager?.beginTransaction()?.replace(
-                R.id.fragmentContainer,
-                selectedFragment
-            )?.commit()
+            activity?.supportFragmentManager
+                ?.beginTransaction()
+                ?.replace(R.id.fragmentContainer, selectedFragment)
+                ?.addToBackStack(null)
+                ?.commit()
         }
         return binding.root
     }
@@ -144,42 +161,41 @@ class UserInformationFragment : Fragment() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+
     private fun popupMenu(binding: FragmentUserInformationBinding) {
-        val popup = PopupMenu(requireContext(), binding.languageConstraintLayout)
-        popup.inflate(R.menu.popup_language_menu)
-        popup.setForceShowIcon(true)
-        popup.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.languageEn -> {
-                    SharedConfigs.appLang = AppLangKeys.EN
-                    binding.languageImage?.setImageResource(R.drawable.ic_united_kingdom)
-                    LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
-                    requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
-                }
-                R.id.languageRu -> {
-                    SharedConfigs.appLang = AppLangKeys.RU
-                    binding.languageImage?.setImageResource(R.drawable.ic_russia)
-                    LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
-                    requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
-                }
-                else -> {
-                    SharedConfigs.appLang = AppLangKeys.AM
-                    binding.languageImage?.setImageResource(R.drawable.ic_armenia)
-                    LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
-                    requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
-                }
-            }
-            true
+        binding.languageEn.setOnClickListener {
+            SharedConfigs.appLang = AppLangKeys.EN
+            binding.languageImage.setImageResource(R.drawable.ic_united_kingdom)
+            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
+            requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
         }
-        binding.languageConstraintLayout?.setOnClickListener {
-            popup.show()
+
+        binding.languageRu.setOnClickListener {
+            SharedConfigs.appLang = AppLangKeys.RU
+            binding.languageImage.setImageResource(R.drawable.ic_russia)
+            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
+            requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
+        }
+
+        binding.languageAm.setOnClickListener {
+            SharedConfigs.appLang = AppLangKeys.AM
+            binding.languageImage.setImageResource(R.drawable.ic_armenia)
+            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
+            requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
         }
     }
 
     private fun setAvatar() {
         if (SharedConfigs.signedUser?.avatarURL != null) {
             DownloadImageTask(binding.userProfileImageView).execute(SharedConfigs.signedUser!!.avatarURL)
+        }
+    }
+
+    private fun changeDarkMode() {
+        if (SharedConfigs.getDarkMode()) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 }

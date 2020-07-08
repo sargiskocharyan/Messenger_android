@@ -1,34 +1,28 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getColor
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
-import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomDiffUtilCallback
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.github.nkzawa.socketio.client.Socket
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class ChatRoomFragment : Fragment() {
@@ -49,14 +43,18 @@ class ChatRoomFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(ChatRoomViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        val receiverID = SharedPreferencesManager.getReceiverID(requireContext())
         val myID = SharedConfigs.signedUser!!._id
+        val receiverID = SharedPreferencesManager.getReceiverID(requireContext())
         val receiverAvatar = SharedPreferencesManager.getReceiverAvatarUrl(requireContext())
         adapter = ChatRoomAdapter(requireContext(), myID)
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatRecyclerView.adapter = adapter
 
-//        (activity as AppCompatActivity).supportActionBar?.title = "Title"
+        val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+        bottomNavBar.visibility = View.GONE
+        val topNavBar = (activity as AppCompatActivity).supportActionBar
+        configureTopNavBar(topNavBar, "Title")
+
         viewModel.getAvatar(receiverAvatar){
             adapter.receiverImage = it
         }
@@ -92,6 +90,12 @@ class ChatRoomFragment : Fragment() {
         return binding.root
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        val inflater: MenuInflater = requireActivity().menuInflater
+        inflater.inflate(R.menu.chat_top_bar, menu)
+        return
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         socketManager.closeSocket()
@@ -110,5 +114,13 @@ class ChatRoomFragment : Fragment() {
 
     private fun scrollToBottom(binding : FragmentChatRoomBinding, adapter: ChatRoomAdapter) {
         binding.chatRecyclerView.scrollToPosition(adapter.itemCount - 1)
+    }
+
+    private fun configureTopNavBar(topNavBar: ActionBar?, title: String) {
+        topNavBar?.show()
+//        topNavBar?.setHomeButtonEnabled(true)
+        topNavBar?.setDisplayHomeAsUpEnabled(true)
+        topNavBar?.title = title
+        topNavBar?.setBackgroundDrawable(ColorDrawable(getColor(requireContext(), R.color.white)))
     }
 }

@@ -14,6 +14,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -23,8 +24,10 @@ import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.DownloadImageTask
 import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
+import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.DiskCache
+import com.example.dynamicmessenger.userHome.fragments.UpdateUserInformationFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -33,7 +36,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
+class UserChatsAdapter(val context: Context, job: Job, val activity: Activity) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
     var data = mutableListOf<Chat>()
     private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
     private val diskLruCache = DiskCache.getInstance(context)
@@ -126,6 +129,7 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
         }
     }
 
+    @SuppressLint("ResourceType")
     inner class UserChatsViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView){
         var chat: Chat? = null
         val name: TextView = itemView.findViewById(R.id.chatsUserName)
@@ -135,12 +139,13 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
         val chatUserImageView: ImageView = itemView.findViewById(R.id.chatUserImageView)
         init {
             itemView.setOnClickListener {
-                val intent = Intent(context, ChatRoomActivity::class.java)
-//                intent.putExtra(IntentExtra.receiverId, chat!!.id)
+                (context as AppCompatActivity?)!!.supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.fragmentContainer , ChatRoomFragment())
+                    .addToBackStack(null)
+                    .commit()
                 SharedPreferencesManager.setReceiverID(context, chat!!.id)
                 SharedPreferencesManager.setReceiverAvatarUrl(context, chat!!.recipientAvatarURL)
-                context.startActivity(intent)
-                (context as Activity?)!!.overridePendingTransition(1, 1)
             }
         }
     }

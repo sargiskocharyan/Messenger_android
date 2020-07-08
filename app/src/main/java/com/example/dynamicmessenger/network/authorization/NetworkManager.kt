@@ -17,7 +17,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
 import retrofit2.http.Headers
-import java.util.concurrent.TimeUnit
 
 
 private const val BASE_URL = ResponseUrls.herokuIP
@@ -28,7 +27,7 @@ private var cacheSize: Long = 10 * 1024 * 1024 // 10 MB
 
 private var cache = Cache(myContext.codeCacheDir, cacheSize)
 
-fun hasNetwork(context: Context): Boolean? {
+fun networkAvailable(context: Context): Boolean? {
     var isConnected: Boolean? = false // Initial Value
     val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
@@ -41,7 +40,7 @@ val okHttpClient: OkHttpClient = OkHttpClient.Builder()
     .cache(cache)
     .addInterceptor { chain ->
         var request = chain.request()
-        request = if (hasNetwork(myContext)!!)
+        request = if (networkAvailable(myContext)!!)
             request.newBuilder().header("Cache-Control", "public, max-age=" + 10).build()
         else
             request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build()
