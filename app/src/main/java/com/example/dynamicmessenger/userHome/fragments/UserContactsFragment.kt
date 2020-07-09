@@ -1,9 +1,12 @@
 package com.example.dynamicmessenger.userHome.fragments
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -44,23 +47,20 @@ class UserContactsFragment : Fragment() {
         binding.contactsRecyclerView.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.contactsRecyclerView.layoutManager = linearLayoutManager
+        SharedPreferencesManager.isAddContacts(requireContext(), false)
+        //Toolbar
+        setHasOptionsMenu(true)
+        val toolbar: Toolbar = binding.addUserContactsToolbar
+        configureTopNavBar(toolbar, adapter)
 
-        binding.addImageView.setOnClickListener {
-            SharedPreferencesManager.isAddContacts(requireContext(), true)
-            val exampleDialog = ContactsSearchDialog(coroutineScope) {myList ->
-                updateRecycleView(adapter, myList)
-            }
-            exampleDialog.show(requireActivity().supportFragmentManager, "Dialog")
-        }
-
-        binding.backImageView.setOnClickListener {
-            val selectedFragment = UserInformationFragment()
-            activity?.supportFragmentManager?.beginTransaction()?.replace(
-                R.id.fragmentContainer,
-                selectedFragment
-            )?.commit()
-        }
         return binding.root
+    }
+
+    //for show toolbar menu
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        val inflater: MenuInflater = requireActivity().menuInflater
+        inflater.inflate(R.menu.add_contacts_top_bar, menu)
+        super.onPrepareOptionsMenu(menu)
     }
 
     override fun onDestroy() {
@@ -79,5 +79,26 @@ class UserContactsFragment : Fragment() {
         val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
         adapter.data = data
         authorDiffResult.dispatchUpdatesTo(adapter)
+    }
+
+    private fun configureTopNavBar(toolbar: Toolbar, adapter: UserContactsAdapter) {
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+//        toolbar.title = title
+        toolbar.elevation = 10.0F
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+//        toolbar.inflateMenu(R.menu.chat_top_bar)
+        toolbar.background = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white))
+        toolbar.setNavigationOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+        toolbar.setOnMenuItemClickListener {
+            SharedPreferencesManager.isAddContacts(requireContext(), true)
+            val contactSearchDialog = ContactsSearchDialog(coroutineScope) {myList ->
+                updateRecycleView(adapter, myList)
+            }
+            contactSearchDialog.show(requireActivity().supportFragmentManager, "Dialog")
+
+            return@setOnMenuItemClickListener true
+        }
     }
 }

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +20,7 @@ import com.example.dynamicmessenger.network.DownloadImageTask
 import com.example.dynamicmessenger.network.authorization.AddContactApi
 import com.example.dynamicmessenger.network.authorization.models.AddUserContactTask
 import com.example.dynamicmessenger.network.authorization.models.UserContacts
+import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
 import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
@@ -42,7 +44,9 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         holder.name.text = item.name
         holder.lastname.text = item.lastname
         if (item.avatarURL != null) {
-            DownloadImageTask(holder.contactsUserImageView).execute(item.avatarURL)
+            viewModel.getAvatar(item.avatarURL) {
+                holder.contactsUserImageView.setImageBitmap(it)
+            }
         } else  {
             holder.contactsUserImageView.setImageResource(R.drawable.ic_user_image)
         }
@@ -67,7 +71,7 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
                     viewModel.viewModelScope.launch {
                         try {
                             val response = AddContactApi.retrofitService.addContactResponseAsync(
-                                SharedConfigs.token!!, task)
+                                SharedConfigs.token, task)
                             if (response.isSuccessful) {
                                 updateRecycleView()
                                 SharedPreferencesManager.isAddContacts(context, false)
@@ -79,11 +83,13 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
                         }
                     }
                 } else {
-                    val intent = Intent(context, ChatRoomActivity::class.java)
 //                intent.putExtra(IntentExtra.receiverId, chat!!.id)
                     SharedPreferencesManager.setReceiverID(context, userContact!!._id)
-                    context.startActivity(intent)
-                    (context as Activity?)!!.overridePendingTransition(1, 1)
+                    (context as AppCompatActivity?)!!.supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.fragmentContainer , ChatRoomFragment())
+                        .addToBackStack(null)
+                        .commit()
                 }
             }
         }

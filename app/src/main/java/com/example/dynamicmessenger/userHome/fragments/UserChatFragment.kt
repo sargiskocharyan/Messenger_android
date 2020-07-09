@@ -8,8 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -49,10 +51,12 @@ class UserChatFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-//        val topNavBar = (activity as AppCompatActivity).supportActionBar
-////        topNavBar?.hide()
-//        configureTopNavBar(topNavBar)
+        //toolbar
+        setHasOptionsMenu(true)
+        val toolbar: Toolbar = binding.userChatToolbar
+        configureTopNavBar(toolbar)
 
+        //bottom navigation
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.VISIBLE
 
@@ -110,11 +114,16 @@ class UserChatFragment : Fragment() {
         }
     }
 
-    private fun configureTopNavBar(topNavBar: ActionBar?) {
-        topNavBar?.show()
-//        topNavBar?.setHomeButtonEnabled(true)
-//        topNavBar?.setDisplayHomeAsUpEnabled(true)
-        topNavBar?.title = "Chats"
-        topNavBar?.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white)))
+    private fun configureTopNavBar(toolbar: Toolbar) {
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        toolbar.title = "Chats"
+        toolbar.elevation = 10.0F
+//        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+//        toolbar.inflateMenu(R.menu.chat_top_bar)
+        toolbar.background = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white))
+        toolbar.setOnMenuItemClickListener {
+            Toast.makeText(requireContext(), "sexmir", Toast.LENGTH_SHORT).show()
+            return@setOnMenuItemClickListener true
+        }
     }
 }

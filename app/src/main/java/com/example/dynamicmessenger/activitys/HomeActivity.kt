@@ -43,7 +43,7 @@ class HomeActivity : AppCompatActivity() {
         val tokenDao = SignedUserDatabase.getUserDatabase(this)!!.userTokenDao()
         val userRep = UserTokenRepository(tokenDao)
         setContentView(R.layout.activity_home)
-        this.supportActionBar!!.hide()
+//        this.supportActionBar!!.hide()  TODO
         val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavBar.setOnNavigationItemSelectedListener(navListener)
         val context = this

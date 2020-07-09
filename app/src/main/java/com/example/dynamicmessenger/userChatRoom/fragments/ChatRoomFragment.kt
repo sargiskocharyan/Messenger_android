@@ -4,8 +4,10 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat.getColor
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -28,7 +30,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class ChatRoomFragment : Fragment() {
     private lateinit var viewModel: ChatRoomViewModel
     private lateinit var mSocket: Socket
-    private lateinit var binding : FragmentChatRoomBinding
+    private lateinit var binding: FragmentChatRoomBinding
     private lateinit var adapter: ChatRoomAdapter
     private lateinit var socketManager: SocketManager
 
@@ -36,13 +38,8 @@ class ChatRoomFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater,
-                R.layout.fragment_chat_room,
-                container, false)
+        binding = FragmentChatRoomBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(ChatRoomViewModel::class.java)
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
         val myID = SharedConfigs.signedUser!!._id
         val receiverID = SharedPreferencesManager.getReceiverID(requireContext())
         val receiverAvatar = SharedPreferencesManager.getReceiverAvatarUrl(requireContext())
@@ -50,17 +47,20 @@ class ChatRoomFragment : Fragment() {
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatRecyclerView.adapter = adapter
 
-        val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+        val bottomNavBar: BottomNavigationView =
+            requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.GONE
-        val topNavBar = (activity as AppCompatActivity).supportActionBar
-        configureTopNavBar(topNavBar, "Title")
 
-        viewModel.getAvatar(receiverAvatar){
+        //Toolbar
+        setHasOptionsMenu(true)
+        val toolbar: Toolbar = binding.chatRoomToolbar
+        configureTopNavBar(toolbar, "title")
+
+        viewModel.getAvatar(receiverAvatar) {
             adapter.receiverImage = it
         }
 
-//        linearLayoutManager.stackFromEnd = true
-        val firstVisibleItemPosition =  linearLayoutManager.findFirstVisibleItemPosition()
+        val firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
         binding.chatRecyclerView.layoutManager = linearLayoutManager
 
         updateRecyclerView(receiverID)
@@ -71,7 +71,7 @@ class ChatRoomFragment : Fragment() {
 
         try {
             mSocket = socketManager.getSocketInstance()!!
-        } catch (e: Exception){
+        } catch (e: Exception) {
             Log.i("+++", e.toString())
         }
         mSocket.connect()
@@ -80,20 +80,22 @@ class ChatRoomFragment : Fragment() {
             socketManager.sendMessage(receiverID, binding.sendMessageEditText)
         }
 
-        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 super.onChanged()
                 scrollToBottom(binding, adapter)
             }
         })
 
+
         return binding.root
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        val inflater: MenuInflater = requireActivity().menuInflater
+    //for show toolbar menu
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        val inflater: MenuInflater = requireActivity().menuInflater
         inflater.inflate(R.menu.chat_top_bar, menu)
-        return
+        super.onPrepareOptionsMenu(menu)
     }
 
     override fun onDestroyView() {
@@ -112,15 +114,23 @@ class ChatRoomFragment : Fragment() {
         }
     }
 
-    private fun scrollToBottom(binding : FragmentChatRoomBinding, adapter: ChatRoomAdapter) {
+    private fun scrollToBottom(binding: FragmentChatRoomBinding, adapter: ChatRoomAdapter) {
         binding.chatRecyclerView.scrollToPosition(adapter.itemCount - 1)
     }
 
-    private fun configureTopNavBar(topNavBar: ActionBar?, title: String) {
-        topNavBar?.show()
-//        topNavBar?.setHomeButtonEnabled(true)
-        topNavBar?.setDisplayHomeAsUpEnabled(true)
-        topNavBar?.title = title
-        topNavBar?.setBackgroundDrawable(ColorDrawable(getColor(requireContext(), R.color.white)))
+    private fun configureTopNavBar(toolbar: Toolbar, title: String) {
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        toolbar.title = title
+        toolbar.elevation = 10.0F
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+//        toolbar.inflateMenu(R.menu.chat_top_bar)
+        toolbar.background = ColorDrawable(getColor(requireContext(), R.color.white))
+        toolbar.setNavigationOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+        toolbar.setOnMenuItemClickListener {
+            Toast.makeText(requireContext(), "sexmir", Toast.LENGTH_SHORT).show()
+            return@setOnMenuItemClickListener true
+        }
     }
 }

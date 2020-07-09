@@ -35,7 +35,6 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
                         response.body()!!.avatarURL)
                     Log.i("+++userResponse", user.toString())
                     SharedConfigs.signedUser = user
-//                    SharedPreferencesManager.saveUserObject(context!!,user)
                     view.findNavController().navigate(R.id.action_personRegistrationFragment_to_finishRegistrationFragment)
                 } else {
                     MyAlertMessage.showAlertDialog(context, "Enter correct email")

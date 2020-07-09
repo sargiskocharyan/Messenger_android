@@ -59,7 +59,7 @@ class UpdateUserInformationFragment : Fragment() {
         binding.editTextName.text.append(SharedConfigs.signedUser?.name ?: "")
         binding.editTextLastname.text.append(SharedConfigs.signedUser?.lastname ?: "")
         binding.editTextUsername.text.append(SharedConfigs.signedUser?.username ?: "")
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+//        (activity as AppCompatActivity?)!!.supportActionBar!!.hide() TODO
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.GONE
 
@@ -106,11 +106,7 @@ class UpdateUserInformationFragment : Fragment() {
         }
 
         binding.updateUserBackImageView.setOnClickListener {
-            val selectedFragment = UserInformationFragment()
-            activity?.supportFragmentManager
-                ?.beginTransaction()
-                ?.replace(R.id.fragmentContainer, selectedFragment)
-                ?.commit()
+            requireActivity().supportFragmentManager.popBackStack()
         }
 
         return binding.root

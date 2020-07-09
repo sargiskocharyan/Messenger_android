@@ -63,7 +63,8 @@ data class Chat(
     val username: String,
     @Embedded
     val message: Message?,
-    val recipientAvatarURL: String?) : Parcelable
+    val recipientAvatarURL: String?,
+    val chatCreateDay: String) : Parcelable
 
 @Parcelize
 data class Message(

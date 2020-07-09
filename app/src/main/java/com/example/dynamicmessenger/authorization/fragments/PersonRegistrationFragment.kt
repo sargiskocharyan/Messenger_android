@@ -65,7 +65,7 @@ class PersonRegistrationFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
         var university: String = ""
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+//        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
         var allUniversity: List<UniversityProperty>
         viewModel.getAllUniversity(requireContext()){
             allUniversity = it

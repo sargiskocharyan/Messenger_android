@@ -42,7 +42,7 @@ class ContactsSearchDialog(private val coroutineScope: CoroutineScope, val myClo
                                 Toast.makeText(context, "Something gone a wrong", Toast.LENGTH_SHORT).show()
                             }
                         } catch (e: Exception) {
-                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
+//                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
                         }
                     }
                 })

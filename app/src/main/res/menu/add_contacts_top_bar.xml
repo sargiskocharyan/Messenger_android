@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/receiverInformation"
-        android:icon="@drawable/ic_baseline_info_24"
-        android:title="Receiver information"
+        android:id="@+id/addContactItem"
+        android:icon="@drawable/ic_addcontact"
+        android:title="Add Contact"
         app:showAsAction="always">
 
     </item>

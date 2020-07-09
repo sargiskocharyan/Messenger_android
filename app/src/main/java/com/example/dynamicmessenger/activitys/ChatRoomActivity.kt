@@ -7,7 +7,7 @@ import com.example.dynamicmessenger.R
 class ChatRoomActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        this.supportActionBar!!.hide()
+//        this.supportActionBar!!.hide()
         setContentView(R.layout.activity_chat_room)
     }
 }

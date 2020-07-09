@@ -31,7 +31,7 @@ class EmailAndPhoneFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+//        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()TODO
         val binding : FragmentEmailAndPhoneBinding =
                         DataBindingUtil.inflate(inflater,
                             R.layout.fragment_email_and_phone,

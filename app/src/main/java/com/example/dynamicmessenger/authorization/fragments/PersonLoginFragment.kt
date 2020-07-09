@@ -36,7 +36,7 @@ class PersonLoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+//        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
         val binding : FragmentPersonLoginBinding =
                         DataBindingUtil.inflate(inflater,
                             R.layout.fragment_person_login,

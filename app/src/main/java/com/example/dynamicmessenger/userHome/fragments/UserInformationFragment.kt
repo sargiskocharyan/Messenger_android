@@ -30,6 +30,7 @@ import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
 import com.example.dynamicmessenger.network.DownloadImageTask
 import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
 import com.example.dynamicmessenger.utils.LocalizationUtil
@@ -130,6 +131,15 @@ class UserInformationFragment : Fragment() {
             startActivityForResult(intent, 0)
         }
 
+        binding.userProfileImageView.setOnClickListener {
+            val selectedFragment = UserImageFragment()
+            activity?.supportFragmentManager
+                ?.beginTransaction()
+                ?.replace(R.id.fragmentContainer, selectedFragment)
+                ?.addToBackStack(null)
+                ?.commit()
+        }
+
         binding.updateUserInformationImageView.setOnClickListener {
             val selectedFragment = UpdateUserInformationFragment()
             activity?.supportFragmentManager
@@ -167,21 +177,21 @@ class UserInformationFragment : Fragment() {
             SharedConfigs.appLang = AppLangKeys.EN
             binding.languageImage.setImageResource(R.drawable.ic_united_kingdom)
             LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
-            requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
+            requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this).commit()
         }
 
         binding.languageRu.setOnClickListener {
             SharedConfigs.appLang = AppLangKeys.RU
             binding.languageImage.setImageResource(R.drawable.ic_russia)
             LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
-            requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
+            requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this).commit()
         }
 
         binding.languageAm.setOnClickListener {
             SharedConfigs.appLang = AppLangKeys.AM
             binding.languageImage.setImageResource(R.drawable.ic_armenia)
             LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
-            requireFragmentManager().beginTransaction().detach(this).attach(this).commit()
+            requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this).commit()
         }
     }
 
