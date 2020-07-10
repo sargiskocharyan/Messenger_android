@@ -48,6 +48,7 @@ class UserContactsFragment : Fragment() {
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.contactsRecyclerView.layoutManager = linearLayoutManager
         SharedPreferencesManager.isAddContacts(requireContext(), false)
+
         //Toolbar
         setHasOptionsMenu(true)
         val toolbar: Toolbar = binding.addUserContactsToolbar

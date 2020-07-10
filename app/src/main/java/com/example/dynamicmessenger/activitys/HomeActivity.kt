@@ -8,14 +8,15 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.authorization.UserTokenVerifyApi
+import com.example.dynamicmessenger.network.UserTokenVerifyApi
+import com.example.dynamicmessenger.network.authorization.models.Chat
+import com.example.dynamicmessenger.network.authorization.models.UserContacts
+import com.example.dynamicmessenger.network.authorization.models.UserInfo
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
@@ -122,5 +123,29 @@ class HomeActivity : AppCompatActivity() {
                 Toast.makeText(context, "Please check yur internet connection", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    companion object {
+        var opponentUser: UserInfo? = null
+            set(value) {
+                field = value
+                Log.i("+++", "Opponent user set $value")
+            }
+        var receiverChatInfo: Chat? = null
+            set(value) {
+                field = value
+                Log.i("+++", "receiver Chat Info set $value")
+            }
+        var userContactsInfo: UserContacts? = null
+            set(value) {
+                field = value
+                Log.i("+++", "receiver Chat Info set $value")
+            }
+
+        var receiverID: String? = null
+            set(value) {
+                field = value
+                Log.i("+++", "receiver id set $value")
+            }
     }
 }

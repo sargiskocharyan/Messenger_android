@@ -24,6 +24,7 @@
         android:id="@+id/chatUserImageView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         android:layout_marginStart="16dp"
         android:src="@drawable/ic_user_image"
         app:layout_constraintBottom_toTopOf="@+id/guideline4"
@@ -51,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.9" />
+        app:layout_constraintGuide_percent="1.0" />
 
     <TextView
         android:id="@+id/chatsUserName"
@@ -60,7 +61,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginEnd="40dp"
         android:lines="1"
-        android:text="TextView"
+        android:text="UserName"
         android:textSize="18sp"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toStartOf="@+id/messageTime"
@@ -74,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:lines="1"
-        android:text="TextView"
+        android:text="Lastname"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/chatsUserName"
         app:layout_constraintTop_toTopOf="@+id/guideline2" />

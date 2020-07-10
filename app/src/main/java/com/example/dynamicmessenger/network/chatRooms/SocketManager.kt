@@ -30,7 +30,7 @@ class SocketManager(val context: Context) {
             IO.Options()
             opts.forceNew = true
             opts.reconnection = false
-        mSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + tokenRep.getToken(), opts)
+        mSocket = IO.socket(ResponseUrls.herokuIPForSocket + "?token=" + tokenRep.getToken(), opts)
 
         return mSocket
     }

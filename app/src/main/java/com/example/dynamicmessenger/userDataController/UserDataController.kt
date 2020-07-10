@@ -50,17 +50,6 @@ object SharedPreferencesManager {
         return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefCode, "")!!
     }
 
-    fun setReceiverID(context: Context, id: String) {
-        getSharedPreferences(context)
-            .edit()
-            .putString(SharedPrefConstants.sharedPrefReceiverID, id)
-            .apply()
-    }
-
-    fun getReceiverID(context: Context): String {
-        return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefReceiverID, "")!!
-    }
-
     fun isAddContacts(context: Context, isContacts: Boolean) {
         getSharedPreferences(context)
             .edit()
@@ -74,18 +63,6 @@ object SharedPreferencesManager {
 
     fun deleteUserAllInformation(context: Context) {
         getSharedPreferences(context).edit().clear().apply()
-    }
-
-    fun setReceiverAvatarUrl(context: Context, url: String?) {
-        if (url == null) return
-        getSharedPreferences(context)
-            .edit()
-            .putString(SharedPrefConstants.sharedPrefReceiverAvatar, url)
-            .apply()
-    }
-
-    fun getReceiverAvatarUrl(context: Context): String {
-        return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefReceiverAvatar, "") ?: ""
     }
 
 }

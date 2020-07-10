@@ -51,7 +51,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="300dp"
                 android:layout_marginEnd="32dp"
-                android:text="@string/congratulations_you_are_registered"
+                android:text="@string/congratulations"
                 android:textSize="30sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"

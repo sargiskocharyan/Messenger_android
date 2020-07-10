@@ -4,18 +4,16 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Toast
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat.getColor
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
@@ -41,8 +39,12 @@ class ChatRoomFragment : Fragment() {
         binding = FragmentChatRoomBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(ChatRoomViewModel::class.java)
         val myID = SharedConfigs.signedUser!!._id
-        val receiverID = SharedPreferencesManager.getReceiverID(requireContext())
-        val receiverAvatar = SharedPreferencesManager.getReceiverAvatarUrl(requireContext())
+//        val receiverID = SharedPreferencesManager.getReceiverID(requireContext())
+//        val receiverAvatar = SharedPreferencesManager.getReceiverAvatarUrl(requireContext())
+        val receiverInfo = HomeActivity.receiverChatInfo
+        val receiverID = HomeActivity.receiverID!!
+        Log.i("+++","receiver id $receiverID")
+        val receiverAvatar = receiverInfo?.recipientAvatarURL
         adapter = ChatRoomAdapter(requireContext(), myID)
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatRecyclerView.adapter = adapter
@@ -54,11 +56,14 @@ class ChatRoomFragment : Fragment() {
         //Toolbar
         setHasOptionsMenu(true)
         val toolbar: Toolbar = binding.chatRoomToolbar
-        configureTopNavBar(toolbar, "title")
+        configureTopNavBar(toolbar)
+        binding.userChatToolbarTitle.text = HomeActivity.receiverChatInfo?.username ?: ""
 
         viewModel.getAvatar(receiverAvatar) {
             adapter.receiverImage = it
         }
+
+        viewModel.getOpponentInfoFromNetwork(receiverID)
 
         val firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
         binding.chatRecyclerView.layoutManager = linearLayoutManager
@@ -101,7 +106,7 @@ class ChatRoomFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         socketManager.closeSocket()
-        SharedPreferencesManager.setReceiverAvatarUrl(requireContext(), "")
+//        SharedPreferencesManager.setReceiverAvatarUrl(requireContext(), "")
     }
 
     private fun updateRecyclerView(receiverID: String) {
@@ -118,9 +123,9 @@ class ChatRoomFragment : Fragment() {
         binding.chatRecyclerView.scrollToPosition(adapter.itemCount - 1)
     }
 
-    private fun configureTopNavBar(toolbar: Toolbar, title: String) {
+    private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.title = title
+        toolbar.title = ""
         toolbar.elevation = 10.0F
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
 //        toolbar.inflateMenu(R.menu.chat_top_bar)
@@ -129,7 +134,11 @@ class ChatRoomFragment : Fragment() {
             requireActivity().supportFragmentManager.popBackStack()
         }
         toolbar.setOnMenuItemClickListener {
-            Toast.makeText(requireContext(), "sexmir", Toast.LENGTH_SHORT).show()
+            activity?.supportFragmentManager
+                ?.beginTransaction()
+                ?.replace(R.id.fragmentContainer, OpponentInformationFragment())
+                ?.addToBackStack(null)
+                ?.commit()
             return@setOnMenuItemClickListener true
         }
     }

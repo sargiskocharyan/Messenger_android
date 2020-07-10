@@ -8,13 +8,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.authorization.ChatRoomApi
-import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
+import com.example.dynamicmessenger.network.ChatRoomApi
+import com.example.dynamicmessenger.network.GetUserInfoByIdApi
+import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 import com.example.dynamicmessenger.userDataController.database.DiskCache
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
-import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import kotlinx.coroutines.launch
 
 class ChatRoomViewModel(application: Application) : AndroidViewModel(application) {
@@ -51,6 +51,23 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
                     }
                 } catch (e: Exception) {
                     Log.i("+++exception", e.toString())
+                }
+            }
+        }
+    }
+
+    fun getOpponentInfoFromNetwork(receiverId: String?) {
+        viewModelScope.launch {
+            if (receiverId != null) {
+                try {
+                    val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, receiverId)
+                    if (response.isSuccessful) {
+                        HomeActivity.opponentUser = response.body()
+                    } else {
+                        Log.i("+++else", "getOpponentInfoFromNetwork $response")
+                    }
+                } catch (e: Exception) {
+                    Log.i("+++exception", "getOpponentInfoFromNetwork $e")
                 }
             }
         }

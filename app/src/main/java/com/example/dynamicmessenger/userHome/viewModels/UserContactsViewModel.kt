@@ -9,8 +9,8 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.authorization.ContactsApi
-import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
+import com.example.dynamicmessenger.network.ContactsApi
+import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.UserContacts
 import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase

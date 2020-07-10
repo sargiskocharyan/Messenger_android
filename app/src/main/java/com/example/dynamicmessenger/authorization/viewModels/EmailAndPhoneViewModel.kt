@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.databinding.FragmentEmailAndPhoneBinding
-import com.example.dynamicmessenger.network.authorization.MailExistApi
+import com.example.dynamicmessenger.network.MailExistApi
 import com.example.dynamicmessenger.network.authorization.models.EmailExistTask
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.utils.MyAlertMessage

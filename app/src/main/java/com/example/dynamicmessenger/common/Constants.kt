@@ -22,6 +22,9 @@ class ResponseUrls {
         const val users = "users"
         const val avatar = "avatar"
         const val saveAvatar = "users/me/avatar"
+        const val deleteUser = "users/me"
+        const val userInfoById = "user"
+
 //        users/me/avatar
 //        users/5ee76c90bfa0980017a39013/avatar
     }
@@ -54,7 +57,7 @@ class ValidationConstants {
     companion object {
         val NAME_REGEX = Pattern.compile("[a-zA-Z]{2,31}")
         val LAST_NAME_REGEX = Pattern.compile("[a-zA-Z]{2,31}")
-        val USERNAME_REGEX = Pattern.compile("^[a-zA-Z0-9](_(?!(\\.|_|-))|\\.(?!(_|-|\\.))|-(?!(\\.|_|-))|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]\$")
+        val USERNAME_REGEX = Pattern.compile("^[a-zA-Z0-9](_(?!(\\.|_|-))|\\.(?!(_|-|\\.))|-(?!(\\.|_|-))|[a-zA-Z0-9]){2,18}[a-zA-Z0-9]\$")
     }
 }
 

@@ -9,13 +9,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.authorization.UniversityApi
-import com.example.dynamicmessenger.network.authorization.UpdateUserApi
+import com.example.dynamicmessenger.network.UniversityApi
+import com.example.dynamicmessenger.network.UpdateUserApi
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.userDataController.database.SignedUser
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
-import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 

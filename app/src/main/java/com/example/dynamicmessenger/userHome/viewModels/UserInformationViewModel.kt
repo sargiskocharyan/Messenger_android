@@ -12,9 +12,9 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.AppLangKeys
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
-import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
-import com.example.dynamicmessenger.network.authorization.LogoutApi
-import com.example.dynamicmessenger.network.authorization.SaveAvatarApi
+import com.example.dynamicmessenger.network.LoadAvatarApi
+import com.example.dynamicmessenger.network.LogoutApi
+import com.example.dynamicmessenger.network.SaveAvatarApi
 import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch

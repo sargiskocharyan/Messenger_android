@@ -36,6 +36,11 @@ object SharedConfigs {
             }
         }
 
+    fun deleteAvatar() {
+        signedUser?.avatarURL = null
+        userRep.deleteAvatarFromRepository()
+    }
+
     var token: String = ""
         set(value) {
             field = value

@@ -11,11 +11,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.authorization.SearchContactsApi
+import com.example.dynamicmessenger.network.SearchContactsApi
 import com.example.dynamicmessenger.network.authorization.models.SearchTask
 import com.example.dynamicmessenger.network.authorization.models.UserContacts
-import com.example.dynamicmessenger.userDataController.SaveToken
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

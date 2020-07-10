@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
@@ -43,13 +44,8 @@ class UserChatFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater,
-                R.layout.fragment_user_chat,
-                container,false)
+        binding = FragmentUserChatBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(UserChatViewModel::class.java)
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
 
         //toolbar
         setHasOptionsMenu(true)
@@ -71,6 +67,7 @@ class UserChatFragment : Fragment() {
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatsRecyclerView.layoutManager = linearLayoutManager
 
+        //Socket
         socketManager = SocketManager(requireContext())
         try {
             mSocket = socketManager.getSocketInstance()!!
@@ -92,6 +89,7 @@ class UserChatFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        HomeActivity.receiverChatInfo = null
         activityJob.cancel()
     }
 
@@ -116,10 +114,8 @@ class UserChatFragment : Fragment() {
 
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.title = "Chats"
+        toolbar.title = ""
         toolbar.elevation = 10.0F
-//        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-//        toolbar.inflateMenu(R.menu.chat_top_bar)
         toolbar.background = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white))
         toolbar.setOnMenuItemClickListener {
             Toast.makeText(requireContext(), "sexmir", Toast.LENGTH_SHORT).show()

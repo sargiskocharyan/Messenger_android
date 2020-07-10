@@ -1,8 +1,6 @@
 package com.example.dynamicmessenger.userHome.adapters
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,14 +12,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.activitys.ChatRoomActivity
+import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.DownloadImageTask
-import com.example.dynamicmessenger.network.authorization.AddContactApi
+import com.example.dynamicmessenger.network.AddContactApi
 import com.example.dynamicmessenger.network.authorization.models.AddUserContactTask
 import com.example.dynamicmessenger.network.authorization.models.UserContacts
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
-import com.example.dynamicmessenger.userDataController.SaveToken
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
 import kotlinx.coroutines.launch
@@ -83,8 +79,9 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
                         }
                     }
                 } else {
-//                intent.putExtra(IntentExtra.receiverId, chat!!.id)
-                    SharedPreferencesManager.setReceiverID(context, userContact!!._id)
+//                    SharedPreferencesManager.setReceiverID(context, userContact!!._id)
+                    HomeActivity.userContactsInfo = userContact
+                    HomeActivity.receiverID = userContact!!._id
                     (context as AppCompatActivity?)!!.supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.fragmentContainer , ChatRoomFragment())

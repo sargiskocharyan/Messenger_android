@@ -3,31 +3,23 @@ package com.example.dynamicmessenger.userHome.adapters
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.activitys.ChatRoomActivity
-import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.DownloadImageTask
-import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
+import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.DiskCache
-import com.example.dynamicmessenger.userHome.fragments.UpdateUserInformationFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -144,8 +136,10 @@ class UserChatsAdapter(val context: Context, job: Job, val activity: Activity) :
                     .replace(R.id.fragmentContainer , ChatRoomFragment())
                     .addToBackStack(null)
                     .commit()
-                SharedPreferencesManager.setReceiverID(context, chat!!.id)
-                SharedPreferencesManager.setReceiverAvatarUrl(context, chat!!.recipientAvatarURL)
+                HomeActivity.receiverChatInfo = chat
+                HomeActivity.receiverID = chat!!.id
+//                SharedPreferencesManager.setReceiverID(context, chat!!.id)
+//                SharedPreferencesManager.setReceiverAvatarUrl(context, chat!!.recipientAvatarURL)
             }
         }
     }

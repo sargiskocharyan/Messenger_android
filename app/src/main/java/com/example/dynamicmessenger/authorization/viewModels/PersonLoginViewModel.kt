@@ -9,9 +9,9 @@ import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentPersonLoginBinding
-import com.example.dynamicmessenger.network.authorization.LoginApi
-import com.example.dynamicmessenger.network.authorization.MailExistApi
-import com.example.dynamicmessenger.network.authorization.RegistrationApi
+import com.example.dynamicmessenger.network.LoginApi
+import com.example.dynamicmessenger.network.MailExistApi
+import com.example.dynamicmessenger.network.RegistrationApi
 import com.example.dynamicmessenger.network.authorization.models.*
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.*
@@ -27,7 +27,7 @@ class PersonLoginViewModel(application: Application) : AndroidViewModel(applicat
         if (isExist) {
             binding.loginRegisterTextView.setText(R.string.login)
         } else {
-            binding.loginRegisterTextView.setText(R.string.registration)
+            binding.loginRegisterTextView.setText(R.string.register)
         }
     }
 

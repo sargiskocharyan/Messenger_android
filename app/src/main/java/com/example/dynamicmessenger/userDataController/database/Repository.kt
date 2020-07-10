@@ -13,6 +13,12 @@ class SignedUserRepository(private val signedUserDao: SignedUserDao) {
         signedUserDao.insert(signedUser)
     }
 
+    fun deleteAvatarFromRepository() {
+        val user = signedUserDao.getSignedUser()
+        user.avatarURL = null
+        insert(user)
+    }
+
     fun delete() {
         signedUserDao.deleteAll()
     }

@@ -6,8 +6,8 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.authorization.UniversityApi
-import com.example.dynamicmessenger.network.authorization.UpdateUserApi
+import com.example.dynamicmessenger.network.UniversityApi
+import com.example.dynamicmessenger.network.UpdateUserApi
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.userDataController.database.SignedUser

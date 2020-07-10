@@ -18,8 +18,8 @@ data class SignedUser(
     val _id: String,
     val name: String?,
     val lastname: String?,
-    val username: String,
-    val email: String,
+    val username: String?,
+    val email: String?,
     @Embedded
     val university: University?,
     var avatarURL: String?

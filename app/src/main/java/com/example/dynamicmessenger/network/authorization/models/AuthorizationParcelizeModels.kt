@@ -21,7 +21,7 @@ data class LoginProperty(val token: String, val user: User) : Parcelable
 //data class RegistrationProperty(val token: String, val user: User) : Parcelable
 
 @Parcelize
-data class UpdateUserProperty(val _id: String, val name: String, val lastname: String, val university: University, val email: String, val username: String, val avatarURL: String?) : Parcelable
+data class UpdateUserProperty(val _id: String, val name: String?, val lastname: String?, val university: University?, val email: String?, val username: String?, val avatarURL: String?) : Parcelable
 
 @Parcelize
 data class University(@PrimaryKey
@@ -42,13 +42,23 @@ data class University(@PrimaryKey
 data class UserTokenProperty(val tokenExists: Boolean) : Parcelable
 
 @Parcelize
-data class User(val name: String? = null, val lastname: String? = null, val _id: String, val email: String, val username: String, val university: University? = null, var avatarURL: String?) : Parcelable
+data class User(val name: String? = null, val lastname: String? = null, val _id: String, val email: String?, val username: String?, val university: University? = null, var avatarURL: String?) : Parcelable
 
 @Parcelize
-data class UserInfo(val name: String? = null, val lastname: String? = null, val _id: String, val email: String, val username: String) : Parcelable
+data class UserInfo(val gender: String?,
+                    val _id: String,
+                    val name: String?,
+                    val lastname: String?,
+                    val email: String?,
+                    val username: String?,
+                    val phoneNumber: String?,
+                    val address: String?,
+                    val birthday: String?,
+                    val info: String?,
+                    val avatarURL: String?) : Parcelable
 
 @Parcelize
-data class UserContacts(val  _id: String, val name: String?, val lastname: String?, val username: String, val avatarURL: String?) : Parcelable
+data class UserContacts(val  _id: String, val name: String?, val lastname: String?, val username: String?, val avatarURL: String?) : Parcelable
 
 @Parcelize
 data class Users(val users: List<UserContacts>) : Parcelable
@@ -60,7 +70,7 @@ data class Chat(
     val id: String,
     val name: String?,
     val lastname: String?,
-    val username: String,
+    val username: String?,
     @Embedded
     val message: Message?,
     val recipientAvatarURL: String?,

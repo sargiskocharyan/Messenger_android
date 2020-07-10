@@ -1,16 +1,18 @@
 package com.example.dynamicmessenger.userHome.fragments
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -60,8 +62,14 @@ class UpdateUserInformationFragment : Fragment() {
         binding.editTextLastname.text.append(SharedConfigs.signedUser?.lastname ?: "")
         binding.editTextUsername.text.append(SharedConfigs.signedUser?.username ?: "")
 //        (activity as AppCompatActivity?)!!.supportActionBar!!.hide() TODO
+        //Bottom bar
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.GONE
+
+        //Toolbar
+        setHasOptionsMenu(true)
+        val toolbar: Toolbar = binding.updateUserInformationToolbar
+        configureTopNavBar(toolbar)
 
         var allUniversity: List<UniversityProperty>
         viewModel.getAllUniversity(requireContext()){
@@ -105,10 +113,18 @@ class UpdateUserInformationFragment : Fragment() {
             }
         }
 
-        binding.updateUserBackImageView.setOnClickListener {
+        return binding.root
+    }
+
+    private fun configureTopNavBar(toolbar: Toolbar) {
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        toolbar.title = ""
+        toolbar.elevation = 10.0F
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+//        toolbar.inflateMenu(R.menu.chat_top_bar)
+        toolbar.background = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white))
+        toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
-
-        return binding.root
     }
 }

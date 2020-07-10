@@ -2,8 +2,6 @@ package com.example.dynamicmessenger.userChatRoom.adapters
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,14 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.network.DownloadImageTask
-import com.example.dynamicmessenger.network.authorization.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 class ChatRoomAdapter(val context: Context, private val myID: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

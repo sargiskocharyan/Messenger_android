@@ -17,13 +17,13 @@
             android:layout_gravity="center">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/textViewDeleteAccount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="300dp"
                 android:layout_marginEnd="32dp"
-                android:text="@string/registration"
+                android:text="@string/register"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"

@@ -1,4 +1,4 @@
-package com.example.dynamicmessenger.network.authorization
+package com.example.dynamicmessenger.network
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -275,6 +275,55 @@ object SaveAvatarApi {
     val retrofitService : JsonPlaceHolderSaveAvatarApi by lazy {
         retrofit.create(
             JsonPlaceHolderSaveAvatarApi::class.java
+        )
+    }
+}
+
+//Delete user
+interface JsonPlaceHolderDeleteUserApi {
+    @Headers(MyHeaders.accept)
+    @DELETE(ResponseUrls.deleteUser)
+    suspend fun deleteUserResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
+            Response<Void>
+}
+
+object DeleteUserApi {
+    val retrofitService : JsonPlaceHolderDeleteUserApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderDeleteUserApi::class.java
+        )
+    }
+}
+
+//Delete user avatar
+interface JsonPlaceHolderDeleteAvatarApi {
+    @Headers(MyHeaders.accept)
+    @DELETE(ResponseUrls.saveAvatar)
+    suspend fun deleteAvatarResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
+            Response<Void>
+}
+
+object DeleteAvatarApi {
+    val retrofitService : JsonPlaceHolderDeleteAvatarApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderDeleteAvatarApi::class.java
+        )
+    }
+}
+
+//User info by id
+interface JsonPlaceHolderGetUserInfoByIdApi {
+    @Headers(MyHeaders.accept)
+    @GET("${ResponseUrls.userInfoById}/{id}")
+    suspend fun getUserInfoByIdResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
+                                             @Path ("id") receiverId: String) :
+            Response<UserInfo>
+}
+
+object GetUserInfoByIdApi {
+    val retrofitService : JsonPlaceHolderGetUserInfoByIdApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderGetUserInfoByIdApi::class.java
         )
     }
 }
