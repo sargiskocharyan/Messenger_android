@@ -51,7 +51,7 @@
     <string name="close">Закрыть</string>
     <string name="select_gender">Пол</string>
     <string name="address">Адрес</string>
-    <string name="birth_date">Дата рождения(д/м/гг)</string>
+    <string name="birth_date">Дата рождения(м/д/гг)</string>
     <string name="add_contact">Добавить контакт</string>
     <string name="number">Телефонный номер</string>
     <string name="correct_birth_date">Правильная дата рождения</string>

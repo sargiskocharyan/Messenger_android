@@ -67,6 +67,8 @@ class UserChatFragment : Fragment() {
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatsRecyclerView.layoutManager = linearLayoutManager
 
+        HomeActivity.opponentUser = null
+
         //Socket
         socketManager = SocketManager(requireContext())
         try {

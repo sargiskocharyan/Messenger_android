@@ -1,6 +1,7 @@
 package com.example.dynamicmessenger.userHome.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,15 +16,17 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.AddContactApi
+import com.example.dynamicmessenger.network.GetUserInfoByIdApi
 import com.example.dynamicmessenger.network.authorization.models.AddUserContactTask
-import com.example.dynamicmessenger.network.authorization.models.UserContacts
+import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
+import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
 import kotlinx.coroutines.launch
 
 class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewModel): RecyclerView.Adapter<UserContactsAdapter.UserContactsViewHolder>() {
-      var data = listOf<UserContacts>()
+      var data = listOf<User>()
           set(value) {
               field = value
               notifyDataSetChanged()
@@ -55,7 +58,7 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
     }
 
     inner class UserContactsViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView){
-        var userContact: UserContacts? = null
+        var userContact: User? = null
         val username: TextView = itemView.findViewById(R.id.usernameTextView)
         val name: TextView = itemView.findViewById(R.id.userNameTextView)
         val lastname: TextView = itemView.findViewById(R.id.userLastnameTextView)
@@ -63,30 +66,41 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         init {
             itemView.setOnClickListener {
                 val task = AddUserContactTask(userContact!!._id)
-                if (SharedPreferencesManager.getIsAddContacts(context)) {
+                if (HomeActivity.isAddContacts == true) {
                     viewModel.viewModelScope.launch {
                         try {
                             val response = AddContactApi.retrofitService.addContactResponseAsync(
                                 SharedConfigs.token, task)
                             if (response.isSuccessful) {
                                 updateRecycleView()
-                                SharedPreferencesManager.isAddContacts(context, false)
+                                HomeActivity.isAddContacts = false
                             } else {
                                 Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
                             }
                         } catch (e: Exception) {
+                            Log.i("+++", "add contact exception $e")
                             Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } else {
-//                    SharedPreferencesManager.setReceiverID(context, userContact!!._id)
-                    HomeActivity.userContactsInfo = userContact
-                    HomeActivity.receiverID = userContact!!._id
-                    (context as AppCompatActivity?)!!.supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.fragmentContainer , ChatRoomFragment())
-                        .addToBackStack(null)
-                        .commit()
+                    viewModel.viewModelScope.launch {
+                        try {
+                            val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, userContact!!._id)
+                            if (response.isSuccessful) {
+                                HomeActivity.opponentUser = response.body()
+                                HomeActivity.receiverID = userContact!!._id
+                                (context as AppCompatActivity?)!!.supportFragmentManager
+                                    .beginTransaction()
+                                    .replace(R.id.fragmentContainer , OpponentInformationFragment())
+                                    .addToBackStack(null)
+                                    .commit()
+                            } else {
+                                Log.i("+++else", "getOpponentInfoFromNetwork $response")
+                            }
+                        } catch (e: Exception) {
+                            Log.i("+++exception", "getOpponentInfoFromNetwork $e")
+                        }
+                    }
                 }
             }
         }
@@ -101,7 +115,7 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
 
 }
 
-class UserContactsDiffUtilCallback(private val oldList: List<UserContacts>, private val newList: List<UserContacts>): DiffUtil.Callback() {
+class UserContactsDiffUtilCallback(private val oldList: List<User>, private val newList: List<User>): DiffUtil.Callback() {
     override fun getOldListSize() = oldList.size
     override fun getNewListSize() = newList.size
 

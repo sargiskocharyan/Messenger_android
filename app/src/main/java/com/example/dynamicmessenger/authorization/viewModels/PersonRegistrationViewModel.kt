@@ -29,7 +29,8 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
                         response.body()!!.lastname,
                         response.body()!!.username,
                         response.body()!!.email,
-                        response.body()!!.university,
+//                        response.body()!!.university,
+                        null, //TODO
                         response.body()!!.avatarURL)
                     Log.i("+++userResponse", user.toString())
                     SharedConfigs.signedUser = user

@@ -50,17 +50,6 @@ object SharedPreferencesManager {
         return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefCode, "")!!
     }
 
-    fun isAddContacts(context: Context, isContacts: Boolean) {
-        getSharedPreferences(context)
-            .edit()
-            .putBoolean(SharedPrefConstants.sharedPrefIsContacts, isContacts)
-            .apply()
-    }
-
-    fun getIsAddContacts(context: Context): Boolean {
-        return getSharedPreferences(context).getBoolean(SharedPrefConstants.sharedPrefIsContacts, false)
-    }
-
     fun deleteUserAllInformation(context: Context) {
         getSharedPreferences(context).edit().clear().apply()
     }

@@ -51,7 +51,7 @@
     <string name="close">Փակել</string>
     <string name="select_gender">Սեռ</string>
     <string name="address">Հասցե</string>
-    <string name="birth_date">Ծննդյան օր(օր/ամիս/ամսաթիվ)</string>
+    <string name="birth_date">Ծննդյան օր(ամիս/օր/ամսաթիվ)</string>
     <string name="add_contact">Ավելացնել կոնտակտ</string>
     <string name="number">Հեռախոսահամար</string>
     <string name="correct_birth_date">Ծննդյան ճիշտ ամսաթիվը</string>

@@ -123,7 +123,7 @@ interface JsonPlaceHolderUpdateUserApi {
     @POST(ResponseUrls.updateUser)
     suspend fun updateUserResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
                                 @Body updateUserTask: UpdateUserTask):
-            Response<UpdateUserProperty>
+            Response<User>
 }
 
 object UpdateUserApi {
@@ -167,7 +167,7 @@ interface JsonPlaceHolderContactsApi {
     @Headers(MyHeaders.accept)
     @GET(ResponseUrls.contacts)
     suspend fun contactsResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String):
-            Response<List<UserContacts>>
+            Response<List<User>>
 }
 
 object ContactsApi {
@@ -295,6 +295,22 @@ object DeleteUserApi {
     }
 }
 
+//Deactivate user
+interface JsonPlaceHolderDeactivateUserApi {
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.deactivateUser)
+    suspend fun deactivateUserResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
+            Response<Void>
+}
+
+object DeactivateUserApi {
+    val retrofitService : JsonPlaceHolderDeactivateUserApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderDeactivateUserApi::class.java
+        )
+    }
+}
+
 //Delete user avatar
 interface JsonPlaceHolderDeleteAvatarApi {
     @Headers(MyHeaders.accept)
@@ -317,7 +333,7 @@ interface JsonPlaceHolderGetUserInfoByIdApi {
     @GET("${ResponseUrls.userInfoById}/{id}")
     suspend fun getUserInfoByIdResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
                                              @Path ("id") receiverId: String) :
-            Response<UserInfo>
+            Response<User>
 }
 
 object GetUserInfoByIdApi {

@@ -18,9 +18,7 @@ import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.common.AppLangKeys
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
-import com.example.dynamicmessenger.network.DownloadImageTask
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.ToByteArray
@@ -51,7 +49,6 @@ class UserInformationFragment : Fragment() {
                 R.layout.fragment_user_information,
                 container, false
             )
-        val chatDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userChatDao()
         viewModel = ViewModelProvider(this).get(UserInformationViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -180,12 +177,6 @@ class UserInformationFragment : Fragment() {
             binding.languageImage.setImageResource(R.drawable.ic_armenia)
             LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
             requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this).commit()
-        }
-    }
-
-    private fun setAvatar() {
-        if (SharedConfigs.signedUser?.avatarURL != null) {
-            DownloadImageTask(binding.userProfileImageView).execute(SharedConfigs.signedUser!!.avatarURL)
         }
     }
 

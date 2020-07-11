@@ -15,8 +15,7 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.UserTokenVerifyApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
-import com.example.dynamicmessenger.network.authorization.models.UserContacts
-import com.example.dynamicmessenger.network.authorization.models.UserInfo
+import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
@@ -126,7 +125,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     companion object {
-        var opponentUser: UserInfo? = null
+        var opponentUser: User? = null
             set(value) {
                 field = value
                 Log.i("+++", "Opponent user set $value")
@@ -136,16 +135,15 @@ class HomeActivity : AppCompatActivity() {
                 field = value
                 Log.i("+++", "receiver Chat Info set $value")
             }
-        var userContactsInfo: UserContacts? = null
-            set(value) {
-                field = value
-                Log.i("+++", "receiver Chat Info set $value")
-            }
-
         var receiverID: String? = null
             set(value) {
                 field = value
                 Log.i("+++", "receiver id set $value")
+            }
+        var isAddContacts: Boolean? = null
+            set(value) {
+                field = value
+                Log.i("+++", "is Add Contacts set $value")
             }
     }
 }

@@ -69,8 +69,9 @@ class UserChatsAdapter(val context: Context, job: Job, val activity: Activity) :
         val timeInHours: String
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         format.timeZone = TimeZone.getTimeZone("UTC")
+        val chatTime = item.message?.createdAt ?: item.chatCreateDay
         try {
-            val date: Date = format.parse(item.message?.createdAt)!!
+            val date: Date = format.parse(chatTime)!!
             val currentDate: Date = Calendar.getInstance().time
             if ((currentDate.day == date.day) && (currentDate.month == date.month) && (currentDate.year == date.year)) {
                 val newFormat = SimpleDateFormat("HH:mm")
@@ -92,7 +93,6 @@ class UserChatsAdapter(val context: Context, job: Job, val activity: Activity) :
         holder.lastname.text = item.lastname
         holder.lastMessage.text = item.message?.text
         if (item.recipientAvatarURL != null) {
-//            DownloadImageTask(holder.chatUserImageView).execute(item.recipientAvatarURL)
             getAvatar(holder.chatUserImageView, item.recipientAvatarURL)
         } else  {
             holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
@@ -138,8 +138,6 @@ class UserChatsAdapter(val context: Context, job: Job, val activity: Activity) :
                     .commit()
                 HomeActivity.receiverChatInfo = chat
                 HomeActivity.receiverID = chat!!.id
-//                SharedPreferencesManager.setReceiverID(context, chat!!.id)
-//                SharedPreferencesManager.setReceiverAvatarUrl(context, chat!!.recipientAvatarURL)
             }
         }
     }

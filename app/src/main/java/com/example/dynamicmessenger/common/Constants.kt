@@ -23,6 +23,7 @@ class ResponseUrls {
         const val avatar = "avatar"
         const val saveAvatar = "users/me/avatar"
         const val deleteUser = "users/me"
+        const val deactivateUser = "deactivate/me"
         const val userInfoById = "user"
 
 //        users/me/avatar

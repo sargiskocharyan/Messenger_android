@@ -44,7 +44,8 @@ class PersonLoginViewModel(application: Application) : AndroidViewModel(applicat
                                                     response.body()!!.user.lastname,
                                                     response.body()!!.user.username,
                                                     response.body()!!.user.email,
-                                                    response.body()!!.user.university,
+//                                                    response.body()!!.user.university, TODO
+                            null,
                                                     response.body()!!.user.avatarURL)
                         SharedConfigs.signedUser = signedUSer
                         SharedConfigs.token = response.body()!!.token
@@ -68,7 +69,8 @@ class PersonLoginViewModel(application: Application) : AndroidViewModel(applicat
                                                         response.body()!!.user.lastname,
                                                         response.body()!!.user.username,
                                                         response.body()!!.user.email,
-                                                        response.body()!!.user.university,
+//                                                        response.body()!!.user.university,//TODO
+                                null,
                                                         response.body()!!.user.avatarURL)
                             SharedConfigs.signedUser = signedUSer
                             SharedConfigs.token = response.body()!!.token

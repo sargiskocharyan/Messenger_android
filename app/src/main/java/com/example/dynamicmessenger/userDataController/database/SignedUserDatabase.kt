@@ -6,12 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.dynamicmessenger.network.authorization.models.Chat
 
-@Database(entities = [SignedUser::class, UserToken::class, Chat::class], version = 1)
+@Database(entities = [SignedUser::class, UserToken::class], version = 1)
 //@TypeConverters(DateTypeConverter::class)
 abstract class SignedUserDatabase : RoomDatabase() {
     abstract fun signedUserDao(): SignedUserDao
     abstract fun userTokenDao(): UserTokenDao
-    abstract fun userChatDao(): UserChatDao
 
 
     companion object {

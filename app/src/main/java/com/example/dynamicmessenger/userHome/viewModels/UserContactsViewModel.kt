@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.ContactsApi
 import com.example.dynamicmessenger.network.LoadAvatarApi
-import com.example.dynamicmessenger.network.authorization.models.UserContacts
+import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
@@ -22,7 +22,7 @@ class UserContactsViewModel(application: Application) : AndroidViewModel(applica
     private val tokenRep = UserTokenRepository(tokenDao)
     private val diskLruCache = DiskCache.getInstance(application)
 
-    fun getUserContactsFromNetwork(context: Context?, closure: (List<UserContacts>) -> Unit) {
+    fun getUserContactsFromNetwork(context: Context?, closure: (List<User>) -> Unit) {
         viewModelScope.launch {
             try {
                 val response = ContactsApi.retrofitService.contactsResponseAsync(SharedConfigs.token)

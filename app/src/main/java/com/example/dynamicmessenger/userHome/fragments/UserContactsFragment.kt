@@ -13,9 +13,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.databinding.FragmentUserContactsBinding
 import com.example.dynamicmessenger.dialogs.ContactsSearchDialog
-import com.example.dynamicmessenger.network.authorization.models.UserContacts
+import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.adapters.UserContactsAdapter
 import com.example.dynamicmessenger.userHome.adapters.UserContactsDiffUtilCallback
@@ -47,7 +48,8 @@ class UserContactsFragment : Fragment() {
         binding.contactsRecyclerView.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.contactsRecyclerView.layoutManager = linearLayoutManager
-        SharedPreferencesManager.isAddContacts(requireContext(), false)
+
+        HomeActivity.isAddContacts = false
 
         //Toolbar
         setHasOptionsMenu(true)
@@ -75,7 +77,7 @@ class UserContactsFragment : Fragment() {
         }
     }
 
-    private fun updateRecycleView(adapter: UserContactsAdapter, data: List<UserContacts>) {
+    private fun updateRecycleView(adapter: UserContactsAdapter, data: List<User>) {
         val userChatDiffUtilCallback = UserContactsDiffUtilCallback(adapter.data, data)
         val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
         adapter.data = data
@@ -84,16 +86,14 @@ class UserContactsFragment : Fragment() {
 
     private fun configureTopNavBar(toolbar: Toolbar, adapter: UserContactsAdapter) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-//        toolbar.title = title
+        toolbar.title = ""
         toolbar.elevation = 10.0F
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-//        toolbar.inflateMenu(R.menu.chat_top_bar)
         toolbar.background = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white))
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
         toolbar.setOnMenuItemClickListener {
-            SharedPreferencesManager.isAddContacts(requireContext(), true)
             val contactSearchDialog = ContactsSearchDialog(coroutineScope) {myList ->
                 updateRecycleView(adapter, myList)
             }

@@ -1,15 +1,15 @@
 package com.example.dynamicmessenger.userHome.fragments
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -17,10 +17,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUpdateUserInformationBinding
+import com.example.dynamicmessenger.dialogs.DeactivateUserDialog
+import com.example.dynamicmessenger.dialogs.DeleteUserDialog
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
+import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UpdateUserInformationViewModel
 import com.example.dynamicmessenger.utils.Validations
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -61,7 +65,7 @@ class UpdateUserInformationFragment : Fragment() {
         binding.editTextName.text.append(SharedConfigs.signedUser?.name ?: "")
         binding.editTextLastname.text.append(SharedConfigs.signedUser?.lastname ?: "")
         binding.editTextUsername.text.append(SharedConfigs.signedUser?.username ?: "")
-//        (activity as AppCompatActivity?)!!.supportActionBar!!.hide() TODO
+
         //Bottom bar
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.GONE
@@ -97,10 +101,12 @@ class UpdateUserInformationFragment : Fragment() {
         }
 
         binding.continueButton.setOnClickListener {
+            val birthDate = binding.editTextBirthDate.text.toString()
             val name = binding.editTextName.text.toString()
             val lastname = binding.editTextLastname.text.toString()
             val username = binding.editTextUsername.text.toString()
-            val updateUserTask = UpdateUserTask(name, lastname, username, university)
+            val phoneNumber = binding.editTextPhoneNumber.text.toString()
+            val updateUserTask = UpdateUserTask(name, lastname, username, university, phoneNumber, null, null, null, birthDate)
             viewModel.updateUserNetwork(updateUserTask, context){closure ->
                 if (closure) {
                     val selectedFragment = UserInformationFragment()
@@ -111,6 +117,46 @@ class UpdateUserInformationFragment : Fragment() {
                         ?.commit()
                 }
             }
+        }
+
+        binding.textViewDeactivateAccount.setOnClickListener {
+            val deactivateUserAccountDialog = DeactivateUserDialog { userAnswer ->
+                if (userAnswer) {
+                    viewModel.deactivateUserAccount {
+                        if (it) {
+                            SharedPreferencesManager.deleteUserAllInformation(requireContext())
+                            SharedConfigs.deleteToken()
+                            SharedConfigs.deleteSignedUser()
+                            val intent = Intent(activity, MainActivity::class.java)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            startActivity(intent)
+                            (activity as Activity?)!!.overridePendingTransition(1, 1)
+                        }
+                    }
+                }
+            }
+            deactivateUserAccountDialog.show(requireActivity().supportFragmentManager, "Dialog")
+        }
+
+        binding.textViewDeleteAccount.setOnClickListener {
+            val deleteUserAccountDialog = DeleteUserDialog { userAnswer ->
+                if (userAnswer) {
+                    viewModel.deleteUserAccount {
+                        if (it) {
+                            SharedPreferencesManager.deleteUserAllInformation(requireContext())
+                            SharedConfigs.deleteToken()
+                            SharedConfigs.deleteSignedUser()
+                            val intent = Intent(activity, MainActivity::class.java)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            startActivity(intent)
+                            (activity as Activity?)!!.overridePendingTransition(1, 1)
+                        }
+                    }
+                }
+            }
+            deleteUserAccountDialog.show(requireActivity().supportFragmentManager, "Dialog")
         }
 
         return binding.root

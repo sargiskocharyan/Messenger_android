@@ -106,7 +106,6 @@ class ChatRoomFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         socketManager.closeSocket()
-//        SharedPreferencesManager.setReceiverAvatarUrl(requireContext(), "")
     }
 
     private fun updateRecyclerView(receiverID: String) {

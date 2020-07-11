@@ -30,14 +30,3 @@ data class UserToken(
     @PrimaryKey
     val token: String
 )
-
-@Entity(tableName = "user_chat")
-data class UserChat(
-    @PrimaryKey
-    val id: String,
-    val name: String?,
-    val lastname: String?,
-    val username: String,
-    @Embedded
-    val message: Message?,
-    val recipientAvatarURL: String?)

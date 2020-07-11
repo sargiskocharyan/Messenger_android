@@ -55,21 +55,30 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/addToContactsTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Add to contact"
                     app:layout_constraintBottom_toBottomOf="@+id/opponentProfileAvatarImageView"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.77"
+                    app:layout_constraintHorizontal_bias="0.6"
                     app:layout_constraintStart_toEndOf="@+id/opponentProfileAvatarImageView"
                     app:layout_constraintTop_toTopOf="@+id/opponentProfileAvatarImageView" />
+
+                <ImageView
+                    android:id="@+id/sendMessageImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_mail_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/addToContactsTextView"
+                    app:layout_constraintStart_toEndOf="@+id/addToContactsTextView"
+                    app:layout_constraintTop_toTopOf="@+id/addToContactsTextView" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="15dp">
 
@@ -158,56 +167,56 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
-                        android:text="Dacuke" />
+                        tools:text="Dacuke" />
 
                     <TextView
                         android:id="@+id/opponentInfoNameTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
-                        android:text="David" />
+                        tools:text="David" />
 
                     <TextView
                         android:id="@+id/opponentInfoLastNameTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
-                        android:text="Melikyan" />
+                        tools:text="Melikyan" />
 
                     <TextView
                         android:id="@+id/opponentInfoPhoneTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
-                        android:text="094 80 80 80 80" />
+                        tools:text="094 80 80 80 80" />
 
                     <TextView
                         android:id="@+id/opponentInfoEmailTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
-                        android:text="david.melikyan.1999@mail.ru" />
+                        tools:text="david.melikyan.1999@mail.ru" />
 
                     <TextView
                         android:id="@+id/opponentInfoGenderTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
-                        android:text="Male" />
+                        tools:text="Male" />
 
                     <TextView
                         android:id="@+id/opponentInfoBirthDateTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
-                        android:text="17.05.1999" />
+                        tools:text="17.05.1999" />
 
                     <TextView
                         android:id="@+id/opponentInfoAddressTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
-                        android:text="Vanadzor" />
+                        tools:text="Vanadzor" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
