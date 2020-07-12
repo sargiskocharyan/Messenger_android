@@ -34,7 +34,7 @@ import kotlinx.coroutines.Job
 
 class UserChatFragment : Fragment() {
     private lateinit var viewModel: UserChatViewModel
-    private lateinit var binding : FragmentUserChatBinding
+    private lateinit var binding: FragmentUserChatBinding
     private lateinit var socketManager: SocketManager
     private lateinit var mSocket: Socket
     private var activityJob = Job()
@@ -68,20 +68,21 @@ class UserChatFragment : Fragment() {
         binding.chatsRecyclerView.layoutManager = linearLayoutManager
 
         HomeActivity.opponentUser = null
+        HomeActivity.isAddContacts = null
 
         //Socket
         socketManager = SocketManager(requireContext())
         try {
             mSocket = socketManager.getSocketInstance()!!
-        } catch (e: Exception){
+        } catch (e: Exception) {
             Log.i("+++", e.toString())
         }
 
         mSocket.connect()
-        mSocket.on("message", socketManager.onMessageForAllChats(Activity()){
+        mSocket.on("message", socketManager.onMessageForAllChats(Activity()) {
             try {
                 if (it) updateRecyclerView(adapter)
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 Log.i("+++", e.toString())
             }
         })

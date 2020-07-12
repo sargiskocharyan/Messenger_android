@@ -36,16 +36,28 @@ class OpponentInformationFragment : Fragment() {
             binding.opponentProfileAvatarImageView.setImageBitmap(it)
         }
 
+        binding.addToContactsTextView.setOnClickListener {
+            viewModel.addUserToContacts {
+                if (it) {
+                    binding.addToContactsTextView.visibility = View.INVISIBLE
+                }
+            }
+        }
+
+        binding.sendMessageImageView.setOnClickListener {
+            HomeActivity.isAddContacts = null
+            (context as AppCompatActivity?)!!.supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, ChatRoomFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         configurePage()
+
 
         return binding.root
     }
-
-//    override fun onDestroyView() {
-//        super.onDestroyView()
-//
-//        HomeActivity.opponentUser = null
-//    }
 
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
@@ -71,5 +83,12 @@ class OpponentInformationFragment : Fragment() {
         binding.opponentInfoGenderTextView.text = opponentUser?.gender
         binding.opponentInfoBirthDateTextView.text = opponentUser?.birthday?.substring(0, 10)
         binding.opponentInfoAddressTextView.text = opponentUser?.address
+
+        if (HomeActivity.isAddContacts == false) {
+            binding.addToContactsTextView.visibility = View.INVISIBLE
+        } else if (HomeActivity.isAddContacts == null) {
+            binding.addToContactsTextView.visibility = View.INVISIBLE
+            binding.sendMessageImageView.visibility = View.INVISIBLE
+        }
     }
 }

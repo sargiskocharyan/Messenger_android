@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentPersonLoginBinding
 import com.example.dynamicmessenger.network.LoginApi
@@ -92,9 +93,9 @@ class PersonLoginViewModel(application: Application) : AndroidViewModel(applicat
                 val response = MailExistApi.retrofitService.isMailExistAsync(task)
                 binding.progressBar.visibility = View.INVISIBLE
                 if (response.isSuccessful) {
-                    SharedPreferencesManager.setUserMailExists(context, response.body()!!.mailExist)
-                    SharedPreferencesManager.setUserCode(context, response.body()!!.code)
-                    SharedPreferencesManager.setUserMail(context, task.email)
+                    MainActivity.userMailExists = response.body()!!.mailExist
+                    MainActivity.userCode = response.body()!!.code
+                    MainActivity.userMail = task.email
                     binding.verificationCode.setText(response.body()!!.code)
                 } else {
                     MyAlertMessage.showAlertDialog(context, "Try again")

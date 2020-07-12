@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.authorization.viewModels.PersonLoginViewModel
 import com.example.dynamicmessenger.databinding.FragmentPersonLoginBinding
 import com.example.dynamicmessenger.network.authorization.models.EmailExistTask
@@ -37,16 +38,12 @@ class PersonLoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 //        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-        val binding : FragmentPersonLoginBinding =
-                        DataBindingUtil.inflate(inflater,
-                            R.layout.fragment_person_login,
-                            container, false)
+        val binding: FragmentPersonLoginBinding =
+            FragmentPersonLoginBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(PersonLoginViewModel::class.java)
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
-        val isEmailExists = SharedPreferencesManager.getUserMailExists(requireContext())
-        val personEmail = SharedPreferencesManager.getUserMail(requireContext())
-        val personCode = SharedPreferencesManager.getUserCode(requireContext())
+        val isEmailExists = MainActivity.userMailExists ?: false
+        val personEmail = MainActivity.userMail ?: ""
+        val personCode = MainActivity.userCode
 
         binding.verificationCode.setText(personCode)
 
@@ -84,7 +81,7 @@ class PersonLoginFragment : Fragment() {
         binding.button.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
             val loginTask = LoginTask(personEmail, binding.verificationCode.text.toString())
-            viewModel.loginNetwork(it, isEmailExists, loginTask, binding){closure ->
+            viewModel.loginNetwork(it, isEmailExists, loginTask, binding) { closure ->
                 if (closure) {
                     val intent = Intent(requireActivity(), HomeActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -97,7 +94,7 @@ class PersonLoginFragment : Fragment() {
 
         binding.resendVerificationCodeTextView.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
-            viewModel.emailNetwork(EmailExistTask(personEmail),  binding)
+            viewModel.emailNetwork(EmailExistTask(personEmail), binding)
         }
         return binding.root
     }

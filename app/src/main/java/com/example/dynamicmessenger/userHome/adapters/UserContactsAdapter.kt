@@ -65,51 +65,25 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         val contactsUserImageView: ImageView = itemView.findViewById(R.id.contactsUserImageView)
         init {
             itemView.setOnClickListener {
-                val task = AddUserContactTask(userContact!!._id)
-                if (HomeActivity.isAddContacts == true) {
-                    viewModel.viewModelScope.launch {
-                        try {
-                            val response = AddContactApi.retrofitService.addContactResponseAsync(
-                                SharedConfigs.token, task)
-                            if (response.isSuccessful) {
-                                updateRecycleView()
-                                HomeActivity.isAddContacts = false
-                            } else {
-                                Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
-                            }
-                        } catch (e: Exception) {
-                            Log.i("+++", "add contact exception $e")
-                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
+                viewModel.viewModelScope.launch {
+                    try {
+                        val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, userContact!!._id)
+                        if (response.isSuccessful) {
+                            HomeActivity.opponentUser = response.body()
+                            HomeActivity.receiverID = userContact!!._id
+                            (context as AppCompatActivity?)!!.supportFragmentManager
+                                .beginTransaction()
+                                .replace(R.id.fragmentContainer , OpponentInformationFragment())
+                                .addToBackStack(null)
+                                .commit()
+                        } else {
+                            Log.i("+++else", "getOpponentInfoFromNetwork $response")
                         }
-                    }
-                } else {
-                    viewModel.viewModelScope.launch {
-                        try {
-                            val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, userContact!!._id)
-                            if (response.isSuccessful) {
-                                HomeActivity.opponentUser = response.body()
-                                HomeActivity.receiverID = userContact!!._id
-                                (context as AppCompatActivity?)!!.supportFragmentManager
-                                    .beginTransaction()
-                                    .replace(R.id.fragmentContainer , OpponentInformationFragment())
-                                    .addToBackStack(null)
-                                    .commit()
-                            } else {
-                                Log.i("+++else", "getOpponentInfoFromNetwork $response")
-                            }
-                        } catch (e: Exception) {
-                            Log.i("+++exception", "getOpponentInfoFromNetwork $e")
-                        }
+                    } catch (e: Exception) {
+                        Log.i("+++exception", "getOpponentInfoFromNetwork $e")
                     }
                 }
             }
-        }
-    }
-
-    private fun updateRecycleView() {
-        viewModel.getUserContactsFromNetwork(context) {
-            data = it
-            notifyDataSetChanged()
         }
     }
 

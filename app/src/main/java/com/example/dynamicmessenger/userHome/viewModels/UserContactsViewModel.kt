@@ -18,8 +18,6 @@ import com.example.dynamicmessenger.userDataController.database.UserTokenReposit
 import kotlinx.coroutines.launch
 
 class UserContactsViewModel(application: Application) : AndroidViewModel(application) {
-    private val tokenDao = SignedUserDatabase.getUserDatabase(application)!!.userTokenDao()
-    private val tokenRep = UserTokenRepository(tokenDao)
     private val diskLruCache = DiskCache.getInstance(application)
 
     fun getUserContactsFromNetwork(context: Context?, closure: (List<User>) -> Unit) {

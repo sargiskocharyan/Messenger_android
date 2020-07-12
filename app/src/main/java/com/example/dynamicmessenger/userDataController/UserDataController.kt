@@ -3,11 +3,7 @@ package com.example.dynamicmessenger.userDataController
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
-import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.common.SharedPrefConstants
-import com.example.dynamicmessenger.network.authorization.models.User
-import com.example.dynamicmessenger.userDataController.database.SignedUser
-import com.google.gson.Gson
 import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -15,39 +11,6 @@ import javax.crypto.spec.SecretKeySpec
 object SharedPreferencesManager {
     private fun getSharedPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
-    }
-
-    fun setUserMailExists(context: Context, exists: Boolean) {
-        getSharedPreferences(context)
-            .edit()
-            .putBoolean(SharedPrefConstants.sharedPrefIsMailExist, exists)
-            .apply()
-    }
-
-    fun getUserMailExists(context: Context): Boolean {
-        return getSharedPreferences(context).getBoolean(SharedPrefConstants.sharedPrefIsMailExist, false)
-    }
-
-    fun setUserMail(context: Context, mail: String) {
-        getSharedPreferences(context)
-            .edit()
-            .putString(SharedPrefConstants.sharedPrefMail, mail)
-            .apply()
-    }
-
-    fun getUserMail(context: Context): String {
-        return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefMail, "")!!
-    }
-
-    fun setUserCode(context: Context, code: String) {
-        getSharedPreferences(context)
-            .edit()
-            .putString(SharedPrefConstants.sharedPrefCode, code)
-            .apply()
-    }
-
-    fun getUserCode(context: Context): String {
-        return getSharedPreferences(context).getString(SharedPrefConstants.sharedPrefCode, "")!!
     }
 
     fun deleteUserAllInformation(context: Context) {

@@ -24,13 +24,9 @@ class FinishRegistrationFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 //        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-        val binding : FragmentFinishRegistrationBinding =
-                        DataBindingUtil.inflate(inflater,
-                            R.layout.fragment_finish_registration,
-                            container, false)
+        val binding: FragmentFinishRegistrationBinding =
+            FragmentFinishRegistrationBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(FinishRegistrationViewModel::class.java)
-        binding.lifecycleOwner = this
-        binding.finishRegistrationViewModel = viewModel
 
         binding.nextButton.setOnClickListener {
             val intent = Intent(activity, HomeActivity::class.java)
