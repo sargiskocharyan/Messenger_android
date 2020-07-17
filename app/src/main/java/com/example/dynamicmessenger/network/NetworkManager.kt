@@ -53,10 +53,6 @@ private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()
 
-private val gson = GsonBuilder()
-    .setLenient()
-    .create()
-
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
 //    .addConverterFactory(LENIENT_FACTORY.create(moshi = moshi))
@@ -199,9 +195,9 @@ object SearchContactsApi {
 interface JsonPlaceHolderAddContactApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.addContact)
+    //TODO: addContact
     suspend fun addContactResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                                        @Body userID : AddUserContactTask) :
-            Response<Void>
+                                        @Body userID : AddUserContactTask) : Response<Void>
 }
 
 object AddContactApi {
@@ -361,7 +357,7 @@ interface JsonPlaceHolderLoadAvatarApi {
 
 object LoadAvatarApi {
     val retrofitService : JsonPlaceHolderLoadAvatarApi by lazy {
-        retrofitImage.create(
+        retrofit.create(
             JsonPlaceHolderLoadAvatarApi::class.java
         )
     }

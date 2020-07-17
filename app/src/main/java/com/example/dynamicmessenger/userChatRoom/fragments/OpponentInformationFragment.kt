@@ -73,6 +73,7 @@ class OpponentInformationFragment : Fragment() {
 
     private fun configurePage() {
         val opponentUser = HomeActivity.opponentUser
+        //TODO:binding
         binding.opponentInformationToolbarTextView.text = opponentUser?.username
         binding.opponentInfo.text = opponentUser?.info
         binding.opponentInfoUsernameTextView.text = opponentUser?.username

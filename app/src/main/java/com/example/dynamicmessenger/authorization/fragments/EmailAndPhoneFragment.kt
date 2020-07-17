@@ -36,6 +36,7 @@ class EmailAndPhoneFragment : Fragment() {
             FragmentEmailAndPhoneBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(EmailAndPhoneViewModel::class.java)
 
+        //TODO: Binding adapters
         binding.loginRegisterEmailEditText.addTextChangedListener(object : TextWatcher {
             @SuppressLint("ResourceAsColor")
             override fun afterTextChanged(s: Editable?) {

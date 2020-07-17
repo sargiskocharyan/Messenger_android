@@ -17,11 +17,13 @@ import kotlinx.coroutines.launch
 
 class EmailAndPhoneViewModel(application: Application) : AndroidViewModel(application) {
 
+    //TODO:rename
     fun emailNetwork(view: View, task: EmailExistTask, context: Context?, binding: FragmentEmailAndPhoneBinding) {
         viewModelScope.launch {
             try {
                 val response = MailExistApi.retrofitService.isMailExistAsync(task)
                 if (response.isSuccessful) {
+                    //TODO: set LiveData
                     MainActivity.userMailExists = response.body()!!.mailExist
                     MainActivity.userCode = response.body()!!.code
                     MainActivity.userMail = task.email

@@ -1,35 +1,39 @@
 package com.example.dynamicmessenger.userHome.fragments
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
-import com.example.dynamicmessenger.userDataController.database.SignedUserRepository
-import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
+import com.example.dynamicmessenger.activitys.MainActivity
+import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
+import com.example.dynamicmessenger.databinding.FragmentUserCallBinding
+import com.example.dynamicmessenger.userCalls.CallRoomActivity
 
 
 class UserCallFragment : Fragment() {
+
+    private lateinit var binding: FragmentUserCallBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-//        val userDao = SignedUserDatabase.getUserDatabase(requireContext())!!.signedUserDao()
-//        val userRep = SignedUserRepository(userDao)
-//        val tokenDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userTokenDao()
-//        val tokenRep = UserTokenRepository(tokenDao)
-//        Log.i("+++token", tokenRep.getToken())
-//        Log.i("+++SharedConfigsToken", SharedConfigs.token)
-//        Log.i("+++SharedConfigs", SharedConfigs.signedUser.toString())
-//        Log.i("+++userRepo", userRep.signedUser.toString())
+        binding = DataBindingUtil.inflate(inflater,
+            R.layout.fragment_user_call,
+            container,false)
 
-        return inflater.inflate(R.layout.fragment_user_call, container, false)
+        binding.goToCallActivityButton.setOnClickListener {
+            val intent = Intent(activity, CallRoomActivity::class.java)
+            startActivity(intent)
+            (activity as Activity?)!!.overridePendingTransition(1, 1)
+        }
+
+        return binding.root
     }
 
 }

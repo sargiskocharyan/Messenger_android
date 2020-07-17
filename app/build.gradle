@@ -38,6 +38,15 @@ android {
         exclude 'META-INF/atomicfu.kotlin_module'
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
     allprojects {
         repositories {
             google()
@@ -66,7 +75,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.google.firebase:firebase-analytics:17.4.3'
-//    implementation 'com.google.android.material:material:1.1.0'
     //ViewModel and LiveData
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 //    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
@@ -101,4 +109,6 @@ dependencies {
     kapt 'android.arch.persistence.room:compiler:1.1.1'
 //    kapt 'androidx.room:room-compiler:2.2.5'
     implementation 'com.jakewharton:disklrucache:2.0.2'
+    //Web rtc
+    implementation 'org.webrtc:google-webrtc:1.0.30039'
 }

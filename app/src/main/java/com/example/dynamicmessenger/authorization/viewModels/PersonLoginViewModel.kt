@@ -40,6 +40,7 @@ class PersonLoginViewModel(application: Application) : AndroidViewModel(applicat
                     val response = LoginApi.retrofitService.loginResponseAsync(task)
                     if (response.isSuccessful) {
                         binding.progressBar.visibility = View.INVISIBLE
+                        //TODO:Use GsonFactory or Moshi?
                         val signedUSer = SignedUser(response.body()!!.user._id,
                                                     response.body()!!.user.name,
                                                     response.body()!!.user.lastname,

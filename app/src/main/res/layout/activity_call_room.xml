@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/activity_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="com.example.dynamicmessenger.userCalls.CallRoomActivity">
+
+
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/remoteView"
+            android:layout_width="match_parent"
+            android:layout_height="585dp"
+            android:visibility="gone" />
+
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/localView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom|end" />
+
+
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/end_call"
+            android:text="Hangup" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/call_yelena"
+            android:text="CALL Yelena" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/call_erik"
+            android:text="CALL Erik" />
+    </LinearLayout>
+</FrameLayout>

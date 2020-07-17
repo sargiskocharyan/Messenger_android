@@ -17,8 +17,6 @@ import com.example.dynamicmessenger.network.UserTokenVerifyApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
-import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.userHome.fragments.*
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.MyAlertMessage
@@ -40,8 +38,6 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val tokenDao = SignedUserDatabase.getUserDatabase(this)!!.userTokenDao()
-        val userRep = UserTokenRepository(tokenDao)
         setContentView(R.layout.activity_home)
 //        this.supportActionBar!!.hide()  TODO
         val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
@@ -49,11 +45,13 @@ class HomeActivity : AppCompatActivity() {
         val context = this
         if (SharedConfigs.token == "") tokenCheck(context, SharedConfigs.token)
 
-        socketManager = SocketManager(this)
+        //socket
+        socketManager = SocketManager
         try {
             mSocket = socketManager.getSocketInstance()!!
         } catch (e: Exception){
-            Log.i("+++", e.toString())
+            //TODO: Use TAGS
+            Log.e("+++", "HomeActivity Socket $e")
         }
         mSocket.connect()
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

@@ -34,9 +34,6 @@
             android:id="@+id/action_personLoginFragment_to_personRegistrationFragment"
             app:destination="@id/personRegistrationFragment"
             app:enterAnim="@android:anim/fade_in" />
-        <action
-            android:id="@+id/action_personLoginFragment_to_finishRegistrationFragment"
-            app:destination="@id/finishRegistrationFragment" />
     </fragment>
     <fragment
         android:id="@+id/finishRegistrationFragment"

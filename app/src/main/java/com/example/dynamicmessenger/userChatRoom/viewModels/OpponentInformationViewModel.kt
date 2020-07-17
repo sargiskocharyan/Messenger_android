@@ -53,12 +53,11 @@ class OpponentInformationViewModel(application: Application) : AndroidViewModel(
                     AddContactApi.retrofitService.addContactResponseAsync(SharedConfigs.token, task)
                 if (response.isSuccessful) {
                     HomeActivity.isAddContacts = false
-                    Toast.makeText(context, "User added in your contacts", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(context, "User added in your contacts", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
                 }
+                //TODO:Use LiveData
                 closure(true)
             } catch (e: Exception) {
                 Log.i("+++", "add contact exception $e")

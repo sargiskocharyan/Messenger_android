@@ -20,7 +20,6 @@ import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomDiffUtilCallback
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.github.nkzawa.socketio.client.Socket
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -72,14 +71,14 @@ class ChatRoomFragment : Fragment() {
         binding.root.setHasTransientState(true)
 
         //socket
-        socketManager = SocketManager(requireContext())
+        socketManager = SocketManager
 
         try {
             mSocket = socketManager.getSocketInstance()!!
         } catch (e: Exception) {
-            Log.i("+++", e.toString())
+            Log.i("+++", "ChatRoomFragment Socket $e")
         }
-        mSocket.connect()
+//        mSocket.connect()
         mSocket.on("message", socketManager.onMessage(adapter, receiverID, activity))
         binding.sendMessageButton.setOnClickListener {
             socketManager.sendMessage(receiverID, binding.sendMessageEditText)
@@ -103,10 +102,10 @@ class ChatRoomFragment : Fragment() {
         super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        socketManager.closeSocket()
-    }
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        socketManager.closeSocket()
+//    }
 
     private fun updateRecyclerView(receiverID: String) {
         viewModel.getMessagesFromNetwork(requireContext(), receiverID) {

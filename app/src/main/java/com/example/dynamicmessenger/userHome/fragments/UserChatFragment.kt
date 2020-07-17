@@ -9,11 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,8 +19,6 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
-import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
-import com.example.dynamicmessenger.userDataController.database.*
 import com.example.dynamicmessenger.userHome.adapters.UserChatsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserChatViewModel
 import com.github.nkzawa.socketio.client.Socket
@@ -71,19 +67,19 @@ class UserChatFragment : Fragment() {
         HomeActivity.isAddContacts = null
 
         //Socket
-        socketManager = SocketManager(requireContext())
+        socketManager = SocketManager
         try {
             mSocket = socketManager.getSocketInstance()!!
         } catch (e: Exception) {
-            Log.i("+++", e.toString())
+            Log.i("+++", "UserChatFragment socket $e")
         }
 
-        mSocket.connect()
+//        mSocket.connect()
         mSocket.on("message", socketManager.onMessageForAllChats(Activity()) {
             try {
                 if (it) updateRecyclerView(adapter)
             } catch (e: Exception) {
-                Log.i("+++", e.toString())
+                Log.i("+++", "UserChatFragment socket event message $e")
             }
         })
 

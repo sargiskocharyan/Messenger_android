@@ -11,8 +11,6 @@ import com.example.dynamicmessenger.network.*
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.userDataController.database.SignedUser
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
-import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 

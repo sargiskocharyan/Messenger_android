@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this,
             R.layout.activity_main
         )
+        //TODO: binding adapter
         changeDarkMode()
         val tokenDao = SignedUserDatabase.getUserDatabase(application)!!.userTokenDao()
         val tokenRep = UserTokenRepository(tokenDao)
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //TODO: move to viewModel as LiveData  Share data between fragments
     companion object {
         var userMailExists: Boolean? = null
         var userCode: String? = null

@@ -1,17 +1,15 @@
 package com.example.dynamicmessenger.network.chatRooms
 
 import android.app.Activity
-import android.content.Context
 import android.util.Log
 import android.widget.EditText
 import androidx.recyclerview.widget.DiffUtil
 import com.example.dynamicmessenger.common.ResponseUrls
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 import com.example.dynamicmessenger.network.authorization.models.Message
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomDiffUtilCallback
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
-import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
@@ -20,19 +18,33 @@ import org.json.JSONException
 import org.json.JSONObject
 
 
-class SocketManager(val context: Context) {
-    private val tokenDao = SignedUserDatabase.getUserDatabase(context)!!.userTokenDao()
-    private val tokenRep = UserTokenRepository(tokenDao)
+object SocketManager {
     private var mSocket: Socket? = null
+    private var ErosSocket: Socket? = null
 
     fun getSocketInstance(): Socket? {
-        val opts =
-            IO.Options()
+        if (mSocket == null) {
+            Log.i("+++", "socket@ taza sarqvec")
+            val opts =
+                IO.Options()
             opts.forceNew = true
             opts.reconnection = false
-        mSocket = IO.socket(ResponseUrls.herokuIPForSocket + "?token=" + tokenRep.getToken(), opts)
-
+            mSocket = IO.socket(ResponseUrls.herokuIPForSocket + "?token=" + SharedConfigs.token, opts)
+//            mSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + SharedConfigs.token, opts)
+        }
         return mSocket
+    }
+
+    fun getErosSocketInstance(): Socket? {
+        if (ErosSocket == null) {
+            Log.i("+++", "Eroi socket@ taza sarqvec")
+            val opts =
+                IO.Options()
+            opts.forceNew = true
+            opts.reconnection = false
+            ErosSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + SharedConfigs.token, opts)
+        }
+        return ErosSocket
     }
 
     private fun deleteSocket() {
@@ -46,12 +58,10 @@ class SocketManager(val context: Context) {
         deleteSocket()
     }
 
-    fun sendMessage(receiverID: String, text: EditText) {
-        mSocket?.emit("sendMessage" , text.text.toString() , receiverID)
-        text.text.clear()
+    fun sendMessage(receiverID: String, editText: EditText) {
+        mSocket?.emit("sendMessage" , editText.text.toString() , receiverID)
+        editText.text.clear()
     }
-
-
 
     fun onMessage(adapter: ChatRoomAdapter, chatID: String, activity: Activity?): Emitter.Listener {
         return Emitter.Listener { args ->
@@ -70,7 +80,7 @@ class SocketManager(val context: Context) {
                         authorDiffResult.dispatchUpdatesTo(adapter)
                     }
                 } catch (e: JSONException) {
-                    Log.i("+++", e.toString())
+                    Log.i("+++", "onMessage $e")
                     return@Runnable
                 }
             })
@@ -83,7 +93,7 @@ class SocketManager(val context: Context) {
                 try {
                     closure(true)
                 } catch (e: JSONException) {
-                    Log.i("+++", e.toString())
+                    Log.i("+++", "onMessageForAllChats $e")
                     return@Runnable
                 }
             })
@@ -100,7 +110,7 @@ class SocketManager(val context: Context) {
                     val message = ChatRoom(gsonMessage.sender,gsonMessage.text,gsonMessage.reciever)
                     closure(message)
                 } catch (e: JSONException) {
-                    Log.i("+++", e.toString())
+                    Log.i("+++", "onMessageForNotification $e")
                     return@Runnable
                 }
             })
