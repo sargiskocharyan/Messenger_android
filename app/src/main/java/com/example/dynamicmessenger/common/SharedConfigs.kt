@@ -2,50 +2,80 @@ package com.example.dynamicmessenger.common
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.dynamicmessenger.network.authorization.models.User
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import android.util.Log
+import com.example.dynamicmessenger.userDataController.database.*
 import java.util.*
 
 
 object SharedConfigs {
     private lateinit var sharedPrefs: SharedPreferences
-    private lateinit var context: Context
+    lateinit var myContext: Context
+    private lateinit var userDao: SignedUserDao
+    private lateinit var userRep: SignedUserRepository
+    private lateinit var tokenDao: UserTokenDao
+    private lateinit var tokenRep: UserTokenRepository
     fun init(context: Context) {
-        this.context = context
+        this.myContext = context
+        userDao = SignedUserDatabase.getUserDatabase(context)!!.signedUserDao()
+        tokenDao = SignedUserDatabase.getUserDatabase(context)!!.userTokenDao()
+        userRep = SignedUserRepository(userDao)
+        tokenRep = UserTokenRepository(tokenDao)
+        signedUser = userRep.signedUser
+        token = tokenRep.getToken()
         sharedPrefs = context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
+        appLang = setLang()
     }
-    var shared = SharedConfigs
 
-    var signedUser: User? = null
-//        get() {
-//            return SharedPreferencesManager.loadUserObject(context)
-//        }
-//        set(value) {
-//            SharedPreferencesManager.saveUserObject(context, value!!)
-//        }
-
-    var appLang: AppLangKeys
-        get() {
-            return (if (getAppLanguage() == null || getAppLanguage() == "") {
-                AppLangKeys.fromValue(Locale.getDefault().language)
-            } else {
-                AppLangKeys.valueOf(getAppLanguage()!!)
-            })
-        }
+    var signedUser: SignedUser? = null
         set(value) {
+            if (value != null) {
+                field = value
+                Log.i("+++userInsertIF", value.toString())
+                userRep.insert(value)
+//                Log.i("+++userInsertrep", userRep.signedUser.toString())
+            }
+        }
+
+    fun deleteAvatar() {
+        signedUser?.avatarURL = null
+        userRep.deleteAvatarFromRepository()
+    }
+
+    var token: String = ""
+        set(value) {
+            field = value
+            tokenRep.insert(value)
+        }
+
+    var appLang: AppLangKeys = AppLangKeys.EN
+        set(value) {
+            field = value
             setAppLanguage(value.name)
         }
 
 
-    fun setLang(key: String) {
-        //1 set key to appLang
-        // 2.  save in shared preferences
+    private fun setLang(): AppLangKeys {
+        return (if (getAppLanguage() == null || getAppLanguage() == "") {
+            AppLangKeys.fromValue(Locale.getDefault().language)
+        } else {
+            AppLangKeys.valueOf(getAppLanguage()!!)
+        })
     }
 //    var appMode: AppMode = when (getDarkMode()) {
 //        true -> AppMode.dark
 //        else -> AppMode.light
 //    }
 //
+    fun deleteSignedUser() {
+        signedUser = null
+        userRep.delete()
+    }
+
+    fun deleteToken() {
+        token = ""
+        tokenRep.delete()
+    }
+
     fun setDarkMode(enabled: Boolean) {
         sharedPrefs
             .edit()

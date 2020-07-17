@@ -1,6 +1,7 @@
 package com.example.dynamicmessenger.userHome.viewModels
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 
-class UserCallViewModel : ViewModel() {
+class UserCallViewModel(application: Application) : AndroidViewModel(application) {
 }

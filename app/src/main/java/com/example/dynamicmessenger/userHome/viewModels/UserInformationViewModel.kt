@@ -1,23 +1,26 @@
 package com.example.dynamicmessenger.userHome.viewModels
 
+import android.app.Application
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Log
+import android.view.View
 import android.widget.Toast
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.AppLangKeys
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.authorization.LogoutApi
-import com.example.dynamicmessenger.network.authorization.SaveAvatarApi
-import com.example.dynamicmessenger.userDataController.SaveToken
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
+import com.example.dynamicmessenger.network.LoadAvatarApi
+import com.example.dynamicmessenger.network.LogoutApi
+import com.example.dynamicmessenger.network.SaveAvatarApi
+import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 
-class UserInformationViewModel : ViewModel() {
+class UserInformationViewModel(application: Application) : AndroidViewModel(application) {
     private val _username = MutableLiveData<String>()
     val username: LiveData<String> get() = _username
 
@@ -30,35 +33,41 @@ class UserInformationViewModel : ViewModel() {
     private val _lastName = MutableLiveData<String>()
     val lastName: LiveData<String> get() = _lastName
 
+    private val diskLruCache = DiskCache.getInstance(application)
+
     init {
         setUserProperty()
     }
 
-    fun saveUserAvatarFromNetwork(context: Context?, avatar: MultipartBody.Part) {
-        val myEncryptedToken = SharedPreferencesManager.getUserToken(context!!)
-        val myToken = SaveToken.decrypt(myEncryptedToken)
+    fun saveUserAvatarFromNetwork(context: Context?, avatar: MultipartBody.Part, binding: FragmentUserInformationBinding) {
+        binding.imageUploadProgressBar.visibility = View.VISIBLE
         viewModelScope.launch {
             try {
-                val response = SaveAvatarApi.retrofitService.saveAvatarResponseAsync(myToken!!, avatar)
+                val response = SaveAvatarApi.retrofitService.saveAvatarResponseAsync(SharedConfigs.token, avatar)
                 if (response.isSuccessful) {
+                    val user = SharedConfigs.signedUser
+                    user!!.avatarURL = response.body()!!.string()
+                    SharedConfigs.signedUser = user
                     Toast.makeText(context, "Avatar uploaded", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(context, "getUserAvatarFromNetwork else ", Toast.LENGTH_SHORT).show()
                 }
+                binding.imageUploadProgressBar.visibility = View.INVISIBLE
             } catch (e: Exception) {
+                binding.imageUploadProgressBar.visibility = View.INVISIBLE
                 Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     fun logoutNetwork(token: String?, context: Context?, closure: (Boolean) -> Unit) {
-        if (token == null) {
+        if (token == null || token == "") {
             closure(true)
             return
         }
         viewModelScope.launch {
             try {
-                val response = LogoutApi.retrofitService.logoutResponseAsync(token!!)
+                val response = LogoutApi.retrofitService.logoutResponseAsync(token)
                 if (response.isSuccessful) {
                     closure(true)
                 } else {
@@ -66,6 +75,30 @@ class UserInformationViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
+                closure(true)
+            }
+        }
+    }
+
+
+    fun getAvatar(closure: (Bitmap) -> Unit) {
+        viewModelScope.launch {
+            if (SharedConfigs.signedUser?.avatarURL != null) {
+                try {
+                    if (diskLruCache.get(SharedConfigs.signedUser?.avatarURL!!) != null) {
+                        closure(diskLruCache.get(SharedConfigs.signedUser?.avatarURL!!)!!)
+                    } else {
+                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(SharedConfigs.signedUser!!.avatarURL!!)
+                        if (response.isSuccessful) {
+                            val inputStream = response.body()!!.byteStream()
+                            val bitmap = BitmapFactory.decodeStream(inputStream)
+                            diskLruCache.put(SharedConfigs.signedUser?.avatarURL!!, bitmap)
+                            closure(bitmap)
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.i("+++exception", "userInformationViewModel getAvatar $e")
+                }
             }
         }
     }

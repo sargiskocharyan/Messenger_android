@@ -1,0 +1,38 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparentik"
+    tools:context="com.example.dynamicmessenger.userHome.fragments.UserImageFragment">
+
+
+    <ImageView
+        android:id="@+id/bigAvatarImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/ic_user_image"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="h,1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/bigAvatarBackImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/common_google_signin_btn_icon_disabled"
+        app:layout_constraintBottom_toTopOf="@+id/bigAvatarImageView"
+        app:layout_constraintEnd_toEndOf="@+id/bigAvatarImageView"
+        app:layout_constraintStart_toStartOf="@+id/bigAvatarImageView" />
+
+    <ImageView
+        android:id="@+id/deleteAvatarImageView"
+        android:layout_width="40dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_baseline_delete_24"
+        app:layout_constraintEnd_toEndOf="@+id/bigAvatarImageView"
+        app:layout_constraintStart_toStartOf="@+id/bigAvatarImageView"
+        app:layout_constraintTop_toBottomOf="@+id/bigAvatarImageView" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -31,15 +31,12 @@ class EmailAndPhoneFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-        val binding : FragmentEmailAndPhoneBinding =
-                        DataBindingUtil.inflate(inflater,
-                            R.layout.fragment_email_and_phone,
-                            container, false)
+//        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()TODO
+        val binding: FragmentEmailAndPhoneBinding =
+            FragmentEmailAndPhoneBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(EmailAndPhoneViewModel::class.java)
-        binding.lifecycleOwner = this
-        binding.emailAndPhoneViewModel = viewModel
 
+        //TODO: Binding adapters
         binding.loginRegisterEmailEditText.addTextChangedListener(object : TextWatcher {
             @SuppressLint("ResourceAsColor")
             override fun afterTextChanged(s: Editable?) {
@@ -60,6 +57,7 @@ class EmailAndPhoneFragment : Fragment() {
                     binding.emailHintTextView.visibility = View.INVISIBLE
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}

@@ -1,39 +1,39 @@
 package com.example.dynamicmessenger.authorization.viewModels
 
+import android.app.Application
 import android.content.Context
+import android.util.Log
 import android.view.View
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.network.authorization.UniversityApi
-import com.example.dynamicmessenger.network.authorization.UpdateUserApi
+import com.example.dynamicmessenger.common.SharedConfigs
+import com.example.dynamicmessenger.network.UniversityApi
+import com.example.dynamicmessenger.network.UpdateUserApi
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
-import com.example.dynamicmessenger.network.authorization.models.User
-import com.example.dynamicmessenger.userDataController.SaveToken
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.SignedUser
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 
-class PersonRegistrationViewModel: ViewModel(){
+class PersonRegistrationViewModel(application: Application): AndroidViewModel(application){
 
     fun updateUserNetwork(view: View, updateUserTask: UpdateUserTask, context: Context?) {
-        val myEncryptedToken = SharedPreferencesManager.getUserToken(context!!)
-        val myToken = SaveToken.decrypt(myEncryptedToken)
         viewModelScope.launch {
             try {
-                val response = UpdateUserApi.retrofitService.updateUserResponseAsync(myToken!! ,updateUserTask)
+                val response = UpdateUserApi.retrofitService.updateUserResponseAsync(SharedConfigs.token ,updateUserTask)
                 if (response.isSuccessful) {
-                    val user = User(response.body()!!.name,
+                    val user = SignedUser(response.body()!!._id,
+                        response.body()!!.name,
                         response.body()!!.lastname,
-                        response.body()!!._id,
-                        response.body()!!.email,
                         response.body()!!.username,
-                        response.body()!!.university,
-                        response.body()!!.avatar
-                    )
-                    SharedPreferencesManager.saveUserObject(context,user)
+                        response.body()!!.email,
+//                        response.body()!!.university,
+                        null, //TODO
+                        response.body()!!.avatarURL)
+                    Log.i("+++userResponse", user.toString())
+                    SharedConfigs.signedUser = user
                     view.findNavController().navigate(R.id.action_personRegistrationFragment_to_finishRegistrationFragment)
                 } else {
                     MyAlertMessage.showAlertDialog(context, "Enter correct email")
@@ -45,12 +45,10 @@ class PersonRegistrationViewModel: ViewModel(){
     }
 
     fun getAllUniversity(context: Context?, closure: (List<UniversityProperty>) -> Unit){
-        val myToken = SharedPreferencesManager.getUserToken(context!!)
-        val token = SaveToken.decrypt(myToken)
         var allUniversity: List<UniversityProperty>? = null
         viewModelScope.launch {
             try {
-                val response = UniversityApi.retrofitService.universityResponseAsync(token!!)
+                val response = UniversityApi.retrofitService.universityResponseAsync(SharedConfigs.token)
                 if (response.isSuccessful) {
                     allUniversity = response.body()
                     closure(allUniversity!!)

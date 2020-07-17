@@ -1,9 +1,11 @@
 package com.example.dynamicmessenger.userChatRoom.adapters
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -11,11 +13,14 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 
 class ChatRoomAdapter(val context: Context, private val myID: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
     var data = listOf<ChatRoom>()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
+
+    var receiverImage: Bitmap? = null
 
 
     override fun getItemCount(): Int {
@@ -53,8 +58,14 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
     inner class ChatRoomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val chatRoom: ChatRoom? = null
         private val message: TextView = itemView.findViewById(R.id.receiverTextView)
+        private val receiverImageView: ImageView = itemView.findViewById(R.id.receiverImageView)
         internal fun bind(position: Int) {
             message.text = data[position].text
+            if (receiverImage != null) {
+                receiverImageView.setImageBitmap(receiverImage)
+            } else  {
+                receiverImageView.setImageResource(R.drawable.ic_user_image)
+            }
         }
     }
 

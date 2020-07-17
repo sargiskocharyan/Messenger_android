@@ -1,7 +1,8 @@
 package com.example.dynamicmessenger.authorization.viewModels
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 
-class FinishRegistrationViewModel: ViewModel()  {
+class FinishRegistrationViewModel(application: Application) : AndroidViewModel(application)  {
 
 }

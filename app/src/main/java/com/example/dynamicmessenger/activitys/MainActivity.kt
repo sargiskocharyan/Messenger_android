@@ -4,19 +4,17 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
-import androidx.navigation.ui.NavigationUI
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.ActivityMainBinding
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.utils.LocalizationUtil
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,13 +22,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SharedPreferencesManager.loadUserObjectToSharedConfigs(this)
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this,
             R.layout.activity_main
         )
+        //TODO: binding adapter
         changeDarkMode()
+        val tokenDao = SignedUserDatabase.getUserDatabase(application)!!.userTokenDao()
+        val tokenRep = UserTokenRepository(tokenDao)
 
-        if (SharedConfigs.signedUser != null) {
+        if (tokenRep.getToken() != "") {
             val intent = Intent(this,HomeActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = binding.drawerLayout
 
         val navController = this.findNavController(R.id.myNavHostFragment)
-        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
+//        NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout) TODO
     }
 
     override fun attachBaseContext(base: Context?) {
@@ -54,6 +54,13 @@ class MainActivity : AppCompatActivity() {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
+    }
+
+    //TODO: move to viewModel as LiveData  Share data between fragments
+    companion object {
+        var userMailExists: Boolean? = null
+        var userCode: String? = null
+        var userMail: String? = null
     }
 }
 

@@ -1,20 +1,16 @@
 package com.example.dynamicmessenger.authorization.fragments
 
 
-
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -24,10 +20,6 @@ import com.example.dynamicmessenger.databinding.FragmentPersonRegistrationBindin
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.utils.Validations
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 
 class PersonRegistrationFragment : Fragment() {
@@ -39,19 +31,16 @@ class PersonRegistrationFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding: FragmentPersonRegistrationBinding =
-                        DataBindingUtil.inflate(inflater,
-                            R.layout.fragment_person_registration,
-                            container, false)
+            FragmentPersonRegistrationBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(PersonRegistrationViewModel::class.java)
-        binding.lifecycleOwner = this
-        binding.registrationViewModel = viewModel
 
         binding.editTextUsername.addTextChangedListener(object : TextWatcher {
             @SuppressLint("ResourceAsColor")
             override fun afterTextChanged(s: Editable?) {
                 if (Validations.isUsernameValid(binding.editTextUsername.text.toString())
                     && Validations.isNameValid(binding.editTextName.text.toString())
-                    && Validations.isLastNameValid(binding.editTextLastname.text.toString())) {
+                    && Validations.isLastNameValid(binding.editTextLastname.text.toString())
+                ) {
                     binding.continueButton.isEnabled = true
                     binding.continueButton.setBackgroundResource(R.drawable.enable_button_design)
                 } else {
@@ -65,9 +54,9 @@ class PersonRegistrationFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
         var university: String = ""
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+//        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
         var allUniversity: List<UniversityProperty>
-        viewModel.getAllUniversity(requireContext()){
+        viewModel.getAllUniversity(requireContext()) {
             allUniversity = it
             val adapter = ArrayAdapter(
                 requireContext(),
@@ -84,8 +73,9 @@ class PersonRegistrationFragment : Fragment() {
                     id: Long
                 ) {
                     val allUniver = parent.selectedItem as UniversityProperty
-                     university = allUniver._id
+                    university = allUniver._id
                 }
+
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
         }
@@ -95,12 +85,14 @@ class PersonRegistrationFragment : Fragment() {
             val name = binding.editTextName.text.toString()
             val lastname = binding.editTextLastname.text.toString()
             val username = binding.editTextUsername.text.toString()
-            val updateUserTask = UpdateUserTask(name, lastname, username, university)
+            val updateUserTask =
+                UpdateUserTask(name, lastname, username, university, null, null, null, null, null)
             viewModel.updateUserNetwork(it, updateUserTask, context)
         }
 
         binding.skipButton.setOnClickListener {
-            it.findNavController().navigate(R.id.action_personRegistrationFragment_to_finishRegistrationFragment)
+            it.findNavController()
+                .navigate(R.id.action_personRegistrationFragment_to_finishRegistrationFragment)
         }
         return binding.root
     }

@@ -1,25 +1,33 @@
 package com.example.dynamicmessenger.userHome.fragments
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.activitys.MainActivity
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUpdateUserInformationBinding
+import com.example.dynamicmessenger.dialogs.DeactivateUserDialog
+import com.example.dynamicmessenger.dialogs.DeleteUserDialog
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
+import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UpdateUserInformationViewModel
 import com.example.dynamicmessenger.utils.Validations
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class UpdateUserInformationFragment : Fragment() {
     private lateinit var viewModel: UpdateUserInformationViewModel
@@ -54,7 +62,19 @@ class UpdateUserInformationFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
         var university: String = ""
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+        binding.editTextName.text.append(SharedConfigs.signedUser?.name ?: "")
+        binding.editTextLastname.text.append(SharedConfigs.signedUser?.lastname ?: "")
+        binding.editTextUsername.text.append(SharedConfigs.signedUser?.username ?: "")
+
+        //Bottom bar
+        val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+        bottomNavBar.visibility = View.GONE
+
+        //Toolbar
+        setHasOptionsMenu(true)
+        val toolbar: Toolbar = binding.updateUserInformationToolbar
+        configureTopNavBar(toolbar)
+
         var allUniversity: List<UniversityProperty>
         viewModel.getAllUniversity(requireContext()){
             allUniversity = it
@@ -74,7 +94,6 @@ class UpdateUserInformationFragment : Fragment() {
                     id: Long
                 ) {
                     val allUniver = parent.selectedItem as UniversityProperty
-                    Log.i("+++", allUniver._id)
                     university = allUniver._id
                 }
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -82,29 +101,76 @@ class UpdateUserInformationFragment : Fragment() {
         }
 
         binding.continueButton.setOnClickListener {
+            val birthDate = binding.editTextBirthDate.text.toString()
             val name = binding.editTextName.text.toString()
             val lastname = binding.editTextLastname.text.toString()
             val username = binding.editTextUsername.text.toString()
-            val updateUserTask = UpdateUserTask(name, lastname, username, university)
+            val phoneNumber = binding.editTextPhoneNumber.text.toString()
+            val updateUserTask = UpdateUserTask(name, lastname, username, university, phoneNumber, null, null, null, birthDate)
             viewModel.updateUserNetwork(updateUserTask, context){closure ->
                 if (closure) {
                     val selectedFragment = UserInformationFragment()
-                    activity?.supportFragmentManager?.beginTransaction()?.replace(
-                        R.id.fragmentContainer,
-                        selectedFragment
-                    )?.commit()
+                    activity?.supportFragmentManager
+                        ?.beginTransaction()
+                        ?.replace(R.id.fragmentContainer, selectedFragment)
+                        ?.addToBackStack(null)
+                        ?.commit()
                 }
             }
         }
 
-        binding.updateUserBackImageView.setOnClickListener {
-            val selectedFragment = UserInformationFragment()
-            activity?.supportFragmentManager?.beginTransaction()?.replace(
-                R.id.fragmentContainer,
-                selectedFragment
-            )?.commit()
+        binding.textViewDeactivateAccount.setOnClickListener {
+            val deactivateUserAccountDialog = DeactivateUserDialog { userAnswer ->
+                if (userAnswer) {
+                    viewModel.deactivateUserAccount {
+                        if (it) {
+                            SharedPreferencesManager.deleteUserAllInformation(requireContext())
+                            SharedConfigs.deleteToken()
+                            SharedConfigs.deleteSignedUser()
+                            val intent = Intent(activity, MainActivity::class.java)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            startActivity(intent)
+                            (activity as Activity?)!!.overridePendingTransition(1, 1)
+                        }
+                    }
+                }
+            }
+            deactivateUserAccountDialog.show(requireActivity().supportFragmentManager, "Dialog")
+        }
+
+        binding.textViewDeleteAccount.setOnClickListener {
+            val deleteUserAccountDialog = DeleteUserDialog { userAnswer ->
+                if (userAnswer) {
+                    viewModel.deleteUserAccount {
+                        if (it) {
+                            SharedPreferencesManager.deleteUserAllInformation(requireContext())
+                            SharedConfigs.deleteToken()
+                            SharedConfigs.deleteSignedUser()
+                            val intent = Intent(activity, MainActivity::class.java)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            startActivity(intent)
+                            (activity as Activity?)!!.overridePendingTransition(1, 1)
+                        }
+                    }
+                }
+            }
+            deleteUserAccountDialog.show(requireActivity().supportFragmentManager, "Dialog")
         }
 
         return binding.root
+    }
+
+    private fun configureTopNavBar(toolbar: Toolbar) {
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        toolbar.title = ""
+        toolbar.elevation = 10.0F
+        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+//        toolbar.inflateMenu(R.menu.chat_top_bar)
+        toolbar.background = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white))
+        toolbar.setNavigationOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
     }
 }

@@ -1,36 +1,64 @@
-package com.example.dynamicmessenger.network.authorization
+package com.example.dynamicmessenger.network
 
-import android.app.ProgressDialog
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.os.AsyncTask
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import com.example.dynamicmessenger.common.MyHeaders
 import com.example.dynamicmessenger.common.ResponseUrls
+import com.example.dynamicmessenger.common.SharedConfigs.myContext
 import com.example.dynamicmessenger.network.authorization.models.*
+import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.MultipartBody
-import okhttp3.ResponseBody
+import okhttp3.*
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
-import java.io.InputStream
+import retrofit2.http.Headers
 
 
 private const val BASE_URL = ResponseUrls.herokuIP
+//private const val BASE_URL = ResponseUrls.ErosServerIP
 private const val ERO_URL = ResponseUrls.ErosServerIP
 //private const val ERO_URL = ""
+
+private var cacheSize: Long = 10 * 1024 * 1024 // 10 MB
+
+private var cache = Cache(myContext.codeCacheDir, cacheSize)
+
+fun networkAvailable(context: Context): Boolean? {
+    var isConnected: Boolean? = false // Initial Value
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+    if (activeNetwork != null && activeNetwork.isConnected)
+        isConnected = true
+    return isConnected
+}
+
+val okHttpClient: OkHttpClient = OkHttpClient.Builder()
+    .cache(cache)
+    .addInterceptor { chain ->
+        var request = chain.request()
+        request = if (networkAvailable(myContext)!!)
+            request.newBuilder().header("Cache-Control", "public, max-age=" + 10).build()
+        else
+            request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build()
+        chain.proceed(request)
+    }
+    .build()
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()
 
 private val retrofit = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
+    .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
+//    .addConverterFactory(LENIENT_FACTORY.create(moshi = moshi))
     .addCallAdapterFactory(CoroutineCallAdapterFactory())
-    .baseUrl(ERO_URL)
+    .baseUrl(BASE_URL)
+    .client(okHttpClient)
     .build()
 
 private val retrofitEro = Retrofit.Builder()
@@ -75,7 +103,7 @@ interface JsonPlaceHolderRegistrationApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.reg)
     suspend fun registrationResponseAsync(@Body loginTask: LoginTask):
-            Response<RegistrationProperty>
+            Response<LoginProperty>
 }
 
 object RegistrationApi {
@@ -91,7 +119,7 @@ interface JsonPlaceHolderUpdateUserApi {
     @POST(ResponseUrls.updateUser)
     suspend fun updateUserResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
                                 @Body updateUserTask: UpdateUserTask):
-            Response<UpdateUserProperty>
+            Response<User>
 }
 
 object UpdateUserApi {
@@ -135,7 +163,7 @@ interface JsonPlaceHolderContactsApi {
     @Headers(MyHeaders.accept)
     @GET(ResponseUrls.contacts)
     suspend fun contactsResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String):
-            Response<List<UserContacts>>
+            Response<List<User>>
 }
 
 object ContactsApi {
@@ -151,7 +179,7 @@ interface JsonPlaceHolderSearchContactsApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.searchContacts)
     suspend fun contactsSearchResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                                    @Body term: SearchTask) :
+                                            @Body term: SearchTask) :
             Response<Users>
 }
 
@@ -167,9 +195,9 @@ object SearchContactsApi {
 interface JsonPlaceHolderAddContactApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.addContact)
+    //TODO: addContact
     suspend fun addContactResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                                @Body userID : AddUserContactTask) :
-            Response<Void>
+                                        @Body userID : AddUserContactTask) : Response<Void>
 }
 
 object AddContactApi {
@@ -217,7 +245,7 @@ interface JsonPlaceHolderChatRoomApi {
     @Headers(MyHeaders.accept)
     @GET("${ResponseUrls.chats}/{id}")
     suspend fun chatRoomResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                              @Path ("id") receiverId: String) :
+                                      @Path ("id") receiverId: String) :
             Response<List<ChatRoom>>
 }
 
@@ -235,14 +263,102 @@ interface JsonPlaceHolderSaveAvatarApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.saveAvatar)
     suspend fun saveAvatarResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                                @Part avatar : MultipartBody.Part) :
-            Response<Void>
+                                        @Part avatar : MultipartBody.Part) :
+            Response<ResponseBody>
 }
 
 object SaveAvatarApi {
     val retrofitService : JsonPlaceHolderSaveAvatarApi by lazy {
         retrofit.create(
             JsonPlaceHolderSaveAvatarApi::class.java
+        )
+    }
+}
+
+//Delete user
+interface JsonPlaceHolderDeleteUserApi {
+    @Headers(MyHeaders.accept)
+    @DELETE(ResponseUrls.deleteUser)
+    suspend fun deleteUserResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
+            Response<Void>
+}
+
+object DeleteUserApi {
+    val retrofitService : JsonPlaceHolderDeleteUserApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderDeleteUserApi::class.java
+        )
+    }
+}
+
+//Deactivate user
+interface JsonPlaceHolderDeactivateUserApi {
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.deactivateUser)
+    suspend fun deactivateUserResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
+            Response<Void>
+}
+
+object DeactivateUserApi {
+    val retrofitService : JsonPlaceHolderDeactivateUserApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderDeactivateUserApi::class.java
+        )
+    }
+}
+
+//Delete user avatar
+interface JsonPlaceHolderDeleteAvatarApi {
+    @Headers(MyHeaders.accept)
+    @DELETE(ResponseUrls.saveAvatar)
+    suspend fun deleteAvatarResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
+            Response<Void>
+}
+
+object DeleteAvatarApi {
+    val retrofitService : JsonPlaceHolderDeleteAvatarApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderDeleteAvatarApi::class.java
+        )
+    }
+}
+
+//User info by id
+interface JsonPlaceHolderGetUserInfoByIdApi {
+    @Headers(MyHeaders.accept)
+    @GET("${ResponseUrls.userInfoById}/{id}")
+    suspend fun getUserInfoByIdResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
+                                             @Path ("id") receiverId: String) :
+            Response<User>
+}
+
+object GetUserInfoByIdApi {
+    val retrofitService : JsonPlaceHolderGetUserInfoByIdApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderGetUserInfoByIdApi::class.java
+        )
+    }
+}
+
+private val retrofitImage = Retrofit.Builder()
+    .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
+//    .addConverterFactory(LENIENT_FACTORY.create(moshi = moshi))
+    .addCallAdapterFactory(CoroutineCallAdapterFactory())
+    .baseUrl("https://storage.googleapis.com/")//39
+    .build()
+
+//Load Avatar
+interface JsonPlaceHolderLoadAvatarApi {
+    @GET
+    @Streaming
+    suspend fun loadAvatarResponseAsync(@Url avatarUrl: String) :
+            Response<ResponseBody>
+}
+
+object LoadAvatarApi {
+    val retrofitService : JsonPlaceHolderLoadAvatarApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderLoadAvatarApi::class.java
         )
     }
 }
