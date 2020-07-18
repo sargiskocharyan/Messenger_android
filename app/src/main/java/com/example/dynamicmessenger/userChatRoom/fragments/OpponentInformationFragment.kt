@@ -1,19 +1,26 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
-import android.graphics.drawable.ColorDrawable
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.activitys.MainActivity
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentOpponentInformationBinding
+import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userChatRoom.viewModels.OpponentInformationViewModel
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserCalls
+import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
+import java.util.*
 
 class OpponentInformationFragment : Fragment() {
 
@@ -26,6 +33,9 @@ class OpponentInformationFragment : Fragment() {
     ): View? {
         viewModel = ViewModelProvider(this).get(OpponentInformationViewModel::class.java)
         binding = FragmentOpponentInformationBinding.inflate(layoutInflater)
+
+        val callsDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userCallsDao()
+        val callsRepository = UserCallsRepository(callsDao)
 
         //Toolbar
         setHasOptionsMenu(true)
@@ -42,6 +52,17 @@ class OpponentInformationFragment : Fragment() {
                     binding.addToContactsTextView.visibility = View.INVISIBLE
                 }
             }
+        }
+
+        binding.callOpponentImageView.setOnClickListener {
+            val opponentUser = HomeActivity.opponentUser!!
+            val currentDate: Date = Calendar.getInstance().time
+            val userCalls = UserCalls(opponentUser._id, opponentUser.name , opponentUser.lastname, opponentUser.username, opponentUser.avatarURL, currentDate.toString())
+            SharedConfigs.callingOpponentId = opponentUser._id
+            callsRepository.insert(userCalls)
+            val intent = Intent(activity, CallRoomActivity::class.java)
+            startActivity(intent)
+            (activity as Activity?)!!.overridePendingTransition(1, 1)
         }
 
         binding.sendMessageImageView.setOnClickListener {
@@ -62,10 +83,6 @@ class OpponentInformationFragment : Fragment() {
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         toolbar.elevation = 10.0F
-        toolbar.title = ""
-        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-//        toolbar.inflateMenu(R.menu.chat_top_bar)
-        toolbar.background = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white))
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }

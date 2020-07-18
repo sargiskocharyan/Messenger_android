@@ -113,9 +113,7 @@ class UserChatFragment : Fragment() {
 
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.title = ""
         toolbar.elevation = 10.0F
-        toolbar.background = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white))
         toolbar.setOnMenuItemClickListener {
             Toast.makeText(requireContext(), "sexmir", Toast.LENGTH_SHORT).show()
             return@setOnMenuItemClickListener true

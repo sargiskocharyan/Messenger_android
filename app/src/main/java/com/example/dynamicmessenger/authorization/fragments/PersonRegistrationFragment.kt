@@ -86,7 +86,7 @@ class PersonRegistrationFragment : Fragment() {
             val lastname = binding.editTextLastname.text.toString()
             val username = binding.editTextUsername.text.toString()
             val updateUserTask =
-                UpdateUserTask(name, lastname, username, university, null, null, null, null, null)
+                UpdateUserTask(name, lastname, username, university)
             viewModel.updateUserNetwork(it, updateUserTask, context)
         }
 

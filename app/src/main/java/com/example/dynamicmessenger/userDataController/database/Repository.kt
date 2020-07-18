@@ -38,3 +38,17 @@ class UserTokenRepository(private val userTokenDao: UserTokenDao) {
         userTokenDao.deleteAll()
     }
 }
+
+class UserCallsRepository(private val userCallsDao: UserCallsDao) {
+    fun getUserCalls() = userCallsDao.getUserCalls()
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    fun insert(userCalls: UserCalls) {
+        userCallsDao.insert(userCalls)
+    }
+
+    fun delete() {
+        userCallsDao.deleteAll()
+    }
+}

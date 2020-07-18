@@ -25,7 +25,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".userCalls.CallRoomActivity"></activity>
+        <activity android:name=".userCalls.CallRoomActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <activity android:name=".activitys.ChatRoomActivity">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />

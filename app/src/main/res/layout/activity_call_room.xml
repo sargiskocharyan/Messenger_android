@@ -25,8 +25,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="bottom|end" />
 
-
-
     </FrameLayout>
 
     <LinearLayout
@@ -45,14 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_margin="5dp"
             android:layout_height="wrap_content"
-            android:id="@+id/call_yelena"
-            android:text="CALL Yelena" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/call_erik"
-            android:text="CALL Erik" />
+            android:id="@+id/call_opponent"
+            android:text="CALL" />
     </LinearLayout>
 </FrameLayout>

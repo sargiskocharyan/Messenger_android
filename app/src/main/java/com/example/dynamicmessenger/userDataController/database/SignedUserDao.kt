@@ -29,3 +29,15 @@ interface UserTokenDao {
     @Query("DELETE FROM user_token")
     fun deleteAll()
 }
+
+@Dao
+interface UserCallsDao {
+    @Query("SELECT * FROM user_calls")
+    fun getUserCalls(): List<UserCalls?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(userCalls: UserCalls)
+
+    @Query("DELETE FROM user_calls")
+    fun deleteAll()
+}

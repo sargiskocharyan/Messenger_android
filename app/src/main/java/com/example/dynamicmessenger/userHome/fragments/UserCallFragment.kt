@@ -8,12 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.activitys.MainActivity
-import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
 import com.example.dynamicmessenger.databinding.FragmentUserCallBinding
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
-
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
+import com.example.dynamicmessenger.userHome.adapters.UserCallsAdapter
 
 class UserCallFragment : Fragment() {
 
@@ -32,6 +33,16 @@ class UserCallFragment : Fragment() {
             startActivity(intent)
             (activity as Activity?)!!.overridePendingTransition(1, 1)
         }
+
+        val callsDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userCallsDao()
+        val callsRepository = UserCallsRepository(callsDao)
+
+        val adapter = UserCallsAdapter(requireContext())
+        binding.root.setHasTransientState(true)
+        binding.callRecyclerView.adapter = adapter
+        adapter.data = callsRepository.getUserCalls()
+        val linearLayoutManager = LinearLayoutManager(requireContext())
+        binding.callRecyclerView.layoutManager = linearLayoutManager
 
         return binding.root
     }

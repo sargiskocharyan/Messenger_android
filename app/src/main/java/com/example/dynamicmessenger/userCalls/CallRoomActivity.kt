@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userCalls.webRtc.CustomPeerConnectionObserver
 import com.example.dynamicmessenger.userCalls.webRtc.CustomSdpObserver
@@ -53,13 +54,9 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
 
         CallRoomActivity.socket.connect()
-        val callYelenaButton: Button = findViewById(R.id.call_yelena)
-        val callErikButton: Button = findViewById(R.id.call_erik)
-        callYelenaButton.setOnClickListener {
-            SignallingClient.getInstance()!!.callOpponentYelena()
-        }
-        callErikButton.setOnClickListener {
-            SignallingClient.getInstance()!!.callOpponentErik()
+        val callOpponentButton: Button = findViewById(R.id.call_opponent)
+        callOpponentButton.setOnClickListener {
+            SignallingClient.getInstance()!!.callOpponent()
         }
     }
 
@@ -250,7 +247,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
     }
     override fun onOfferReceived(data: JSONObject?) {
-        showToast("Received Offer")
+//        showToast("Received Offer")
         runOnUiThread {
 //            if (!SignallingClient.getInstance()!!.isInitiator && !SignallingClient.getInstance()!!.isStarted) {
             onTryToStart()
@@ -305,7 +302,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     override fun onAnswerReceived(data: JSONObject?) {
-        showToast("Received Answer")
+//        showToast("Received Answer")
         try {
             if (data != null) {
                 localPeer!!.setRemoteDescription(
@@ -372,6 +369,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     override fun onDestroy() {
 //        SignallingClient.getInstance()!!.close()
         super.onDestroy()
+        SharedConfigs.callingOpponentId = null
         CallRoomActivity.socket.disconnect()
 //        if (surfaceTextureHelper != null) {
         surfaceTextureHelper.dispose()

@@ -10,12 +10,12 @@ data class UpdateUserTask (
     val name: String,
     val lastname: String,
     val username: String,
-    val university: String?,
-    val phoneNumber: String?,
-    val info: String?,
-    val address: String?,
-    val gender: String?,
-    val birthday: String?)
+    val university: String? = null,
+    val phoneNumber: String? = null,
+    val info: String? = null,
+    val address: String? = null,
+    val gender: String? = null,
+    val birthday: String? = null)
 
 data class SearchTask (val term: String)
 

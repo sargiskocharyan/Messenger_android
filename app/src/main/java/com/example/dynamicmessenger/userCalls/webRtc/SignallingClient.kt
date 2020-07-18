@@ -232,14 +232,9 @@ internal class SignallingClient {
         socket.close()
     }
 
-    fun callOpponentYelena() {
+    fun callOpponent() {
         Log.d("SignallingClient", "call call Yelena")
-        socket.emit("call", "5f06b7add526610017115fea") //Yelena
-    }
-
-    fun callOpponentErik() {
-        Log.d("SignallingClient", "call call Erik")
-        socket.emit("call", "5f05c4851e41d40d29360d08") //Erik
+        socket.emit("call", SharedConfigs.callingOpponentId)
     }
 
     internal interface SignalingInterface {

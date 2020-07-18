@@ -106,7 +106,7 @@ class UpdateUserInformationFragment : Fragment() {
             val lastname = binding.editTextLastname.text.toString()
             val username = binding.editTextUsername.text.toString()
             val phoneNumber = binding.editTextPhoneNumber.text.toString()
-            val updateUserTask = UpdateUserTask(name, lastname, username, university, phoneNumber, null, null, null, birthDate)
+            val updateUserTask = UpdateUserTask(name, lastname, username, university, phoneNumber, birthday = birthDate)
             viewModel.updateUserNetwork(updateUserTask, context){closure ->
                 if (closure) {
                     val selectedFragment = UserInformationFragment()
@@ -164,11 +164,7 @@ class UpdateUserInformationFragment : Fragment() {
 
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.title = ""
         toolbar.elevation = 10.0F
-        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-//        toolbar.inflateMenu(R.menu.chat_top_bar)
-        toolbar.background = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white))
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }

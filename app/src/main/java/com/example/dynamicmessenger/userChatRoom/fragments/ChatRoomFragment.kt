@@ -123,11 +123,7 @@ class ChatRoomFragment : Fragment() {
 
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.title = ""
         toolbar.elevation = 10.0F
-        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-//        toolbar.inflateMenu(R.menu.chat_top_bar)
-        toolbar.background = ColorDrawable(getColor(requireContext(), R.color.white))
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }

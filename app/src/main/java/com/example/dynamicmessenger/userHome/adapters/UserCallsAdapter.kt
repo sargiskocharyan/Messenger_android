@@ -1,0 +1,86 @@
+package com.example.dynamicmessenger.userHome.adapters
+
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.RecyclerView
+import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.common.SharedConfigs
+import com.example.dynamicmessenger.network.GetUserInfoByIdApi
+import com.example.dynamicmessenger.userCalls.CallRoomActivity
+import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
+import com.example.dynamicmessenger.userDataController.database.DiskCache
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserCalls
+import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
+import kotlinx.coroutines.launch
+import java.util.*
+
+class UserCallsAdapter(val context: Context) : RecyclerView.Adapter<UserCallsAdapter.UserCallsViewHolder>() {
+    var data = listOf<UserCalls?>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
+    private val diskLruCache = DiskCache.getInstance(SharedConfigs.myContext)
+    private val callsDao = SignedUserDatabase.getUserDatabase(context)!!.userCallsDao()
+    private val callsRepository = UserCallsRepository(callsDao)
+
+    override fun getItemCount(): Int {
+        return data.size
+    }
+
+    override fun onBindViewHolder(holder: UserCallsViewHolder, position: Int) {
+        val item = data[position]
+        holder.userCalls = item
+        if (item?.name != null) {
+            holder.name.text = item.name
+            holder.lastname.text = item.lastname
+        } else {
+            holder.name.text = item?.username
+        }
+        holder.callTime.text = item?.time?.subSequence(0, 20)
+        if (item?.avatarURL != null) {
+            if (diskLruCache.get(item.avatarURL!!) != null) {
+                holder.userImageView.setImageBitmap(diskLruCache.get(item.avatarURL!!)!!)
+            }
+        } else {
+            holder.userImageView.setImageResource(R.drawable.ic_user_image)
+        }
+
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserCallsAdapter.UserCallsViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.calls_item_view, parent, false)
+        return UserCallsViewHolder(view, context)
+    }
+
+    inner class UserCallsViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView){
+        var userCalls: UserCalls? = null
+        val name: TextView = itemView.findViewById(R.id.callUserNameTextView)
+        val lastname: TextView = itemView.findViewById(R.id.callUserLastnameTextView)
+        val userImageView: ImageView = itemView.findViewById(R.id.callUserImageView)
+        val callTime: TextView = itemView.findViewById(R.id.callMessageTimeTextView)
+        init {
+            itemView.setOnClickListener {
+                SharedConfigs.callingOpponentId = userCalls!!._id
+                val intent = Intent(context, CallRoomActivity::class.java)
+                userCalls!!.time = Calendar.getInstance().time.toString()
+                callsRepository.insert(userCalls!!)
+                context.startActivity(intent)
+                (context as Activity?)!!.overridePendingTransition(1, 1)
+            }
+        }
+    }
+}
