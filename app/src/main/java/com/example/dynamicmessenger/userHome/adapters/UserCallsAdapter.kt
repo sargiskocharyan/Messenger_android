@@ -1,8 +1,10 @@
 package com.example.dynamicmessenger.userHome.adapters
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +25,7 @@ import com.example.dynamicmessenger.userDataController.database.SignedUserDataba
 import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
 
 class UserCallsAdapter(val context: Context) : RecyclerView.Adapter<UserCallsAdapter.UserCallsViewHolder>() {
@@ -49,7 +52,8 @@ class UserCallsAdapter(val context: Context) : RecyclerView.Adapter<UserCallsAda
         } else {
             holder.name.text = item?.username
         }
-        holder.callTime.text = item?.time?.subSequence(0, 20)
+
+        holder.callTime.text = item?.time?.let { convertLongToTime(it) }
         if (item?.avatarURL != null) {
             if (diskLruCache.get(item.avatarURL!!) != null) {
                 holder.userImageView.setImageBitmap(diskLruCache.get(item.avatarURL!!)!!)
@@ -58,6 +62,20 @@ class UserCallsAdapter(val context: Context) : RecyclerView.Adapter<UserCallsAda
             holder.userImageView.setImageResource(R.drawable.ic_user_image)
         }
 
+    }
+    @SuppressLint("SimpleDateFormat")
+    fun convertLongToTime(time: Long): String {
+        val date = Date(time)
+        val currentDate: Date = Calendar.getInstance().time
+        return if ((currentDate.day == date.day) && (currentDate.month == date.month) && (currentDate.year == date.year)) {
+            val newFormat = SimpleDateFormat("HH:mm:ss")
+            newFormat.format(date)
+        } else if ((currentDate.day != date.day) || (currentDate.month != date.month) && (currentDate.year == date.year)) {
+            val newFormat = SimpleDateFormat("MMMM-dd")
+            newFormat.format(date)
+        } else {
+            Resources.getSystem().getString(R.string.long_time_ago)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserCallsAdapter.UserCallsViewHolder {
@@ -76,7 +94,7 @@ class UserCallsAdapter(val context: Context) : RecyclerView.Adapter<UserCallsAda
             itemView.setOnClickListener {
                 SharedConfigs.callingOpponentId = userCalls!!._id
                 val intent = Intent(context, CallRoomActivity::class.java)
-                userCalls!!.time = Calendar.getInstance().time.toString()
+                userCalls!!.time = System.currentTimeMillis()
                 callsRepository.insert(userCalls!!)
                 context.startActivity(intent)
                 (context as Activity?)!!.overridePendingTransition(1, 1)

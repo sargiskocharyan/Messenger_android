@@ -57,3 +57,11 @@ fun setProgressBarVisible(progressBar: ProgressBar, answer: Boolean) {
     }
 }
 
+@BindingAdapter("loginRegisterTextChange")
+fun loginRegisterTextChange(textView: TextView, answer: Boolean) {
+    if (answer) {
+        textView.setText(R.string.login)
+    } else {
+        textView.setText(R.string.register)
+    }
+}

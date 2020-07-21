@@ -41,5 +41,5 @@ data class UserCalls(
     val username: String?,
     var avatarURL: String?,
     @PrimaryKey
-    var time: String
+    var time: Long
 )

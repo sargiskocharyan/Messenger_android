@@ -22,8 +22,7 @@ class EmailAndPhoneFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-//        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()TODO
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_email_and_phone, container, false)
+        binding = FragmentEmailAndPhoneBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(EmailAndPhoneViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel

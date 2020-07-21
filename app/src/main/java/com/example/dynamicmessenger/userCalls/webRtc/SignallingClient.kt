@@ -119,41 +119,43 @@ internal class SignallingClient {
                     e.printStackTrace()
                 }
             }
+            /*
             //messages - SDP and ICE candidates are transferred through this
-            socket.on("message") { args: Array<Any> ->
-                Log.d(
-                    "SignallingClient",
-                    "message call() called with: args = [" + args.contentToString() + "]"
-                )
-                if (args[0] is String) {
-                    Log.d("SignallingClient", "String received :: " + args[0])
-                    val data = args[0] as String
-                    if (data.equals("got user media", ignoreCase = true)) {
-                        callback.onTryToStart()
-                    }
-                    if (data.equals("bye", ignoreCase = true)) {
-                        callback.onRemoteHangUp(data)
-                    }
-                } else if (args[0] is JSONObject) {
-                    try {
-                        val data = args[0] as JSONObject
-                        Log.d(
-                            "SignallingClient",
-                            "Json Received :: $data"
-                        )
-                        val type = data.getString("type")
-                        if (type.equals("offer", ignoreCase = true)) {
-                            callback.onOfferReceived(data)
-                        } else if (type.equals("answer", ignoreCase = true) && isStarted) {
-                            callback.onAnswerReceived(data)
-                        } else if (type.equals("candidate", ignoreCase = true) && isStarted) {
-                            callback.onIceCandidateReceived(data)
-                        }
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
-                    }
-                }
-            }
+//            socket.on("message") { args: Array<Any> ->
+//                Log.d(
+//                    "SignallingClient",
+//                    "message call() called with: args = [" + args.contentToString() + "]"
+//                )
+//                if (args[0] is String) {
+//                    Log.d("SignallingClient", "String received :: " + args[0])
+//                    val data = args[0] as String
+//                    if (data.equals("got user media", ignoreCase = true)) {
+//                        callback.onTryToStart()
+//                    }
+//                    if (data.equals("bye", ignoreCase = true)) {
+//                        callback.onRemoteHangUp(data)
+//                    }
+//                } else if (args[0] is JSONObject) {
+//                    try {
+//                        val data = args[0] as JSONObject
+//                        Log.d(
+//                            "SignallingClient",
+//                            "Json Received :: $data"
+//                        )
+//                        val type = data.getString("type")
+//                        if (type.equals("offer", ignoreCase = true)) {
+//                            callback.onOfferReceived(data)
+//                        } else if (type.equals("answer", ignoreCase = true) && isStarted) {
+//                            callback.onAnswerReceived(data)
+//                        } else if (type.equals("candidate", ignoreCase = true) && isStarted) {
+//                            callback.onIceCandidateReceived(data)
+//                        }
+//                    } catch (e: JSONException) {
+//                        e.printStackTrace()
+//                    }
+//                }
+//            }
+            */
         } catch (e: URISyntaxException) {
             e.printStackTrace()
         } catch (e: NoSuchAlgorithmException) {

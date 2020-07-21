@@ -26,7 +26,6 @@ class EmailAndPhoneViewModel(application: Application) : AndroidViewModel(applic
     val isEmailValid = MutableLiveData<Boolean>()
     val progressBarVisibility = MutableLiveData<Boolean>()
 
-    //TODO:rename
     fun checkIsMailExist(view: View) {
         progressBarVisibility.value = true
         viewModelScope.launch {

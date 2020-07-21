@@ -7,9 +7,9 @@ data class RegistrationTask(val email: String, val code: String)
 data class LoginTask (val email: String, val code: String)
 
 data class UpdateUserTask (
-    val name: String,
-    val lastname: String,
-    val username: String,
+    val name: String? = null,
+    val lastname: String? = null,
+    val username: String? = null,
     val university: String? = null,
     val phoneNumber: String? = null,
     val info: String? = null,

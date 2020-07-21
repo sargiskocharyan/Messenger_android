@@ -57,7 +57,7 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <EditText
-                            android:id="@+id/editTextBirthDate"
+                            android:id="@+id/birthDateEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
@@ -68,7 +68,7 @@
                             android:inputType="date" />
 
                         <Spinner
-                            android:id="@+id/spinnerUniversity"
+                            android:id="@+id/universitySpinner"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
@@ -89,7 +89,7 @@
                             android:inputType="phone" />
 
                         <EditText
-                            android:id="@+id/editTextName"
+                            android:id="@+id/nameEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
@@ -100,7 +100,7 @@
                             android:inputType="textPersonName" />
 
                         <EditText
-                            android:id="@+id/editTextLastname"
+                            android:id="@+id/lastNameEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
@@ -111,7 +111,7 @@
                             android:inputType="textPersonName" />
 
                         <EditText
-                            android:id="@+id/editTextUsername"
+                            android:id="@+id/usernameEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
@@ -151,18 +151,18 @@
                         app:layout_constraintTop_toTopOf="@+id/linearLayout" />
 
                     <TextView
-                        android:id="@+id/textViewDeleteAccount"
+                        android:id="@+id/deleteAccountTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Delete Account"
                         android:textColor="#F44336"
-                        app:layout_constraintEnd_toStartOf="@+id/textViewDeactivateAccount"
+                        app:layout_constraintEnd_toStartOf="@+id/deactivateAccountTextView"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/textViewDeactivateAccount" />
+                        app:layout_constraintTop_toTopOf="@+id/deactivateAccountTextView" />
 
                     <TextView
-                        android:id="@+id/textViewDeactivateAccount"
+                        android:id="@+id/deactivateAccountTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="60dp"
@@ -172,7 +172,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/textViewDeleteAccount"
+                        app:layout_constraintStart_toEndOf="@+id/deleteAccountTextView"
                         app:layout_constraintTop_toBottomOf="@+id/continueButton" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

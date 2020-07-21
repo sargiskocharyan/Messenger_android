@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.dynamicmessenger.R
@@ -54,7 +55,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
 
         CallRoomActivity.socket.connect()
-        val callOpponentButton: Button = findViewById(R.id.call_opponent)
+        val callOpponentButton: CardView = findViewById(R.id.acceptCallCardView)
         callOpponentButton.setOnClickListener {
             SignallingClient.getInstance()!!.callOpponent()
         }
@@ -272,9 +273,9 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         sdpConstraints.mandatory.add(
             MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true")
         )
-        sdpConstraints.mandatory.add(
-            MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true")
-        )
+//        sdpConstraints.mandatory.add(
+//            MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true")
+//        )
         localPeer?.createOffer(object : CustomSdpObserver("SignallingClient doOffer") {
             override fun onCreateSuccess(sessionDescription: SessionDescription) {
                 super.onCreateSuccess(sessionDescription)
@@ -367,7 +368,11 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     override fun onDestroy() {
-//        SignallingClient.getInstance()!!.close()
+        SignallingClient.getInstance()!!.close()
+        if (localPeer != null) {
+            localPeer!!.close()
+        }
+        localPeer = null
         super.onDestroy()
         SharedConfigs.callingOpponentId = null
         CallRoomActivity.socket.disconnect()

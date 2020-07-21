@@ -31,24 +31,22 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class UpdateUserInformationFragment : Fragment() {
     private lateinit var viewModel: UpdateUserInformationViewModel
+    private lateinit var binding: FragmentUpdateUserInformationBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FragmentUpdateUserInformationBinding =
-                        DataBindingUtil.inflate(inflater,
-                            R.layout.fragment_update_user_information,
-                            container,false)
+        binding = FragmentUpdateUserInformationBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(UpdateUserInformationViewModel::class.java)
         binding.lifecycleOwner = this
         binding.updateUserViewModel = viewModel
-        binding.editTextUsername.addTextChangedListener(object : TextWatcher {
+        binding.usernameEditText.addTextChangedListener(object : TextWatcher {
             @SuppressLint("ResourceAsColor")
             override fun afterTextChanged(s: Editable?) {
-                if (Validations.isUsernameValid(binding.editTextUsername.text.toString())
-                    && Validations.isNameValid(binding.editTextName.text.toString())
-                    && Validations.isLastNameValid(binding.editTextLastname.text.toString())) {
+                if (Validations.isUsernameValid(binding.usernameEditText.text.toString())
+                    && Validations.isNameValid(binding.nameEditText.text.toString())
+                    && Validations.isLastNameValid(binding.lastNameEditText.text.toString())) {
                     binding.continueButton.isEnabled = true
                     binding.continueButton.setBackgroundResource(R.drawable.enable_button_design)
                 } else {
@@ -62,9 +60,9 @@ class UpdateUserInformationFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
         var university: String = ""
-        binding.editTextName.text.append(SharedConfigs.signedUser?.name ?: "")
-        binding.editTextLastname.text.append(SharedConfigs.signedUser?.lastname ?: "")
-        binding.editTextUsername.text.append(SharedConfigs.signedUser?.username ?: "")
+        binding.nameEditText.text.append(SharedConfigs.signedUser?.name ?: "")
+        binding.lastNameEditText.text.append(SharedConfigs.signedUser?.lastname ?: "")
+        binding.usernameEditText.text.append(SharedConfigs.signedUser?.username ?: "")
 
         //Bottom bar
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
@@ -84,8 +82,8 @@ class UpdateUserInformationFragment : Fragment() {
                 allUniversity
             )
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.spinnerUniversity.adapter = adapter
-            binding.spinnerUniversity.onItemSelectedListener = object :
+            binding.universitySpinner.adapter = adapter
+            binding.universitySpinner.onItemSelectedListener = object :
                 AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>,
@@ -101,10 +99,10 @@ class UpdateUserInformationFragment : Fragment() {
         }
 
         binding.continueButton.setOnClickListener {
-            val birthDate = binding.editTextBirthDate.text.toString()
-            val name = binding.editTextName.text.toString()
-            val lastname = binding.editTextLastname.text.toString()
-            val username = binding.editTextUsername.text.toString()
+            val birthDate = binding.birthDateEditText.text.toString()
+            val name = binding.nameEditText.text.toString()
+            val lastname = binding.lastNameEditText.text.toString()
+            val username = binding.usernameEditText.text.toString()
             val phoneNumber = binding.editTextPhoneNumber.text.toString()
             val updateUserTask = UpdateUserTask(name, lastname, username, university, phoneNumber, birthday = birthDate)
             viewModel.updateUserNetwork(updateUserTask, context){closure ->
@@ -119,7 +117,7 @@ class UpdateUserInformationFragment : Fragment() {
             }
         }
 
-        binding.textViewDeactivateAccount.setOnClickListener {
+        binding.deactivateAccountTextView.setOnClickListener {
             val deactivateUserAccountDialog = DeactivateUserDialog { userAnswer ->
                 if (userAnswer) {
                     viewModel.deactivateUserAccount {
@@ -139,7 +137,7 @@ class UpdateUserInformationFragment : Fragment() {
             deactivateUserAccountDialog.show(requireActivity().supportFragmentManager, "Dialog")
         }
 
-        binding.textViewDeleteAccount.setOnClickListener {
+        binding.deleteAccountTextView.setOnClickListener {
             val deleteUserAccountDialog = DeleteUserDialog { userAnswer ->
                 if (userAnswer) {
                     viewModel.deleteUserAccount {
