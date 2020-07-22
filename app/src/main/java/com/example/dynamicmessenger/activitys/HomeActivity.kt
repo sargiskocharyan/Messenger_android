@@ -12,21 +12,25 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.UserTokenVerifyApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userHome.fragments.*
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import com.example.dynamicmessenger.utils.NotificationMessages
+import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 class HomeActivity : AppCompatActivity() {
@@ -65,6 +69,14 @@ class HomeActivity : AppCompatActivity() {
                 Log.i("+++catch", e.toString())
             }
         })
+
+        mSocket.on("call") {
+            Log.d("SignallingClient", "created call() called with: args = [" + Arrays.toString(it) + "]")
+            SharedConfigs.callingOpponentId = it[0].toString()
+            SharedConfigs.isCalling = true
+            val intent = Intent(this, CallRoomActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun attachBaseContext(base: Context?) {

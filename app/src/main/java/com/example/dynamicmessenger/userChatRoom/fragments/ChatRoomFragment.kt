@@ -104,16 +104,13 @@ class ChatRoomFragment : Fragment() {
 
 //    override fun onDestroyView() {
 //        super.onDestroyView()
-//        socketManager.closeSocket()
+//        HomeActivity.isAddContacts = false
 //    }
 
     private fun updateRecyclerView(receiverID: String) {
         viewModel.getMessagesFromNetwork(requireContext(), receiverID) {
-            val userChatDiffUtilCallback = ChatRoomDiffUtilCallback(adapter.data, it)
-            val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
-            adapter.data = it
+            adapter.submitList(it)
             scrollToBottom(binding, adapter)
-            authorDiffResult.dispatchUpdatesTo(adapter)
         }
     }
 

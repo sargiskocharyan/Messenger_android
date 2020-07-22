@@ -53,7 +53,7 @@
             android:layout_height="19dp"
             android:text="@string/resend_code"
             android:onClick="@{viewModel::resendVerificationCode}"
-            app:layout_constraintBottom_toTopOf="@+id/button"
+            app:layout_constraintBottom_toTopOf="@+id/loginContinueButton"
             app:layout_constraintEnd_toEndOf="@+id/verificationCode"
             app:layout_constraintHorizontal_bias="0.95"
             app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +61,7 @@
             app:layout_constraintVertical_bias="0.039" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/loginContinueButton"
             style="@style/ButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -70,6 +70,7 @@
             android:layout_marginBottom="110dp"
             android:background="@drawable/enable_button_design"
             android:text="@string/continue_button"
+            android:onClick="@{viewModel::loginNetwork}"
             app:setContinueButtonConfiguration="@{viewModel.isCodeValid}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

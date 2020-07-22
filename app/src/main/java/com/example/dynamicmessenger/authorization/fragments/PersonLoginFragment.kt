@@ -41,18 +41,15 @@ class PersonLoginFragment : Fragment() {
             viewModel.isCodeValid.value = it.length == 4
         })
 
-        binding.button.setOnClickListener {
-            binding.progressBar.visibility = View.VISIBLE
-            viewModel.loginNetwork(it) { closure ->
-                if (closure) {
-                    val intent = Intent(requireActivity(), HomeActivity::class.java)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    startActivity(intent)
-                    (activity as Activity?)!!.overridePendingTransition(1, 1)
-                }
+        viewModel.goToNextPage.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                val intent = Intent(requireActivity(), HomeActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(intent)
+                (activity as Activity?)!!.overridePendingTransition(1, 1)
             }
-        }
+        })
 
         return binding.root
     }

@@ -1,6 +1,7 @@
 package com.example.dynamicmessenger.userCalls
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -11,13 +12,18 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
+import com.example.dynamicmessenger.databinding.ActivityCallRoomBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.userCalls.viewModels.CallRoomViewModel
 import com.example.dynamicmessenger.userCalls.webRtc.CustomPeerConnectionObserver
 import com.example.dynamicmessenger.userCalls.webRtc.CustomSdpObserver
 import com.example.dynamicmessenger.userCalls.webRtc.SignallingClient
@@ -44,9 +50,13 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     private var gotUserMedia = false
     private var peerIceServers: MutableList<PeerConnection.IceServer> = ArrayList()
     private val ALL_PERMISSIONS_CODE = 1
+    private lateinit var binding: ActivityCallRoomBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_call_room)
+        binding = DataBindingUtil.setContentView<ActivityCallRoomBinding>(this, R.layout.activity_call_room)
+        binding.viewModel = SignallingClient.getInstance()
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !== PackageManager.PERMISSION_GRANTED
             || ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) !== PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO), ALL_PERMISSIONS_CODE)
@@ -54,10 +64,18 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
             start()
         }
 
-        CallRoomActivity.socket.connect()
-        val callOpponentButton: CardView = findViewById(R.id.acceptCallCardView)
-        callOpponentButton.setOnClickListener {
-            SignallingClient.getInstance()!!.callOpponent()
+        binding.acceptCallCardView.setOnClickListener {
+            if (SharedConfigs.isCalling) {
+                SignallingClient.getInstance()!!.emitCallAccepted(true)
+            } else {
+                SignallingClient.getInstance()!!.callOpponent()
+            }
+            SignallingClient.getInstance()!!.isCallingInProgress.value = true
+        }
+
+        binding.hangUpCallCardView.setOnClickListener {
+            SignallingClient.getInstance()!!.emitCallAccepted(false)
+            onBackPressed()
         }
     }
 
@@ -290,7 +308,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     private fun doAnswer() {
-        localPeer!!.createAnswer(object : CustomSdpObserver("localCreateAns") {
+        localPeer?.createAnswer(object : CustomSdpObserver("localCreateAns") {
             override fun onCreateSuccess(sessionDescription: SessionDescription) {
                 super.onCreateSuccess(sessionDescription)
                 localPeer!!.setLocalDescription(
@@ -360,7 +378,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                 localPeer!!.close()
             }
             localPeer = null
-            SignallingClient.getInstance()!!.close()
+//            SignallingClient.getInstance()!!.close()
             updateVideoViews(false)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -368,14 +386,13 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     override fun onDestroy() {
-        SignallingClient.getInstance()!!.close()
+        super.onDestroy()
+//        SignallingClient.getInstance()!!.close()
         if (localPeer != null) {
             localPeer!!.close()
         }
         localPeer = null
-        super.onDestroy()
         SharedConfigs.callingOpponentId = null
-        CallRoomActivity.socket.disconnect()
 //        if (surfaceTextureHelper != null) {
         surfaceTextureHelper.dispose()
 //            surfaceTextureHelper = null
@@ -423,6 +440,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 
     companion object {
         private const val TAG = "MainActivity"
-        val socket = SocketManager.getErosSocketInstance()!!
+//        val socket = SocketManager.getErosSocketInstance()!!
     }
 }

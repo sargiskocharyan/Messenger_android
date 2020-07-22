@@ -15,6 +15,7 @@ object SharedConfigs {
     private lateinit var tokenDao: UserTokenDao
     private lateinit var tokenRep: UserTokenRepository
     var callingOpponentId: String? = null
+    var isCalling: Boolean = false //TODO
     fun init(context: Context) {
         this.myContext = context
         userDao = SignedUserDatabase.getUserDatabase(context)!!.signedUserDao()

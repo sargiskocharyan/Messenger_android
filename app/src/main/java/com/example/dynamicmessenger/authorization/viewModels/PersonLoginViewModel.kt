@@ -6,10 +6,7 @@ import android.view.View
 import androidx.databinding.Bindable
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.MainActivity
@@ -30,9 +27,11 @@ class PersonLoginViewModel: ViewModel(), Observable {
     val hintVisibility = MutableLiveData<Boolean>()
     val isCodeValid = MutableLiveData<Boolean>()
     val progressBarVisibility = MutableLiveData<Boolean>()
+    private val _goToNextPage = MutableLiveData<Boolean>(false)
+    val goToNextPage: LiveData<Boolean> = _goToNextPage
     var personEmail: String? = null
 
-    fun loginNetwork(view: View, closure: (Boolean) -> Unit) {
+    fun loginNetwork(view: View) {
         progressBarVisibility.value = true
         viewModelScope.launch {
             if (isEmailExist.value!!) {
@@ -50,7 +49,7 @@ class PersonLoginViewModel: ViewModel(), Observable {
                                                     response.body()!!.user.avatarURL)
                         SharedConfigs.signedUser = signedUSer
                         SharedConfigs.token = response.body()!!.token
-                        closure(true)
+                        _goToNextPage.value = true
                     } else {
                         MyAlertMessage.showAlertDialog(view.context, "Enter correct code")
                     }

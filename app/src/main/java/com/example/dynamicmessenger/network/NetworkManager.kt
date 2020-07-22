@@ -22,7 +22,6 @@ import retrofit2.http.Headers
 private const val BASE_URL = ResponseUrls.herokuIP
 //private const val BASE_URL = ResponseUrls.ErosServerIP
 private const val ERO_URL = ResponseUrls.ErosServerIP
-//private const val ERO_URL = ""
 
 private var cacheSize: Long = 10 * 1024 * 1024 // 10 MB
 

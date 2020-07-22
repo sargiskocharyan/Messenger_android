@@ -46,10 +46,10 @@ class OpponentInformationFragment : Fragment() {
             binding.opponentProfileAvatarImageView.setImageBitmap(it)
         }
 
-        binding.addToContactsTextView.setOnClickListener {
+        binding.addToContactsImageView.setOnClickListener {
             viewModel.addUserToContacts {
                 if (it) {
-                    binding.addToContactsTextView.visibility = View.INVISIBLE
+                    binding.addToContactsImageView.visibility = View.GONE
                 }
             }
         }
@@ -103,10 +103,10 @@ class OpponentInformationFragment : Fragment() {
         binding.opponentInfoAddressTextView.text = opponentUser?.address
 
         if (HomeActivity.isAddContacts == false) {
-            binding.addToContactsTextView.visibility = View.INVISIBLE
+            binding.addToContactsImageView.visibility = View.GONE
         } else if (HomeActivity.isAddContacts == null) {
-            binding.addToContactsTextView.visibility = View.INVISIBLE
-            binding.sendMessageImageView.visibility = View.INVISIBLE
+            binding.addToContactsImageView.visibility = View.GONE
+            binding.sendMessageImageView.visibility = View.GONE
         }
     }
 }

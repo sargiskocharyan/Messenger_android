@@ -33,11 +33,6 @@ class UserChatsAdapter(val context: Context, job: Job, val activity: Activity) :
     private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
     private val diskLruCache = DiskCache.getInstance(context)
 
-    fun setAdapterData(newList: List<Chat>) {
-        data.clear()
-        data.addAll(newList)
-    }
-
     fun setAdapterDataNotify(newList: List<Chat>) {
         data.clear()
         data.addAll(newList)

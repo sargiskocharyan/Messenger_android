@@ -3,8 +3,10 @@ package com.example.dynamicmessenger.utils
 import android.graphics.Color
 import android.view.View
 import android.widget.*
+import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
 import com.example.dynamicmessenger.R
+import de.hdodenhof.circleimageview.CircleImageView
 
 @BindingAdapter("languageIMG")
 fun setLanguageIG(image: ImageView, resource: Int) {
@@ -63,5 +65,23 @@ fun loginRegisterTextChange(textView: TextView, answer: Boolean) {
         textView.setText(R.string.login)
     } else {
         textView.setText(R.string.register)
+    }
+}
+
+@BindingAdapter("setCircleImageVisible")
+fun setCircleImageVisible(circleImage: CircleImageView, answer: Boolean) {
+    if (answer) {
+        circleImage.visibility = View.VISIBLE
+    } else {
+        circleImage.visibility = View.INVISIBLE
+    }
+}
+
+@BindingAdapter("setCardViewVisible")
+fun setCardViewVisible(cardView: CardView, answer: Boolean) {
+    if (answer) {
+        cardView.visibility = View.VISIBLE
+    } else {
+        cardView.visibility = View.GONE
     }
 }

@@ -47,53 +47,71 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="20dp">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/opponentProfileAvatarImageView"
-                        android:layout_width="100dp"
+                        android:layout_width="110dp"
                         android:layout_height="0dp"
-                        android:layout_marginStart="15dp"
                         android:layout_marginTop="15dp"
-                        android:layout_marginBottom="15dp"
                         android:background="@drawable/foreground_for_image"
                         android:src="@drawable/ic_user_image"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintDimensionRatio="w,1:1"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/addToContactsTextView"
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/addToContactsImageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Add to contact"
-                        app:layout_constraintBottom_toBottomOf="@+id/opponentProfileAvatarImageView"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/opponentProfileAvatarImageView"
-                        app:layout_constraintTop_toTopOf="@+id/opponentProfileAvatarImageView" />
+                        android:layout_marginTop="32dp"
+                        app:cardCornerRadius="10dp"
+                        app:layout_constraintEnd_toStartOf="@+id/sendMessageImageView"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/opponentProfileAvatarImageView" >
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/ic_baseline_person_add_24"/>
+                    </androidx.cardview.widget.CardView>
 
-                    <ImageView
+                    <androidx.cardview.widget.CardView
                         android:id="@+id/sendMessageImageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_baseline_mail_24"
-                        app:layout_constraintBottom_toBottomOf="@+id/addToContactsTextView"
+                        android:layout_marginTop="32dp"
+                        app:cardCornerRadius="10dp"
                         app:layout_constraintEnd_toStartOf="@+id/callOpponentImageView"
                         app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toEndOf="@+id/addToContactsTextView"
-                        app:layout_constraintTop_toTopOf="@+id/addToContactsTextView" />
+                        app:layout_constraintStart_toEndOf="@+id/addToContactsImageView"
+                        app:layout_constraintTop_toBottomOf="@+id/opponentProfileAvatarImageView">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/ic_baseline_mail_24" />
+                    </androidx.cardview.widget.CardView>
 
-                    <ImageView
+                    <androidx.cardview.widget.CardView
                         android:id="@+id/callOpponentImageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_baseline_videocam_24"
-                        app:layout_constraintBottom_toBottomOf="@+id/sendMessageImageView"
+                        android:layout_marginTop="32dp"
+                        app:cardCornerRadius="10dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/sendMessageImageView"
-                        app:layout_constraintTop_toTopOf="@+id/sendMessageImageView" />
+                        app:layout_constraintTop_toBottomOf="@+id/opponentProfileAvatarImageView" >
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/ic_baseline_videocam_24" />
+                    </androidx.cardview.widget.CardView>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -112,7 +130,7 @@
                         android:id="@+id/opponentInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
+                        android:layout_marginTop="5dp"
                         tools:text="infoinfoinfoinfoinfoinfoinfoibvcbcvbcvbcbnfoinfoinfoinfoinfoinfoinfoinfoinfoinfo" />
 
                 </LinearLayout>
@@ -121,7 +139,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingStart="15dp"
-                    android:paddingEnd="15dp">
+                    android:paddingEnd="15dp"
+                    android:layout_marginBottom="20dp">
 
                     <TextView
                         android:id="@+id/textView2"
