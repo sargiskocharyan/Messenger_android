@@ -33,18 +33,19 @@ internal class SignallingClient {
 
             mSocket.on("callAccepted") {
                 Log.d("SignallingClient", "call accepted: args = [" + Arrays.toString(it) + "]")
-                this.roomName = it[1].toString()
+                roomName = it[1].toString()
                 callback.onCallAccepted(it[1].toString())
             }
 
-            mSocket.on("call") {
-                Log.d("SignallingClient", "created call() called with: args = [" + Arrays.toString(it) + "]")
-                mSocket.emit("callAccepted", it[0].toString(), true)
-                isInitiator = false
-//                callback.onCreatedRoom()
-            }
+//            mSocket.on("call") {
+//                Log.d("SignallingClient", "created call() called with: args = [" + Arrays.toString(it) + "]")
+//                mSocket.emit("callAccepted", it[0].toString(), true)
+//                isInitiator = false
+////                callback.onCreatedRoom()
+//            }
 
             mSocket.on("offer") {
+                Log.d("SignallingClient", "on offer " + Arrays.toString(it))
                 roomName = it[0].toString()
                 try {
                     val data = it[1] as JSONObject
@@ -56,7 +57,7 @@ internal class SignallingClient {
             }
 
             mSocket.on("answer") {
-                Log.d("SignallingClient", "answer called with: args = [" + Arrays.toString(it) + "]")
+                Log.d("SignallingClient", "on answer " + Arrays.toString(it))
                 try {
                     val data = it[0] as JSONObject
                     callback.onAnswerReceived(data)
@@ -67,6 +68,7 @@ internal class SignallingClient {
             }
 
             mSocket.on("candidates") {
+                Log.d("SignallingClient", "canditates " + Arrays.toString(it))
                 try {
                     val data = it[0] as JSONObject
                     callback.onIceCandidateReceived(data)
@@ -143,7 +145,7 @@ internal class SignallingClient {
             obj.put("sdp", message.description)
             obj.put("type", message.type.canonicalForm())
             Log.d("SignallingClient", "emitOffer $obj")
-            mSocket.emit("offer", roomName, obj)
+            mSocket.emit("emit offer", roomName, obj)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
@@ -151,7 +153,7 @@ internal class SignallingClient {
 
     fun emitAnswer(message: SessionDescription) {
         try {
-            Log.d("SignallingClient", "emitOffer() called with: message = [$message]")
+            Log.d("SignallingClient", "emitAnswer() called with: message = [$message]")
             val obj = JSONObject()
             obj.put("sdp", message.description)
             obj.put("type", message.type.canonicalForm())
@@ -175,7 +177,9 @@ internal class SignallingClient {
     }
 
     fun emitCallAccepted(answer: Boolean) {
+        Log.d("SignallingClient", "emit call accepted $answer")
         mSocket.emit("callAccepted", SharedConfigs.callingOpponentId, answer)
+        isInitiator = false
     }
 
     fun callOpponent() {

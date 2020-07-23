@@ -18,6 +18,7 @@ import com.example.dynamicmessenger.network.UpdateUserApi
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.userDataController.database.SignedUser
+import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 
@@ -38,14 +39,7 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
                 val usernameEditText = UpdateUserTask(userEnteredName.value, userEnteredLastName.value, userEnteredUsername.value, userEnteredUniversity.value)
                 val response = UpdateUserApi.retrofitService.updateUserResponseAsync(SharedConfigs.token ,usernameEditText)
                 if (response.isSuccessful) {
-                    val user = SignedUser(response.body()!!._id,
-                        response.body()!!.name,
-                        response.body()!!.lastname,
-                        response.body()!!.username,
-                        response.body()!!.email,
-//                        response.body()!!.university,
-                        null, //TODO
-                        response.body()!!.avatarURL)
+                    val user = ClassConverter.userToSignedUser(response.body()!!)
                     Log.i("+++userResponse", user.toString())
                     SharedConfigs.signedUser = user
                     view.findNavController().navigate(R.id.action_personRegistrationFragment_to_finishRegistrationFragment)

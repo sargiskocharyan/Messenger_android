@@ -77,12 +77,12 @@ data class Message(
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         val area1 = format.parse(createdAt)
         val area2 = format.parse(other.createdAt)
-        if(area1 == area2){
-            return 0;
-        }else if(area1 < area2){
-            return -1;
+        if (area1 == area2) {
+            return 0
+        } else if(area1 < area2) {
+            return -1
         }
-        return 1;
+        return 1
     }
 
 }

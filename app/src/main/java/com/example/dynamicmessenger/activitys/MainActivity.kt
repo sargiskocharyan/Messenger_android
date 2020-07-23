@@ -12,8 +12,6 @@ import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.ActivityMainBinding
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
-import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.utils.LocalizationUtil
 
 class MainActivity : AppCompatActivity() {
@@ -27,10 +25,8 @@ class MainActivity : AppCompatActivity() {
         )
         //TODO: binding adapter
         changeDarkMode()
-        val tokenDao = SignedUserDatabase.getUserDatabase(application)!!.userTokenDao()
-        val tokenRep = UserTokenRepository(tokenDao)
 
-        if (tokenRep.getToken() != "") {
+        if (SharedConfigs.token != "") {
             val intent = Intent(this,HomeActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -56,11 +52,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //TODO: move to viewModel as LiveData  Share data between fragments
-    companion object {
-        var userMailExists: Boolean? = null
-        var userCode: String? = null
-        var userMail: String? = null
-    }
 }
 

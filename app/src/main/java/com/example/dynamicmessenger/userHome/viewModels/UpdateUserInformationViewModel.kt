@@ -11,6 +11,7 @@ import com.example.dynamicmessenger.network.*
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.userDataController.database.SignedUser
+import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 
@@ -20,17 +21,7 @@ class UpdateUserInformationViewModel(application: Application) : AndroidViewMode
             try {
                 val response = UpdateUserApi.retrofitService.updateUserResponseAsync(SharedConfigs.token ,updateUserTask)
                 if (response.isSuccessful) {
-                    val user = SignedUser(
-                        response.body()!!._id,
-                        response.body()!!.name,
-                        response.body()!!.lastname,
-                        response.body()!!.username,
-                        response.body()!!.email,
-//                        response.body()!!.university, TODO
-                        null,
-                        response.body()!!.avatarURL
-                    )
-                    SharedConfigs.signedUser = user
+                    SharedConfigs.signedUser = ClassConverter.userToSignedUser(response.body()!!)
                     closure(true)
                 } else {
                     Log.i("+++", "update user else $response")

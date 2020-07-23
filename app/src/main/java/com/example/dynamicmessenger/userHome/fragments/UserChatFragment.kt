@@ -84,6 +84,7 @@ class UserChatFragment : Fragment() {
                 Log.i("+++", "UserChatFragment socket event message $e")
             }
         })
+        Log.i("+++" ,"time in millis ${System.currentTimeMillis()}")
 
         return binding.root
     }
@@ -110,6 +111,7 @@ class UserChatFragment : Fragment() {
             val list = it.sortedWith(compareBy { chat -> chat.message }).reversed()
             adapter.setAdapterDataNotify(list)
             binding.userChatSwipeRefreshLayout.isRefreshing = false
+            Log.i("+++" ,"time in millis ${System.currentTimeMillis()}")
         }
     }
 

@@ -66,6 +66,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 
         binding.acceptCallCardView.setOnClickListener {
             if (SharedConfigs.isCalling) {
+                Log.d("SignallingClient", "accept call on click")
                 SignallingClient.getInstance()!!.emitCallAccepted(true)
             } else {
                 SignallingClient.getInstance()!!.callOpponent()
@@ -75,6 +76,15 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 
         binding.hangUpCallCardView.setOnClickListener {
             SignallingClient.getInstance()!!.emitCallAccepted(false)
+            try {
+                if (localPeer != null) {
+                    localPeer!!.close()
+                }
+                localPeer = null
+                updateVideoViews(false)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
             onBackPressed()
         }
     }
@@ -171,6 +181,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     override fun onTryToStart() {
         runOnUiThread {
             if (!SignallingClient.getInstance()!!.isStarted && SignallingClient.getInstance()!!.isChannelReady) {
+                Log.d("SignallingClient", "on try to start")
                 createPeerConnection()
                 SignallingClient.getInstance()!!.isStarted = true
                 if (SignallingClient.getInstance()!!.isInitiator) {
@@ -266,7 +277,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
     }
     override fun onOfferReceived(data: JSONObject?) {
-//        showToast("Received Offer")
         runOnUiThread {
 //            if (!SignallingClient.getInstance()!!.isInitiator && !SignallingClient.getInstance()!!.isStarted) {
             onTryToStart()
@@ -291,9 +301,9 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         sdpConstraints.mandatory.add(
             MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true")
         )
-//        sdpConstraints.mandatory.add(
-//            MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true")
-//        )
+        sdpConstraints.mandatory.add(
+            MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true")
+        )
         localPeer?.createOffer(object : CustomSdpObserver("SignallingClient doOffer") {
             override fun onCreateSuccess(sessionDescription: SessionDescription) {
                 super.onCreateSuccess(sessionDescription)
@@ -393,6 +403,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
         localPeer = null
         SharedConfigs.callingOpponentId = null
+        SignallingClient.getInstance()!!.isCallingInProgress.value = false
 //        if (surfaceTextureHelper != null) {
         surfaceTextureHelper.dispose()
 //            surfaceTextureHelper = null

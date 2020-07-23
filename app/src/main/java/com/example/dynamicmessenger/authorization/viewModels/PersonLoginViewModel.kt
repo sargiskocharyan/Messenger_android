@@ -1,6 +1,5 @@
 package com.example.dynamicmessenger.authorization.viewModels
 
-import android.app.Application
 import android.util.Log
 import android.view.View
 import androidx.databinding.Bindable
@@ -9,13 +8,13 @@ import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.*
 import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.LoginApi
 import com.example.dynamicmessenger.network.MailExistApi
 import com.example.dynamicmessenger.network.RegistrationApi
 import com.example.dynamicmessenger.network.authorization.models.*
 import com.example.dynamicmessenger.userDataController.database.*
+import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 
@@ -29,25 +28,19 @@ class PersonLoginViewModel: ViewModel(), Observable {
     val progressBarVisibility = MutableLiveData<Boolean>()
     private val _goToNextPage = MutableLiveData<Boolean>(false)
     val goToNextPage: LiveData<Boolean> = _goToNextPage
-    var personEmail: String? = null
+
+    val personEmail = MutableLiveData<String>()
+    val isEmailExists = MutableLiveData<Boolean>()
 
     fun loginNetwork(view: View) {
         progressBarVisibility.value = true
         viewModelScope.launch {
             if (isEmailExist.value!!) {
                 try {
-                    val response = LoginApi.retrofitService.loginResponseAsync(LoginTask(personEmail!!, userEnteredCode.value!!))
+                    val response = LoginApi.retrofitService.loginResponseAsync(LoginTask(personEmail.value!!, userEnteredCode.value!!))
                     if (response.isSuccessful) {
                         //TODO:Use GsonFactory or Moshi?
-                        val signedUSer = SignedUser(response.body()!!.user._id,
-                                                    response.body()!!.user.name,
-                                                    response.body()!!.user.lastname,
-                                                    response.body()!!.user.username,
-                                                    response.body()!!.user.email,
-//                                                    response.body()!!.user.university, TODO
-                            null,
-                                                    response.body()!!.user.avatarURL)
-                        SharedConfigs.signedUser = signedUSer
+                        SharedConfigs.signedUser = ClassConverter.loginPropertyToSignedUser(response.body()!!)
                         SharedConfigs.token = response.body()!!.token
                         _goToNextPage.value = true
                     } else {
@@ -60,17 +53,9 @@ class PersonLoginViewModel: ViewModel(), Observable {
                 progressBarVisibility.value = false
             } else {
                 try {
-                    val response = RegistrationApi.retrofitService.registrationResponseAsync(LoginTask(personEmail!!, userEnteredCode.value!!))
+                    val response = RegistrationApi.retrofitService.registrationResponseAsync(LoginTask(personEmail.value!!, userEnteredCode.value!!))
                     if (response.isSuccessful) {
-                        val signedUSer = SignedUser(response.body()!!.user._id,
-                                                    response.body()!!.user.name,
-                                                    response.body()!!.user.lastname,
-                                                    response.body()!!.user.username,
-                                                    response.body()!!.user.email,
-//                                                        response.body()!!.user.university,//TODO
-                            null,
-                                                    response.body()!!.user.avatarURL)
-                        SharedConfigs.signedUser = signedUSer
+                        SharedConfigs.signedUser = ClassConverter.loginPropertyToSignedUser(response.body()!!)
                         SharedConfigs.token = response.body()!!.token
                         view.findNavController().navigate(R.id.action_personLoginFragment_to_personRegistrationFragment)
                     } else {
@@ -89,11 +74,9 @@ class PersonLoginViewModel: ViewModel(), Observable {
         progressBarVisibility.value = true
         viewModelScope.launch {
             try {
-                val response = MailExistApi.retrofitService.isMailExistAsync(EmailExistTask(personEmail!!))
+                val response = MailExistApi.retrofitService.isMailExistAsync(EmailExistTask(personEmail.value!!))
                 if (response.isSuccessful) {
-                    MainActivity.userMailExists = response.body()!!.mailExist
-                    MainActivity.userCode = response.body()!!.code
-                    MainActivity.userMail = personEmail
+                    isEmailExists.value = response.body()!!.mailExist
                     userEnteredCode.value = response.body()!!.code
                 } else {
                     MyAlertMessage.showAlertDialog(view.context, "Try again")

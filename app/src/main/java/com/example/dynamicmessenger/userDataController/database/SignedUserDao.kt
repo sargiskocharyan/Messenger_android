@@ -32,7 +32,7 @@ interface UserTokenDao {
 
 @Dao
 interface UserCallsDao {
-    @Query("SELECT * FROM user_calls ORDER BY time")
+    @Query("SELECT * FROM user_calls ORDER BY time DESC")
     fun getUserCalls(): List<UserCalls?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -7,12 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.activitys.MainActivity
+import com.example.dynamicmessenger.authorization.viewModels.MainActivityViewModel
 import com.example.dynamicmessenger.authorization.viewModels.PersonLoginViewModel
 import com.example.dynamicmessenger.databinding.FragmentPersonLoginBinding
+import com.example.dynamicmessenger.utils.Validations
 
 class PersonLoginFragment : Fragment() {
 
@@ -28,10 +31,12 @@ class PersonLoginFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(PersonLoginViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        val isEmailExists = MainActivity.userMailExists ?: false
-        val personEmail = MainActivity.userMail ?: ""
-        val personCode = MainActivity.userCode
-        viewModel.personEmail = personEmail
+        val activityViewModel: MainActivityViewModel by activityViewModels()
+
+        val isEmailExists = activityViewModel.userMailExists ?: false
+        val personEmail = activityViewModel.userMail ?: ""
+        val personCode = activityViewModel.userCode
+        viewModel.personEmail.value = personEmail
 
         viewModel.isEmailExist.value = isEmailExists
         viewModel.userEnteredCode.value = personCode
@@ -39,6 +44,7 @@ class PersonLoginFragment : Fragment() {
         viewModel.userEnteredCode.observe(viewLifecycleOwner, Observer {
             viewModel.hintVisibility.value = it.isNotEmpty()
             viewModel.isCodeValid.value = it.length == 4
+            activityViewModel.userCode = it
         })
 
         viewModel.goToNextPage.observe(viewLifecycleOwner, Observer {
@@ -49,6 +55,14 @@ class PersonLoginFragment : Fragment() {
                 startActivity(intent)
                 (activity as Activity?)!!.overridePendingTransition(1, 1)
             }
+        })
+
+        viewModel.personEmail.observe(viewLifecycleOwner, Observer {
+            activityViewModel.userMail = it
+        })
+
+        viewModel.isEmailExists.observe(viewLifecycleOwner, Observer  {
+            activityViewModel.userMailExists = it
         })
 
         return binding.root

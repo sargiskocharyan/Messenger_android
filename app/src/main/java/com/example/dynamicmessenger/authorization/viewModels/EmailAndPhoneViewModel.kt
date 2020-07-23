@@ -26,16 +26,17 @@ class EmailAndPhoneViewModel(application: Application) : AndroidViewModel(applic
     val isEmailValid = MutableLiveData<Boolean>()
     val progressBarVisibility = MutableLiveData<Boolean>()
 
+    val isEmailExists = MutableLiveData<Boolean>()
+    val userCode = MutableLiveData<String>()
+
     fun checkIsMailExist(view: View) {
         progressBarVisibility.value = true
         viewModelScope.launch {
             try {
                 val response = MailExistApi.retrofitService.isMailExistAsync(EmailExistTask(userEnteredEmail.value!!))
                 if (response.isSuccessful) {
-                    //TODO: set LiveData
-                    MainActivity.userMailExists = response.body()!!.mailExist
-                    MainActivity.userCode = response.body()!!.code
-                    MainActivity.userMail = userEnteredEmail.value!!
+                    userCode.value = response.body()!!.code
+                    isEmailExists.value = response.body()!!.mailExist
                     view.findNavController().navigate(R.id.action_emailAndPhoneFragment_to_personLoginFragment)
                 } else {
                     MyAlertMessage.showAlertDialog(view.context, "Enter correct email")
