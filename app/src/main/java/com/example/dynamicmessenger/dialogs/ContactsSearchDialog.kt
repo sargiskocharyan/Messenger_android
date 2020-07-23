@@ -1,7 +1,6 @@
 package com.example.dynamicmessenger.dialogs
 
 import android.app.Dialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,24 +27,23 @@ class ContactsSearchDialog(private val coroutineScope: CoroutineScope, val myClo
         builder.setView(view)
             .setTitle(R.string.search_user)
             .setMessage(R.string.enter_name_or_lastname_or_username)
-            .setPositiveButton(R.string.find,
-                DialogInterface.OnClickListener { _, _ ->
-                    val name = view.findViewById<EditText>(R.id.searchUsername).text.toString()
-                    val task = SearchTask(name)
-                    coroutineScope.launch {
-                        try {
-                            val response = SearchContactsApi.retrofitService.contactsSearchResponseAsync(SharedConfigs.token, task)
-                            if (response.isSuccessful) {
-                                HomeActivity.isAddContacts = true
-                                myClosure(response.body()!!.users)
-                            } else {
-                                Toast.makeText(context, "Something gone a wrong", Toast.LENGTH_SHORT).show()
-                            }
-                        } catch (e: Exception) {
-//                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
+            .setPositiveButton(R.string.find) { _, _ ->
+                val name = view.findViewById<EditText>(R.id.searchUsername).text.toString()
+                val task = SearchTask(name)
+                coroutineScope.launch {
+                    try {
+                        val response = SearchContactsApi.retrofitService.contactsSearchResponseAsync(SharedConfigs.token, task)
+                        if (response.isSuccessful) {
+                            HomeActivity.isAddContacts = true
+                            myClosure(response.body()!!.users)
+                        } else {
+                            Toast.makeText(context, "Something gone a wrong", Toast.LENGTH_SHORT).show()
                         }
+                    } catch (e: Exception) {
+        //                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
                     }
-                })
+                }
+            }
         return builder.create()
     }
 }

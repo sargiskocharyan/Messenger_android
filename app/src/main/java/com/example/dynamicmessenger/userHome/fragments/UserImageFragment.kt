@@ -32,12 +32,12 @@ class UserImageFragment : Fragment() {
     ): View? {
         viewModel = ViewModelProvider(this).get(UserImageViewModel::class.java)
         binding = FragmentUserImageBinding.inflate(layoutInflater)
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.GONE
 
-        viewModel.getAvatar {
-            binding.bigAvatarImageView.setImageBitmap(it)
-        }
+        viewModel.getAvatar()
 
         binding.deleteAvatarImageView.setOnClickListener {
             viewModel.deleteUserAvatar {

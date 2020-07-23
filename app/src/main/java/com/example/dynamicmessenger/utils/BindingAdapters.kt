@@ -7,11 +7,20 @@ import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.common.AppLangKeys
 import de.hdodenhof.circleimageview.CircleImageView
 
+//@BindingAdapter("languageIMG")
+//fun setLanguageIG(image: ImageView, resource: Int) {
+//    image.setImageResource(resource)
+//}
 @BindingAdapter("languageIMG")
-fun setLanguageIG(image: ImageView, resource: Int) {
-    image.setImageResource(resource)
+fun setLanguageIG(image: ImageView, resource: AppLangKeys) {
+    when (resource) {
+        AppLangKeys.EN -> image.setImageResource(R.drawable.ic_united_kingdom)
+        AppLangKeys.RU -> image.setImageResource(R.drawable.ic_russia)
+        else -> image.setImageResource(R.drawable.ic_armenia)
+    }
 }
 
 @BindingAdapter("setTextViewVisible")
@@ -87,7 +96,18 @@ fun setCardViewVisible(cardView: CardView, answer: Boolean) {
     }
 }
 
-//@BindingAdapter("setCircleImageBitmap")
-//fun setCircleImageBitmap(circleImage: CircleImageView, bitmap: Bitmap) {
-//    circleImage.setImageBitmap(bitmap)
-//}
+@BindingAdapter("setCircleImageBitmap")
+fun setCircleImageBitmap(circleImage: CircleImageView, bitmap: Bitmap?) {
+    if (bitmap == null) {
+        circleImage.setImageResource(R.drawable.ic_user_image)
+    }
+    circleImage.setImageBitmap(bitmap)
+}
+
+@BindingAdapter("setImageViewBitmap")
+fun setImageViewBitmap(Image: ImageView, bitmap: Bitmap?) {
+    if (bitmap == null) {
+        Image.setImageResource(R.drawable.ic_user_image)
+    }
+    Image.setImageBitmap(bitmap)
+}

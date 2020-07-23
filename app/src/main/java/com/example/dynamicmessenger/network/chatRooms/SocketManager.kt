@@ -59,8 +59,8 @@ object SocketManager {
                 IO.Options()
             opts.forceNew = true
             opts.reconnection = false
-//            mSocket = IO.socket(ResponseUrls.herokuIPForSocket + "?token=" + SharedConfigs.token, opts)
-            mSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + SharedConfigs.token, opts)
+            mSocket = IO.socket(ResponseUrls.herokuIPForSocket + "?token=" + SharedConfigs.token, opts)
+//            mSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + SharedConfigs.token, opts)
             Log.i("+++", "socket@ taza sarqvec")
         }
         return mSocket

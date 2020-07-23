@@ -9,14 +9,14 @@ class SignedUserRepository(private val signedUserDao: SignedUserDao) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    fun insert(signedUser: SignedUser) {
-        signedUserDao.insert(signedUser)
+    fun update(signedUser: SignedUser) {
+        signedUserDao.update(signedUser)
     }
 
     fun deleteAvatarFromRepository() {
         val user = signedUserDao.getSignedUser()
         user.avatarURL = null
-        insert(user)
+        update(user)
     }
 
     fun delete() {
@@ -30,8 +30,8 @@ class UserTokenRepository(private val userTokenDao: UserTokenDao) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    fun insert(token: String) {
-        userTokenDao.insert(UserToken(SaveToken.encrypt(token)))
+    fun update(token: String) {
+        userTokenDao.update(UserToken(SaveToken.encrypt(token)))
     }
 
     fun delete() {

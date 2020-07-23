@@ -1,4 +1,4 @@
-package com.example.dynamicmessenger.authorization.viewModels
+package com.example.dynamicmessenger.activitys.viewModels
 
 import androidx.lifecycle.ViewModel
 

@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value))
+        super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value!!.value))
     }
 
     private fun changeDarkMode() {

@@ -42,7 +42,7 @@ data class University(
     @ColumnInfo(name = "universityNameRU") val nameRU: String,
     @ColumnInfo(name = "universityNameEN") val nameEN: String) : Parcelable {
     override fun toString(): String {
-        return when (SharedConfigs.appLang) {
+        return when (SharedConfigs.appLang.value) {
             AppLangKeys.AM ->  name
             AppLangKeys.RU ->  nameRU
             else -> nameEN
@@ -99,7 +99,7 @@ data class ChatRoom(val sender: Sender, val text: String, val reciever: String) 
 @Parcelize
 data class UniversityProperty(val _id: String, val name: String, val nameRU: String , val nameEN: String) : Parcelable {
     override fun toString(): String {
-        return when (SharedConfigs.appLang) {
+        return when (SharedConfigs.appLang.value) {
             AppLangKeys.AM ->  name
             AppLangKeys.RU ->  nameRU
             else -> nameEN

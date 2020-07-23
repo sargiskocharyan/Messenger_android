@@ -11,6 +11,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.observe
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs
@@ -47,7 +48,7 @@ class HomeActivity : AppCompatActivity() {
         val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavBar.setOnNavigationItemSelectedListener(navListener)
         val context = this
-        if (SharedConfigs.token == "") tokenCheck(context, SharedConfigs.token)
+//        if (SharedConfigs.token == "") tokenCheck(context, SharedConfigs.token)
 
         //socket
         socketManager = SocketManager
@@ -76,11 +77,15 @@ class HomeActivity : AppCompatActivity() {
             val intent = Intent(this, CallRoomActivity::class.java)
             startActivity(intent)
         }
+
+        SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
+            LocalizationUtil.setApplicationLocale(this, it.value)
+        })
     }
 
-    override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value))
-    }
+//    override fun attachBaseContext(base: Context?) {
+//        super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value!!.value))
+//    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -115,13 +120,12 @@ class HomeActivity : AppCompatActivity() {
                         AlertDialog.Builder(context)
                             .setTitle("Error")
                             .setMessage("Your seans is out of time")
-                            .setPositiveButton("ok",
-                                DialogInterface.OnClickListener { dialog, which ->
-                                    val intent = Intent(context, MainActivity::class.java)
-                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                    startActivity(intent)
-                                })
+                            .setPositiveButton("ok") { _, _ ->
+                                val intent = Intent(context, MainActivity::class.java)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                startActivity(intent)
+                            }
                             .create().show()
                     }
                 } else {

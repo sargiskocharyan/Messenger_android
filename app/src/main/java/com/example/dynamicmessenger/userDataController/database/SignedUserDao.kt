@@ -1,9 +1,6 @@
 package com.example.dynamicmessenger.userDataController.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.dynamicmessenger.network.authorization.models.Chat
 
 @Dao
@@ -12,7 +9,7 @@ interface SignedUserDao {
     fun getSignedUser(): SignedUser
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(signedUser: SignedUser)
+    fun update(signedUser: SignedUser)
 
     @Query("DELETE FROM signed_user")
     fun deleteAll()
@@ -24,7 +21,7 @@ interface UserTokenDao {
     fun getUserToken(): UserToken?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(token: UserToken)
+    fun update(token: UserToken)
 
     @Query("DELETE FROM user_token")
     fun deleteAll()

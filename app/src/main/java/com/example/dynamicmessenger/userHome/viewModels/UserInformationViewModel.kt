@@ -33,6 +33,11 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
     private val _lastName = MutableLiveData<String>()
     val lastName: LiveData<String> get() = _lastName
 
+    val appLanguage = MutableLiveData<AppLangKeys>(AppLangKeys.EN)
+
+    private val _avatarBitmap = MutableLiveData<Bitmap>()
+    val avatarBitmap: LiveData<Bitmap> get() = _avatarBitmap
+
     private val diskLruCache = DiskCache.getInstance(application)
 
     init {
@@ -81,19 +86,19 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
     }
 
 
-    fun getAvatar(closure: (Bitmap) -> Unit) {
+    fun getAvatar() {
         viewModelScope.launch {
             if (SharedConfigs.signedUser?.avatarURL != null) {
                 try {
                     if (diskLruCache.get(SharedConfigs.signedUser?.avatarURL!!) != null) {
-                        closure(diskLruCache.get(SharedConfigs.signedUser?.avatarURL!!)!!)
+                        _avatarBitmap.value = (diskLruCache.get(SharedConfigs.signedUser?.avatarURL!!)!!)
                     } else {
                         val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(SharedConfigs.signedUser!!.avatarURL!!)
                         if (response.isSuccessful) {
                             val inputStream = response.body()!!.byteStream()
                             val bitmap = BitmapFactory.decodeStream(inputStream)
                             diskLruCache.put(SharedConfigs.signedUser?.avatarURL!!, bitmap)
-                            closure(bitmap)
+                            _avatarBitmap.value = bitmap
                         }
                     }
                 } catch (e: Exception) {
@@ -112,7 +117,7 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
     }
 
     fun setLanguageImage(): Int {
-        return when (SharedConfigs.appLang) {
+        return when (SharedConfigs.appLang.value) {
             AppLangKeys.EN -> R.drawable.ic_united_kingdom
             AppLangKeys.RU -> R.drawable.ic_russia
             else -> R.drawable.ic_armenia

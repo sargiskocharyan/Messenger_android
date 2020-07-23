@@ -4,14 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.authorization.viewModels.EmailAndPhoneViewModel
-import com.example.dynamicmessenger.authorization.viewModels.MainActivityViewModel
+import com.example.dynamicmessenger.activitys.viewModels.MainActivityViewModel
 import com.example.dynamicmessenger.databinding.FragmentEmailAndPhoneBinding
 import com.example.dynamicmessenger.utils.Validations
 

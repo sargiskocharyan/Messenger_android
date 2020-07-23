@@ -11,11 +11,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.activitys.HomeActivity
-import com.example.dynamicmessenger.activitys.MainActivity
-import com.example.dynamicmessenger.authorization.viewModels.MainActivityViewModel
+import com.example.dynamicmessenger.activitys.viewModels.MainActivityViewModel
 import com.example.dynamicmessenger.authorization.viewModels.PersonLoginViewModel
 import com.example.dynamicmessenger.databinding.FragmentPersonLoginBinding
-import com.example.dynamicmessenger.utils.Validations
 
 class PersonLoginFragment : Fragment() {
 
