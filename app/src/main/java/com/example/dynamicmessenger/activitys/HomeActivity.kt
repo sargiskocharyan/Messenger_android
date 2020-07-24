@@ -71,7 +71,6 @@ class HomeActivity : AppCompatActivity() {
         })
 
         mSocket.on("call") {
-            Log.d("SignallingClient", "created call() called with: args = [" + Arrays.toString(it) + "]")
             SharedConfigs.callingOpponentId = it[0].toString()
             SharedConfigs.isCalling = true
             val intent = Intent(this, CallRoomActivity::class.java)

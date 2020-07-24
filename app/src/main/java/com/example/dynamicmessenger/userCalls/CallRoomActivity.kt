@@ -1,7 +1,6 @@
 package com.example.dynamicmessenger.userCalls
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -9,20 +8,17 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.ActivityCallRoomBinding
-import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userCalls.viewModels.CallRoomViewModel
 import com.example.dynamicmessenger.userCalls.webRtc.CustomPeerConnectionObserver
 import com.example.dynamicmessenger.userCalls.webRtc.CustomSdpObserver
@@ -51,11 +47,15 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     private var peerIceServers: MutableList<PeerConnection.IceServer> = ArrayList()
     private val ALL_PERMISSIONS_CODE = 1
     private lateinit var binding: ActivityCallRoomBinding
+    private lateinit var viewModel: CallRoomViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView<ActivityCallRoomBinding>(this, R.layout.activity_call_room)
-        binding.viewModel = SignallingClient.getInstance()
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_call_room)
+        viewModel = ViewModelProvider(this).get(CallRoomViewModel::class.java)
+        binding.viewModel = viewModel
+        binding.signalingClient = SignallingClient.getInstance()
+        binding.lifecycleOwner = this
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !== PackageManager.PERMISSION_GRANTED
             || ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) !== PackageManager.PERMISSION_GRANTED) {
@@ -63,6 +63,14 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         } else {
             start()
         }
+        localPeer
+        viewModel.getOpponentInfoFromNetwork()
+        viewModel.opponentAvatarUrl.observe(this, androidx.lifecycle.Observer {
+            viewModel.getAvatar(it)
+        })
+        viewModel.opponentAvatarBitmap.observe(this, androidx.lifecycle.Observer {
+            binding.callerCircleImageView.setImageBitmap(it)
+        })
 
         binding.acceptCallCardView.setOnClickListener {
             if (SharedConfigs.isCalling) {
@@ -71,15 +79,18 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
             } else {
                 SignallingClient.getInstance()!!.callOpponent()
             }
-            SignallingClient.getInstance()!!.isCallingInProgress.value = true
+            SignallingClient.getInstance()!!.isCallingNotProgress.value = false
         }
 
         binding.hangUpCallCardView.setOnClickListener {
             SignallingClient.getInstance()!!.emitCallAccepted(false)
+            SignallingClient.getInstance()!!.isStarted = false
+            SharedConfigs.isCalling = false
             try {
                 if (localPeer != null) {
                     localPeer!!.close()
                 }
+                peerConnectionFactory.dispose()
                 localPeer = null
                 updateVideoViews(false)
             } catch (e: Exception) {
@@ -168,7 +179,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         audioSource = peerConnectionFactory.createAudioSource(audioConstraints)
         localAudioTrack = peerConnectionFactory.createAudioTrack("101", audioSource)
         videoCapturerAndroid?.startCapture(1024, 720, 30)
-        localVideoView.visibility = View.VISIBLE
+//        localVideoView.visibility = View.VISIBLE
         localVideoTrack.addSink(localVideoView)
         localVideoView.setMirror(true)
         remoteVideoView.setMirror(true)
@@ -250,6 +261,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         runOnUiThread {
             try {
                 remoteVideoView.visibility = View.VISIBLE
+                localVideoView.visibility = View.VISIBLE
                 videoTrack.addSink(remoteVideoView)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -278,9 +290,9 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
     override fun onOfferReceived(data: JSONObject?) {
         runOnUiThread {
-//            if (!SignallingClient.getInstance()!!.isInitiator && !SignallingClient.getInstance()!!.isStarted) {
-            onTryToStart()
-//            }
+            if (!SignallingClient.getInstance()!!.isInitiator && !SignallingClient.getInstance()!!.isStarted) {
+                onTryToStart()
+            }
             try {
                 if (data != null) {
                     localPeer?.setRemoteDescription(
@@ -331,10 +343,9 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     override fun onAnswerReceived(data: JSONObject?) {
-//        showToast("Received Answer")
         try {
             if (data != null) {
-                localPeer!!.setRemoteDescription(
+                localPeer?.setRemoteDescription(
                     CustomSdpObserver("SignallingClient localSetRemote"),
                     SessionDescription(
                         SessionDescription.Type.fromCanonicalForm(
@@ -370,7 +381,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         runOnUiThread {
             var params = localVideoView.layoutParams
             if (remoteVisible) {
-                params.height = dpToPx(100)
+                params.height = dpToPx(130)
                 params.width = dpToPx(100)
             } else {
                 params = FrameLayout.LayoutParams(
@@ -403,7 +414,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
         localPeer = null
         SharedConfigs.callingOpponentId = null
-        SignallingClient.getInstance()!!.isCallingInProgress.value = false
+        SignallingClient.getInstance()!!.isCallingNotProgress.value = true
+        SignallingClient.destroyInstance()
 //        if (surfaceTextureHelper != null) {
         surfaceTextureHelper.dispose()
 //            surfaceTextureHelper = null

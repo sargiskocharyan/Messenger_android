@@ -5,8 +5,11 @@
 
     <data>
         <variable
-            name="viewModel"
+            name="signalingClient"
             type="com.example.dynamicmessenger.userCalls.webRtc.SignallingClient" />
+        <variable
+            name="viewModel"
+            type="com.example.dynamicmessenger.userCalls.viewModels.CallRoomViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -29,13 +32,15 @@
             <org.webrtc.SurfaceViewRenderer
                 android:id="@+id/remoteView"
                 android:layout_width="match_parent"
-                android:layout_height="585dp"
+                android:layout_height="match_parent"
                 android:visibility="gone" />
 
             <org.webrtc.SurfaceViewRenderer
                 android:id="@+id/localView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:visibility="gone"
+                android:layout_margin="30dp"
                 android:layout_gravity="bottom|end" />
 
         </FrameLayout>
@@ -45,7 +50,7 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_marginBottom="20dp"
-            app:setCircleImageVisible="@{!viewModel.isCallingInProgress}"
+            app:setCircleImageVisible="@{signalingClient.isCallingNotProgress}"
             app:layout_constraintBottom_toTopOf="@+id/callerNameTextView"
             app:layout_constraintEnd_toEndOf="@+id/activity_main"
             app:layout_constraintStart_toStartOf="@+id/activity_main" />
@@ -55,7 +60,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="24sp"
-            app:setTextViewVisible="@{!viewModel.isCallingInProgress}"
+            android:text="@{viewModel.opponentInformation.username}"
+            app:setTextViewVisible="@{signalingClient.isCallingNotProgress}"
             app:layout_constraintBottom_toBottomOf="@+id/activity_main"
             app:layout_constraintEnd_toEndOf="@+id/callerCircleImageView"
             app:layout_constraintStart_toStartOf="@+id/callerCircleImageView"
@@ -96,7 +102,7 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:backgroundTint="@android:color/holo_green_light"
-                app:setCardViewVisible="@{!viewModel.isCallingInProgress}"
+                app:setCardViewVisible="@{signalingClient.isCallingNotProgress}"
                 app:cardCornerRadius="50dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -109,15 +115,6 @@
                     android:padding="10dp"
                     android:src="@drawable/ic_baseline_call_24" />
             </androidx.cardview.widget.CardView>
-
-            <!--        <Button-->
-            <!--            android:id="@+id/end_call"-->
-            <!--            android:layout_width="wrap_content"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            android:layout_margin="5dp"-->
-            <!--            android:text="Hangup"-->
-            <!--            app:layout_constraintBottom_toBottomOf="parent" />-->
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

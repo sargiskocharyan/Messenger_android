@@ -1,5 +1,6 @@
 package com.example.dynamicmessenger.userCalls.webRtc
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -21,9 +22,10 @@ internal class SignallingClient {
     private lateinit var mSocket: Socket
     var isChannelReady = false
     var isInitiator = false
-    val isCallingInProgress = MutableLiveData<Boolean>(false)
+    val isCallingNotProgress = MutableLiveData<Boolean>(true)
     val isCalling = MutableLiveData<Boolean>(true)
-    var isStarted = true
+    var isStarted = false
+    var number = 0
     private lateinit var callback: SignalingInterface
 
     fun init(signalingInterface: SignalingInterface) {
@@ -32,9 +34,15 @@ internal class SignallingClient {
             mSocket = SocketManager.getSocketInstance()!!
 
             mSocket.on("callAccepted") {
-                Log.d("SignallingClient", "call accepted: args = [" + Arrays.toString(it) + "]")
-                roomName = it[1].toString()
-                callback.onCallAccepted(it[1].toString())
+                number++
+                Log.d("SignallingClientAcc", "call accepted: args = " + Arrays.toString(it))
+                if (it[0] == true) {
+                    if (number == 1) {
+                        Log.d("SignallingClientAcc", "$number")
+                        roomName = it[1].toString()
+                        callback.onCallAccepted(it[1].toString())
+                    }
+                }
             }
 
 //            mSocket.on("call") {
@@ -144,8 +152,8 @@ internal class SignallingClient {
             val obj = JSONObject()
             obj.put("sdp", message.description)
             obj.put("type", message.type.canonicalForm())
-            Log.d("SignallingClient", "emitOffer $obj")
-            mSocket.emit("emit offer", roomName, obj)
+            Log.d("SignallingClient", "emitOffer $roomName, $obj")
+            mSocket.emit("offer", roomName, obj)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
@@ -207,9 +215,14 @@ internal class SignallingClient {
         private var instance: SignallingClient? = null
         fun getInstance(): SignallingClient? {
             if (instance == null) {
+                Log.i("+++", "getInstance called")
                 instance = SignallingClient()
             }
             return instance
+        }
+        fun destroyInstance() {
+            Log.i("+++", "destroyInstance called")
+            instance = null
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.dynamicmessenger.utils
 
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.view.View
 import android.widget.*
@@ -85,3 +86,8 @@ fun setCardViewVisible(cardView: CardView, answer: Boolean) {
         cardView.visibility = View.GONE
     }
 }
+
+//@BindingAdapter("setCircleImageBitmap")
+//fun setCircleImageBitmap(circleImage: CircleImageView, bitmap: Bitmap) {
+//    circleImage.setImageBitmap(bitmap)
+//}
