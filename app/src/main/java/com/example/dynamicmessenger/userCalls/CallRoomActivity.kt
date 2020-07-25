@@ -63,7 +63,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         } else {
             start()
         }
-        localPeer
         viewModel.getOpponentInfoFromNetwork()
         viewModel.opponentAvatarUrl.observe(this, androidx.lifecycle.Observer {
             viewModel.getAvatar(it)
@@ -71,6 +70,18 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         viewModel.opponentAvatarBitmap.observe(this, androidx.lifecycle.Observer {
             binding.callerCircleImageView.setImageBitmap(it)
         })
+//        SocketEventsForVideoCalls.callAccepted.observe(this, androidx.lifecycle.Observer {
+//            SignallingClient.getInstance()!!.eventCallAccepted(it)
+//        })
+//        SocketEventsForVideoCalls.offer.observe(this, androidx.lifecycle.Observer {
+//            SignallingClient.getInstance()!!.eventOffer(it)
+//        })
+//        SocketEventsForVideoCalls.answer.observe(this, androidx.lifecycle.Observer {
+//            SignallingClient.getInstance()!!.eventAnswer(it)
+//        })
+//        SocketEventsForVideoCalls.candidates.observe(this, androidx.lifecycle.Observer {
+//            SignallingClient.getInstance()!!.eventCandidates(it)
+//        })
 
         binding.acceptCallCardView.setOnClickListener {
             if (SharedConfigs.isCalling) {
@@ -96,6 +107,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+//            SignallingClient.getInstance()!!.close()
             onBackPressed()
         }
     }
@@ -114,7 +126,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     private fun initViews() {
-//        val hangup: Button = findViewById(R.id.end_call)
         localVideoView = findViewById(R.id.localView)
         remoteVideoView = findViewById(R.id.remoteView)
     }

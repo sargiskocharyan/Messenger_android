@@ -29,8 +29,8 @@ import javax.net.ssl.X509TrustManager
 import javax.security.cert.CertificateException
 
 
-private const val BASE_URL = ResponseUrls.herokuIP
-//private const val BASE_URL = ResponseUrls.ErosServerIP
+//private const val BASE_URL = ResponseUrls.herokuIP
+private const val BASE_URL = ResponseUrls.ErosServerIP
 private const val ERO_URL = ResponseUrls.ErosServerIP
 
 private var cacheSize: Long = 10 * 1024 * 1024 // 10 MB

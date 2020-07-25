@@ -20,6 +20,8 @@ import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
+import com.example.dynamicmessenger.userCalls.SocketEventsForVideoCalls
+import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.fragments.*
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.MyAlertMessage
@@ -47,8 +49,7 @@ class HomeActivity : AppCompatActivity() {
 //        this.supportActionBar!!.hide()  TODO
         val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavBar.setOnNavigationItemSelectedListener(navListener)
-        val context = this
-//        if (SharedConfigs.token == "") tokenCheck(context, SharedConfigs.token)
+        tokenCheck(this, SharedConfigs.token)
 
         //socket
         socketManager = SocketManager
@@ -58,6 +59,7 @@ class HomeActivity : AppCompatActivity() {
             //TODO: Use TAGS
             Log.e("+++", "HomeActivity Socket $e")
         }
+        Log.i("+++", "Home activity OnCreate")
         mSocket.connect()
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         mSocket.on("message", socketManager.onMessageForNotification(Activity()){
@@ -71,6 +73,22 @@ class HomeActivity : AppCompatActivity() {
             }
         })
 
+        mSocket.on("callAccepted") {
+            socketManager.onCallAccepted(it)
+            Log.d("SignallingClientAcc", "Home activity call accepted: args = " + Arrays.toString(it))
+        }
+        mSocket.on("offer") {
+            socketManager.onOffer(it)
+            Log.d("SignallingClientAcc", "Home activity offer ")
+        }
+        mSocket.on("answer") {
+            socketManager.onAnswer(it)
+            Log.d("SignallingClientAcc", "Home activity answer ")
+        }
+        mSocket.on("candidates") {
+            socketManager.onCandidate(it)
+            Log.d("SignallingClientAcc", "Home activity candidates ")
+        }
         mSocket.on("call") {
             SharedConfigs.callingOpponentId = it[0].toString()
             SharedConfigs.isCalling = true
@@ -115,22 +133,23 @@ class HomeActivity : AppCompatActivity() {
             try {
                 val response = UserTokenVerifyApi.retrofitService.userTokenResponseAsync(token)
                 if (response.isSuccessful) {
-                    if (!response.body()!!.tokenExists) {
-                        SharedConfigs.token = ""
-                        AlertDialog.Builder(context)
-                            .setTitle("Error")
-                            .setMessage("Your seans is out of time")
-                            .setPositiveButton("ok") { _, _ ->
-                                val intent = Intent(context, MainActivity::class.java)
-                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                startActivity(intent)
-                            }
-                            .create().show()
+                    if (response.body()!!.tokenExists!!) {
+                        return@launch
                     }
-                } else {
-                    MyAlertMessage.showAlertDialog(context, "Error verify token")
                 }
+                SharedPreferencesManager.deleteUserAllInformation(context!!)
+                SharedConfigs.deleteToken()
+                SharedConfigs.deleteSignedUser()
+                AlertDialog.Builder(context)
+                    .setTitle("Error")
+                    .setMessage("Your seans is out of time")
+                    .setPositiveButton("ok") { _, _ ->
+                        val intent = Intent(context, MainActivity::class.java)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(intent)
+                    }
+                    .create().show()
             } catch (e: Exception) {
                 Toast.makeText(context, "Please check yur internet connection", Toast.LENGTH_SHORT).show()
             }

@@ -29,11 +29,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class UserCallsAdapter(val context: Context) : RecyclerView.Adapter<UserCallsAdapter.UserCallsViewHolder>() {
-    var data = listOf<UserCalls?>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+    private var data = emptyList<UserCalls>()
+
+    fun setAdapterData(userCalls: List<UserCalls>){
+        this.data = userCalls
+        Log.i("+++", "$userCalls")
+        notifyDataSetChanged()
+    }
 
     private val diskLruCache = DiskCache.getInstance(SharedConfigs.myContext)
     private val callsDao = SignedUserDatabase.getUserDatabase(context)!!.userCallsDao()

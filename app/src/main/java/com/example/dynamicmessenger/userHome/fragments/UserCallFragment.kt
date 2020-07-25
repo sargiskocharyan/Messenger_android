@@ -5,9 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.databinding.FragmentUserCallBinding
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
 import com.example.dynamicmessenger.userHome.adapters.UserCallsAdapter
 
@@ -27,7 +30,11 @@ class UserCallFragment : Fragment() {
         val adapter = UserCallsAdapter(requireContext())
         binding.root.setHasTransientState(true)
         binding.callRecyclerView.adapter = adapter
-        adapter.data = callsRepository.getUserCalls()
+        binding.lifecycleOwner = this
+        val userCalls: LiveData<List<UserCalls>> = callsRepository.getUserCalls
+        userCalls.observe(viewLifecycleOwner, Observer {
+            adapter.setAdapterData(it)
+        })
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.callRecyclerView.layoutManager = linearLayoutManager
 

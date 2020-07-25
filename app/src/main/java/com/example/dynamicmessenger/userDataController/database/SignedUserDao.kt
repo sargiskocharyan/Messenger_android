@@ -1,5 +1,6 @@
 package com.example.dynamicmessenger.userDataController.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.dynamicmessenger.network.authorization.models.Chat
 
@@ -30,7 +31,7 @@ interface UserTokenDao {
 @Dao
 interface UserCallsDao {
     @Query("SELECT * FROM user_calls ORDER BY time DESC")
-    fun getUserCalls(): List<UserCalls?>
+    fun getUserCalls(): LiveData<List<UserCalls>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(userCalls: UserCalls)

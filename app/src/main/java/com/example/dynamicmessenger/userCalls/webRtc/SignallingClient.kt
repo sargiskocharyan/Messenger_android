@@ -1,12 +1,9 @@
 package com.example.dynamicmessenger.userCalls.webRtc
 
-import android.annotation.SuppressLint
 import android.util.Log
-import androidx.activity.viewModels
 import androidx.lifecycle.MutableLiveData
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
-import com.example.dynamicmessenger.userCalls.viewModels.CallRoomViewModel
 import com.github.nkzawa.socketio.client.Socket
 import org.json.JSONException
 import org.json.JSONObject
@@ -17,7 +14,7 @@ import java.security.KeyManagementException
 import java.security.NoSuchAlgorithmException
 import java.util.*
 
-internal class SignallingClient {
+class SignallingClient {
     private var roomName: String? = null
     private lateinit var mSocket: Socket
     var isChannelReady = false
@@ -25,25 +22,25 @@ internal class SignallingClient {
     val isCallingNotProgress = MutableLiveData<Boolean>(true)
     val isCalling = MutableLiveData<Boolean>(true)
     var isStarted = false
-    var number = 0
     private lateinit var callback: SignalingInterface
 
     fun init(signalingInterface: SignalingInterface) {
         callback = signalingInterface
         try {
+            SocketManager.addSignalingClient(this)
             mSocket = SocketManager.getSocketInstance()!!
+/*
+//            mSocket.once("callAccepted") {
+//                Log.d("SignallingClientAcc", "call accepted: args = " + Arrays.toString(it))
+//                if (it[0] == true) {
+////                    if (number == 1) {
+//                        roomName = it[1].toString()
+//                        callback.onCallAccepted(it[1].toString())
+////                    }
+//                }
+//            }
 
-            mSocket.on("callAccepted") {
-                number++
-                Log.d("SignallingClientAcc", "call accepted: args = " + Arrays.toString(it))
-                if (it[0] == true) {
-                    if (number == 1) {
-                        Log.d("SignallingClientAcc", "$number")
-                        roomName = it[1].toString()
-                        callback.onCallAccepted(it[1].toString())
-                    }
-                }
-            }
+
 
 //            mSocket.on("call") {
 //                Log.d("SignallingClient", "created call() called with: args = [" + Arrays.toString(it) + "]")
@@ -52,38 +49,44 @@ internal class SignallingClient {
 ////                callback.onCreatedRoom()
 //            }
 
-            mSocket.on("offer") {
-                Log.d("SignallingClient", "on offer " + Arrays.toString(it))
-                roomName = it[0].toString()
-                try {
-                    val data = it[1] as JSONObject
-                    callback.onOfferReceived(data)
-                } catch (e: JSONException) {
-                    e.printStackTrace()
-                }
-                isChannelReady = true
-            }
+//            mSocket.once("offer") {
+//                number++
+////                SocketEventsForVideoCalls.offer.observe(this, androidx.lifecycle.Observer {
+////
+////                })
+//                Log.d("SignallingClient", "on offer " + Arrays.toString(it))
+//                roomName = it[0].toString()
+//                Log.d("SignallingClientAcc", "$number")
+//                try {
+//                    val data = it[1] as JSONObject
+//                    callback.onOfferReceived(data)
+//                } catch (e: JSONException) {
+//                    e.printStackTrace()
+//                }
+//                isChannelReady = true
+//            }
 
-            mSocket.on("answer") {
-                Log.d("SignallingClient", "on answer " + Arrays.toString(it))
-                try {
-                    val data = it[0] as JSONObject
-                    callback.onAnswerReceived(data)
-                } catch (e: JSONException) {
-                    e.printStackTrace()
-                }
-                isChannelReady = true
-            }
+//            mSocket.once("answer") {
+//                Log.d("SignallingClient", "on answer " + Arrays.toString(it))
+//                try {
+//                    val data = it[0] as JSONObject
+//                    callback.onAnswerReceived(data)
+//                } catch (e: JSONException) {
+//                    e.printStackTrace()
+//                }
+//                isChannelReady = true
+//            }
 
-            mSocket.on("candidates") {
-                Log.d("SignallingClient", "canditates " + Arrays.toString(it))
-                try {
-                    val data = it[0] as JSONObject
-                    callback.onIceCandidateReceived(data)
-                } catch (e: JSONException) {
-                    e.printStackTrace()
-                }
-            }
+//            mSocket.once("candidates") {
+//                Log.d("SignallingClient", "candidates " + Arrays.toString(it))
+//                try {
+//                    val data = it[0] as JSONObject
+//                    callback.onIceCandidateReceived(data)
+//                } catch (e: JSONException) {
+//                    e.printStackTrace()
+//                }
+//            }
+*/
             /*
             //messages - SDP and ICE candidates are transferred through this
 //            socket.on("message") { args: Array<Any> ->
@@ -130,7 +133,46 @@ internal class SignallingClient {
         }
     }
 
+    fun onCallAccepted(array: Array<Any>) {
+        Log.d("SignallingClientAcc", "call accepted: args = " + array.contentToString())
+        if (array[0] == true) {
+            roomName = array[1].toString()
+            callback.onCallAccepted(array[1].toString())
+        }
+    }
 
+    fun onOffer(array: Array<Any>) {
+        Log.d("SignallingClient", "on offer " + array.contentToString())
+        roomName = array[0].toString()
+        try {
+            val data = array[1] as JSONObject
+            callback.onOfferReceived(data)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+        isChannelReady = true
+    }
+
+    fun onAnswer(array: Array<Any>) {
+        Log.d("SignallingClient", "on answer " + array.contentToString())
+        try {
+            val data = array[0] as JSONObject
+            callback.onAnswerReceived(data)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+        isChannelReady = true
+    }
+
+    fun onCandidate(array: Array<Any>) {
+        Log.d("SignallingClient", "candidates " + array.contentToString())
+        try {
+            val data = array[0] as JSONObject
+            callback.onIceCandidateReceived(data)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+    }
 
     fun emitMessage(message: SessionDescription) {
         try {
@@ -195,13 +237,15 @@ internal class SignallingClient {
         mSocket.emit("call", SharedConfigs.callingOpponentId)
     }
 
-    fun close() {
-//        socket.emit("bye", roomName)
-        mSocket.disconnect()
-        mSocket.close()
-    }
 
-    internal interface SignalingInterface {
+//    fun close() {
+////        socket.emit("bye", roomName)
+//        mSocket.disconnect()
+//        mSocket.close()
+//        mSocket.connect()
+//    }
+
+    interface SignalingInterface {
         fun onRemoteHangUp(msg: String?)
         fun onOfferReceived(data: JSONObject?)
         fun onAnswerReceived(data: JSONObject?)
@@ -222,6 +266,7 @@ internal class SignallingClient {
         }
         fun destroyInstance() {
             Log.i("+++", "destroyInstance called")
+            SocketManager.removeSignallingClient()
             instance = null
         }
     }

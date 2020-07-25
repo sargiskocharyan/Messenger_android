@@ -26,20 +26,20 @@ class EmailAndPhoneFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(EmailAndPhoneViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        val activityViewModel: MainActivityViewModel by activityViewModels()
+        val mainActivityViewModel: MainActivityViewModel by activityViewModels()
 
         viewModel.userEnteredEmail.observe(viewLifecycleOwner, Observer {
             viewModel.hintVisibility.value = it.isNotEmpty()
             viewModel.isEmailValid.value = Validations.isEmailValid(it)
-            activityViewModel.userMail = it
+            mainActivityViewModel.userMail = it
         })
 
         viewModel.userCode.observe(viewLifecycleOwner, Observer {
-            activityViewModel.userCode = it
+            mainActivityViewModel.userCode = it
         })
 
-        viewModel.isEmailExists.observe(viewLifecycleOwner, Observer  {
-            activityViewModel.userMailExists = it
+        viewModel.isEmailExists.observe(viewLifecycleOwner, Observer {
+            mainActivityViewModel.userMailExists = it
         })
 
         return binding.root

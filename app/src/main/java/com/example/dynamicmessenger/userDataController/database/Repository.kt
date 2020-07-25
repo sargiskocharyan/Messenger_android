@@ -1,6 +1,7 @@
 package com.example.dynamicmessenger.userDataController.database
 
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userDataController.SaveToken
 
@@ -41,6 +42,7 @@ class UserTokenRepository(private val userTokenDao: UserTokenDao) {
 
 class UserCallsRepository(private val userCallsDao: UserCallsDao) {
     fun getUserCalls() = userCallsDao.getUserCalls()
+    val getUserCalls: LiveData<List<UserCalls>> = userCallsDao.getUserCalls()
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread

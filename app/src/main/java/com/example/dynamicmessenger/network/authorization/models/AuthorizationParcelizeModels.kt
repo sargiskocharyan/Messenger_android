@@ -51,7 +51,7 @@ data class University(
 }
 
 @Parcelize
-data class UserTokenProperty(val tokenExists: Boolean) : Parcelable
+data class UserTokenProperty(val tokenExists: Boolean?, val Error: String?) : Parcelable
 
 @Parcelize
 data class Users(val users: List<User>) : Parcelable

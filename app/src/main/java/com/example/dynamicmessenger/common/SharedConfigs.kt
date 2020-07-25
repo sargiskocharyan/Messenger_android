@@ -25,7 +25,6 @@ object SharedConfigs {
         userRep = SignedUserRepository(userDao)
         tokenRep = UserTokenRepository(tokenDao)
         signedUser = userRep.signedUser
-        token = tokenRep.getToken()
         sharedPrefs = context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
         appLang.value = setLang()
     }
