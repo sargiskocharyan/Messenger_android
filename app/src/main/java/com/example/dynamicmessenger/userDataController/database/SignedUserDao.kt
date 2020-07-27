@@ -3,6 +3,7 @@ package com.example.dynamicmessenger.userDataController.database
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.dynamicmessenger.network.authorization.models.Chat
+import com.example.dynamicmessenger.network.authorization.models.User
 
 @Dao
 interface SignedUserDao {
@@ -38,4 +39,19 @@ interface UserCallsDao {
 
     @Query("DELETE FROM user_calls")
     fun deleteAll()
+}
+
+@Dao
+interface SavedUserDao {
+    @Query("SELECT * FROM user WHERE _id = :id")
+    fun getUserCalls(id: String): User
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(userCalls: User)
+
+    @Query("DELETE FROM user WHERE _id = :id")
+    suspend fun deleteUserById(id: String)
+
+    @Query("DELETE FROM user")
+    suspend fun deleteAll()
 }

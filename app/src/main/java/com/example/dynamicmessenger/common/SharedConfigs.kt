@@ -22,8 +22,8 @@ object SharedConfigs {
         this.myContext = context
         userDao = SignedUserDatabase.getUserDatabase(context)!!.signedUserDao()
         tokenDao = SignedUserDatabase.getUserDatabase(context)!!.userTokenDao()
-        userRep = SignedUserRepository(userDao)
         tokenRep = UserTokenRepository(tokenDao)
+        userRep = SignedUserRepository(userDao)
         signedUser = userRep.signedUser
         sharedPrefs = context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
         appLang.value = setLang()
@@ -45,10 +45,11 @@ object SharedConfigs {
     }
 
     var token: String = ""
-        set(value) {
-            field = value
-            tokenRep.update(value)
-        }
+
+    fun saveToken(token: String, tokenExpire: String) {
+        tokenRep.update(token, tokenExpire)
+        this.token = token
+    }
 
 //    var appLang: AppLangKeys = AppLangKeys.EN
 //        set(value) {

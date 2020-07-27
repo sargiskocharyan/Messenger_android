@@ -27,12 +27,12 @@ class SignedUserRepository(private val signedUserDao: SignedUserDao) {
 
 class UserTokenRepository(private val userTokenDao: UserTokenDao) {
     fun getToken() = SaveToken.decrypt(userTokenDao.getUserToken()?.token)
-
+    val tokenExpire = userTokenDao.getUserToken()?.tokenExpire
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    fun update(token: String) {
-        userTokenDao.update(UserToken(SaveToken.encrypt(token)))
+    fun update(token: String, tokenExpire: String) {
+        userTokenDao.update(UserToken(SaveToken.encrypt(token), tokenExpire))
     }
 
     fun delete() {

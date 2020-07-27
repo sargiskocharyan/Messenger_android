@@ -11,8 +11,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.activitys.viewModels.HomeActivityViewModel
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.UserTokenVerifyApi
@@ -22,6 +24,9 @@ import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userCalls.SocketEventsForVideoCalls
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserTokenDao
+import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.userHome.fragments.*
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.MyAlertMessage
@@ -33,6 +38,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -42,6 +48,9 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var selectedFragment: Fragment
     private lateinit var socketManager: SocketManager
     private lateinit var mSocket: Socket
+    private lateinit var viewModel: HomeActivityViewModel
+    private lateinit var tokenDao: UserTokenDao
+    private lateinit var tokenRep: UserTokenRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +59,9 @@ class HomeActivity : AppCompatActivity() {
         val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavBar.setOnNavigationItemSelectedListener(navListener)
         tokenCheck(this, SharedConfigs.token)
+        viewModel = ViewModelProvider(this).get(HomeActivityViewModel::class.java)
+        tokenDao = SignedUserDatabase.getUserDatabase(this)!!.userTokenDao()
+        tokenRep = UserTokenRepository(tokenDao)
 
         //socket
         socketManager = SocketManager
@@ -59,7 +71,6 @@ class HomeActivity : AppCompatActivity() {
             //TODO: Use TAGS
             Log.e("+++", "HomeActivity Socket $e")
         }
-        Log.i("+++", "Home activity OnCreate")
         mSocket.connect()
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         mSocket.on("message", socketManager.onMessageForNotification(Activity()){
@@ -132,24 +143,27 @@ class HomeActivity : AppCompatActivity() {
         coroutineScope.launch {
             try {
                 val response = UserTokenVerifyApi.retrofitService.userTokenResponseAsync(token)
-                if (response.isSuccessful) {
-                    if (response.body()!!.tokenExists!!) {
-                        return@launch
-                    }
+                val tokenExpire = tokenRep.tokenExpire
+                val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                val date: Date = format.parse(tokenExpire!!)!!
+                val currentDate: Date = Calendar.getInstance().time
+                Log.i("+++", "on on destroy $tokenExpire")
+                Log.i("+++","response.errorBody() ${response.errorBody()?.string()} ,,,,, response.body()?.tokenExists ${response.body()?.tokenExists}")
+                if (response.body()?.tokenExists == false || date.time - currentDate.time <  86400000 ) {
+                    SharedPreferencesManager.deleteUserAllInformation(context!!)
+                    SharedConfigs.deleteToken()
+                    SharedConfigs.deleteSignedUser()
+                    AlertDialog.Builder(context)
+                        .setTitle("Error")
+                        .setMessage("Your seans is out of time")
+                        .setPositiveButton("ok") { _, _ ->
+                            val intent = Intent(context, MainActivity::class.java)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            startActivity(intent)
+                        }
+                        .create().show()
                 }
-                SharedPreferencesManager.deleteUserAllInformation(context!!)
-                SharedConfigs.deleteToken()
-                SharedConfigs.deleteSignedUser()
-                AlertDialog.Builder(context)
-                    .setTitle("Error")
-                    .setMessage("Your seans is out of time")
-                    .setPositiveButton("ok") { _, _ ->
-                        val intent = Intent(context, MainActivity::class.java)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        startActivity(intent)
-                    }
-                    .create().show()
             } catch (e: Exception) {
                 Toast.makeText(context, "Please check yur internet connection", Toast.LENGTH_SHORT).show()
             }

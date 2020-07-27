@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
-import com.example.dynamicmessenger.userHome.adapters.UserChatDiffUtilCallback
 
 class ChatRoomAdapter(val context: Context, private val myID: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

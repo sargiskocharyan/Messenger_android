@@ -17,6 +17,8 @@ import com.example.dynamicmessenger.userDataController.database.SignedUserDataba
 import com.example.dynamicmessenger.userDataController.database.UserTokenDao
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.utils.LocalizationUtil
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 

@@ -41,7 +41,8 @@ class PersonLoginViewModel: ViewModel(), Observable {
                     if (response.isSuccessful) {
                         //TODO:Use GsonFactory or Moshi?
                         SharedConfigs.signedUser = ClassConverter.loginPropertyToSignedUser(response.body()!!)
-                        SharedConfigs.token = response.body()!!.token
+//                        SharedConfigs.token = response.body()!!.token
+                        SharedConfigs.saveToken(response.body()!!.token, response.body()!!.tokenExpire)
                         _goToNextPage.value = true
                     } else {
                         MyAlertMessage.showAlertDialog(view.context, "Enter correct code")
@@ -56,7 +57,8 @@ class PersonLoginViewModel: ViewModel(), Observable {
                     val response = RegistrationApi.retrofitService.registrationResponseAsync(LoginTask(personEmail.value!!, userEnteredCode.value!!))
                     if (response.isSuccessful) {
                         SharedConfigs.signedUser = ClassConverter.loginPropertyToSignedUser(response.body()!!)
-                        SharedConfigs.token = response.body()!!.token
+//                        SharedConfigs.token = response.body()!!.token
+                        SharedConfigs.saveToken(response.body()!!.token, response.body()!!.tokenExpire)
                         view.findNavController().navigate(R.id.action_personLoginFragment_to_personRegistrationFragment)
                     } else {
                         MyAlertMessage.showAlertDialog(view.context, "Enter correct code")

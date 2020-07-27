@@ -13,11 +13,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.GetUserInfoByIdApi
+import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
 import com.example.dynamicmessenger.userDataController.database.DiskCache
@@ -29,12 +31,20 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class UserCallsAdapter(val context: Context) : RecyclerView.Adapter<UserCallsAdapter.UserCallsViewHolder>() {
-    private var data = emptyList<UserCalls>()
+    private var data = mutableListOf<UserCalls>()
 
     fun setAdapterData(userCalls: List<UserCalls>){
-        this.data = userCalls
-        Log.i("+++", "$userCalls")
+        data.clear()
+        data.addAll(userCalls)
         notifyDataSetChanged()
+    }
+
+    fun submitList(newList: List<UserCalls>) {
+        val userChatDiffUtilCallback = UserCallsDiffUtilCallback(data, newList)
+        val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
+        authorDiffResult.dispatchUpdatesTo(this)
+        data.clear()
+        data.addAll(newList)
     }
 
     private val diskLruCache = DiskCache.getInstance(SharedConfigs.myContext)
@@ -103,4 +113,18 @@ class UserCallsAdapter(val context: Context) : RecyclerView.Adapter<UserCallsAda
             }
         }
     }
+}
+
+class UserCallsDiffUtilCallback(private val oldList: List<UserCalls>, private val newList: List<UserCalls>): DiffUtil.Callback() {
+    override fun getOldListSize() = oldList.size
+    override fun getNewListSize() = newList.size
+
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition].time == newList[newItemPosition].time
+    }
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition].time == newList[newItemPosition].time
+    }
+
 }
