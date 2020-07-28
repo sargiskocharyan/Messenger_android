@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
 import com.example.dynamicmessenger.databinding.FragmentUserContactsBinding
 import com.example.dynamicmessenger.dialogs.ContactsSearchDialog
 import com.example.dynamicmessenger.network.authorization.models.User
@@ -26,15 +27,13 @@ class UserContactsFragment : Fragment() {
     lateinit var viewModel: UserContactsViewModel
     private var fragmentJob = Job()
     private val coroutineScope = CoroutineScope(fragmentJob + Dispatchers.Main)
+    private lateinit var binding: FragmentUserContactsBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding :FragmentUserContactsBinding =
-            DataBindingUtil.inflate(inflater,
-                R.layout.fragment_user_contacts,
-                container,false)
+        binding = FragmentUserContactsBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(UserContactsViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -69,15 +68,13 @@ class UserContactsFragment : Fragment() {
 
     private fun updateRecycleViewFromNetwork(adapter: UserContactsAdapter) {
         viewModel.getUserContactsFromNetwork(requireContext()) {
-            updateRecycleView(adapter, it)
+            adapter.setAdapterDataNotify(it)
         }
     }
 
     private fun updateRecycleView(adapter: UserContactsAdapter, data: List<User>) {
-        val userChatDiffUtilCallback = UserContactsDiffUtilCallback(adapter.data, data)
-        val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
-        adapter.data = data
-        authorDiffResult.dispatchUpdatesTo(adapter)
+        scrollToTop()
+        adapter.submitList(data)
     }
 
     private fun configureTopNavBar(toolbar: Toolbar, adapter: UserContactsAdapter) {
@@ -94,5 +91,9 @@ class UserContactsFragment : Fragment() {
 
             return@setOnMenuItemClickListener true
         }
+    }
+
+    private fun scrollToTop() {
+        binding.contactsRecyclerView.scrollToPosition(0)
     }
 }

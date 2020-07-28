@@ -54,7 +54,7 @@ class UserChatFragment : Fragment() {
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.VISIBLE
 
-        val adapter = UserChatsAdapter(requireContext(), activityJob, requireActivity())
+        val adapter = UserChatsAdapter(requireContext(), activityJob)
         updateRecyclerViewFromDatabase(adapter)
 
         binding.root.setHasTransientState(true)
@@ -64,6 +64,7 @@ class UserChatFragment : Fragment() {
         binding.chatsRecyclerView.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatsRecyclerView.layoutManager = linearLayoutManager
+        adapter.setAdapterDataNotify(viewModel.getUserChats().sortedWith(compareBy { chat -> chat.message }).reversed())
 
         HomeActivity.opponentUser = null
         HomeActivity.isAddContacts = null
@@ -84,7 +85,6 @@ class UserChatFragment : Fragment() {
                 Log.i("+++", "UserChatFragment socket event message $e")
             }
         })
-        Log.i("+++" ,"time in millis ${System.currentTimeMillis()}")
 
         return binding.root
     }
@@ -109,9 +109,9 @@ class UserChatFragment : Fragment() {
         binding.userChatSwipeRefreshLayout.isRefreshing = true
         viewModel.getUserChatsFromNetwork(requireContext(), binding.userChatSwipeRefreshLayout) {
             val list = it.sortedWith(compareBy { chat -> chat.message }).reversed()
-            adapter.setAdapterDataNotify(list)
+            adapter.submitList(list)
             binding.userChatSwipeRefreshLayout.isRefreshing = false
-            Log.i("+++" ,"time in millis ${System.currentTimeMillis()}")
+            scrollToTop(binding)
         }
     }
 

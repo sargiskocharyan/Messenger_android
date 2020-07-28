@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.databinding.FragmentUserCallBinding
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
@@ -15,6 +16,7 @@ import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userDataController.database.UserCallsDao
 import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
 import com.example.dynamicmessenger.userHome.adapters.UserCallsAdapter
+import com.example.dynamicmessenger.userHome.viewModels.UserCallViewModel
 
 class UserCallFragment : Fragment() {
 
@@ -22,15 +24,17 @@ class UserCallFragment : Fragment() {
     private lateinit var callsDao: UserCallsDao
     private lateinit var callsRepository: UserCallsRepository
     private lateinit var adapter: UserCallsAdapter
+    private lateinit var viewModel: UserCallViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentUserCallBinding.inflate(layoutInflater)
+        viewModel = ViewModelProvider(this).get(UserCallViewModel::class.java)
         callsDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userCallsDao()
         callsRepository = UserCallsRepository(callsDao)
-        adapter = UserCallsAdapter(requireContext())
+        adapter = UserCallsAdapter(requireContext(), viewModel)
 
         binding.root.setHasTransientState(true)
         binding.callRecyclerView.adapter = adapter

@@ -35,22 +35,37 @@ interface UserCallsDao {
     fun getUserCalls(): LiveData<List<UserCalls>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(userCalls: UserCalls)
+    suspend fun insert(userCalls: UserCalls)
 
     @Query("DELETE FROM user_calls")
-    fun deleteAll()
+    suspend fun deleteAll()
 }
 
 @Dao
 interface SavedUserDao {
     @Query("SELECT * FROM user WHERE _id = :id")
-    fun getUserCalls(id: String): User
+    fun getUserById(id: String): User?
+
+    @Query("SELECT * FROM user")
+    fun getAllUsers(): List<User>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(userCalls: User)
 
     @Query("DELETE FROM user WHERE _id = :id")
     suspend fun deleteUserById(id: String)
+
+    @Query("DELETE FROM user")
+    suspend fun deleteAll()
+}
+
+@Dao
+interface UserChatsDao {
+    @Query("SELECT * FROM chat")
+    fun getAllChats(): List<Chat>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(chats: List<Chat>)
 
     @Query("DELETE FROM user")
     suspend fun deleteAll()

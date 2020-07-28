@@ -3,6 +3,7 @@ package com.example.dynamicmessenger.userDataController.database
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import com.example.dynamicmessenger.network.authorization.models.Chat
+import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.SaveToken
 
 class SignedUserRepository(private val signedUserDao: SignedUserDao) {
@@ -46,11 +47,43 @@ class UserCallsRepository(private val userCallsDao: UserCallsDao) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    fun insert(userCalls: UserCalls) {
+    suspend fun insert(userCalls: UserCalls) {
         userCallsDao.insert(userCalls)
     }
 
-    fun delete() {
+    suspend fun delete() {
         userCallsDao.deleteAll()
+    }
+}
+
+class SavedUserRepository(private val savedUserDao: SavedUserDao) {
+    fun getUserById(id: String) = savedUserDao.getUserById(id)
+    val getUserAllUsers: List<User> = savedUserDao.getAllUsers()
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun insert(user: User) {
+        savedUserDao.insert(user)
+    }
+    suspend fun deleteUserById(id: String) {
+        savedUserDao.deleteUserById(id)
+    }
+
+    suspend fun deleteAll() {
+        savedUserDao.deleteAll()
+    }
+}
+
+class UserChatsRepository(private val userChatsDao: UserChatsDao) {
+    val getUserAllChats: List<Chat> = userChatsDao.getAllChats()
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun insert(chats: List<Chat>) {
+        userChatsDao.insert(chats)
+    }
+
+    suspend fun deleteAll() {
+        userChatsDao.deleteAll()
     }
 }

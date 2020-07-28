@@ -59,7 +59,7 @@ class OpponentInformationFragment : Fragment() {
             val currentDate = System.currentTimeMillis()
             val userCalls = UserCalls(opponentUser._id, opponentUser.name , opponentUser.lastname, opponentUser.username, opponentUser.avatarURL, currentDate)
             SharedConfigs.callingOpponentId = opponentUser._id
-            callsRepository.insert(userCalls)
+            viewModel.saveCall(userCalls)
             val intent = Intent(activity, CallRoomActivity::class.java)
             startActivity(intent)
             (activity as Activity?)!!.overridePendingTransition(1, 1)

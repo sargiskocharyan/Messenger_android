@@ -59,17 +59,21 @@ data class UserTokenProperty(val tokenExists: Boolean?, val Error: String?) : Pa
 data class Users(val users: List<User>) : Parcelable
 
 @Parcelize
+@Entity(tableName = "chat")
 data class Chat(
+    @PrimaryKey
     val id: String,
     val name: String?,
     val lastname: String?,
     val username: String?,
+    @Embedded
     val message: Message?,
     val recipientAvatarURL: String?,
     val chatCreateDay: String) : Parcelable
 
 @Parcelize
 data class Message(
+    @Embedded
     val sender: Sender,
     val text: String,
     var createdAt: String,

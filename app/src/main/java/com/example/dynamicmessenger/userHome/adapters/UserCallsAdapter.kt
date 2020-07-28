@@ -26,12 +26,14 @@ import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
+import com.example.dynamicmessenger.userHome.viewModels.UserCallViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class UserCallsAdapter(val context: Context) : RecyclerView.Adapter<UserCallsAdapter.UserCallsViewHolder>() {
+class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) : RecyclerView.Adapter<UserCallsAdapter.UserCallsViewHolder>() {
     private var data = mutableListOf<UserCalls>()
+    private val diskLruCache = DiskCache.getInstance(SharedConfigs.myContext)
 
     fun setAdapterData(userCalls: List<UserCalls>){
         data.clear()
@@ -46,10 +48,6 @@ class UserCallsAdapter(val context: Context) : RecyclerView.Adapter<UserCallsAda
         data.clear()
         data.addAll(newList)
     }
-
-    private val diskLruCache = DiskCache.getInstance(SharedConfigs.myContext)
-    private val callsDao = SignedUserDatabase.getUserDatabase(context)!!.userCallsDao()
-    private val callsRepository = UserCallsRepository(callsDao)
 
     override fun getItemCount(): Int {
         return data.size
@@ -107,7 +105,7 @@ class UserCallsAdapter(val context: Context) : RecyclerView.Adapter<UserCallsAda
                 SharedConfigs.callingOpponentId = userCalls!!._id
                 val intent = Intent(context, CallRoomActivity::class.java)
                 userCalls!!.time = System.currentTimeMillis()
-                callsRepository.insert(userCalls!!)
+                viewModel.saveCall(userCalls!!)
                 context.startActivity(intent)
                 (context as Activity?)!!.overridePendingTransition(1, 1)
             }

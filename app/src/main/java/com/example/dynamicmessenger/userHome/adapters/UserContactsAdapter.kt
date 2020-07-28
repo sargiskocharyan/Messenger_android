@@ -18,6 +18,7 @@ import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.AddContactApi
 import com.example.dynamicmessenger.network.GetUserInfoByIdApi
 import com.example.dynamicmessenger.network.authorization.models.AddUserContactTask
+import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
 import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
@@ -26,11 +27,21 @@ import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
 import kotlinx.coroutines.launch
 
 class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewModel): RecyclerView.Adapter<UserContactsAdapter.UserContactsViewHolder>() {
-      var data = listOf<User>()
-          set(value) {
-              field = value
-              notifyDataSetChanged()
-          }
+    var data = mutableListOf<User>()
+
+    fun setAdapterDataNotify(newList: List<User>) {
+        data.clear()
+        data.addAll(newList)
+        notifyDataSetChanged()
+    }
+
+    fun submitList(newList: List<User>) {
+        val userChatDiffUtilCallback = UserContactsDiffUtilCallback(data, newList)
+        val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
+        authorDiffResult.dispatchUpdatesTo(this)
+        data.clear()
+        data.addAll(newList)
+    }
 
     override fun getItemCount(): Int {
         return data.size
@@ -65,22 +76,35 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         val contactsUserImageView: ImageView = itemView.findViewById(R.id.contactsUserImageView)
         init {
             itemView.setOnClickListener {
-                viewModel.viewModelScope.launch {
-                    try {
-                        val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, userContact!!._id)
-                        if (response.isSuccessful) {
-                            HomeActivity.opponentUser = response.body()
-                            HomeActivity.receiverID = userContact!!._id
-                            (context as AppCompatActivity?)!!.supportFragmentManager
-                                .beginTransaction()
-                                .replace(R.id.fragmentContainer , OpponentInformationFragment())
-                                .addToBackStack(null)
-                                .commit()
-                        } else {
-                            Log.i("+++else", "getOpponentInfoFromNetwork $response")
+                if (viewModel.getUserById(userContact!!._id) != null) {
+                    Log.i("+++", "userContacts if")
+                    HomeActivity.opponentUser = viewModel.getUserById(userContact!!._id)
+                    HomeActivity.receiverID = userContact!!._id
+                    (context as AppCompatActivity?)!!.supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.fragmentContainer , OpponentInformationFragment())
+                        .addToBackStack(null)
+                        .commit()
+                } else {
+                    viewModel.viewModelScope.launch {
+                        try {
+                            val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, userContact!!._id)
+                            if (response.isSuccessful) {
+                                response.body()?.let { user -> viewModel.saveUser(user) }
+                                Log.i("+++", "userContacts else ${response.body()}")
+                                HomeActivity.opponentUser = response.body()
+                                HomeActivity.receiverID = userContact!!._id
+                                (context as AppCompatActivity?)!!.supportFragmentManager
+                                    .beginTransaction()
+                                    .replace(R.id.fragmentContainer , OpponentInformationFragment())
+                                    .addToBackStack(null)
+                                    .commit()
+                            } else {
+                                Log.i("+++else", "getOpponentInfoFromNetwork $response")
+                            }
+                        } catch (e: Exception) {
+                            Log.i("+++exception", "getOpponentInfoFromNetwork $e")
                         }
-                    } catch (e: Exception) {
-                        Log.i("+++exception", "getOpponentInfoFromNetwork $e")
                     }
                 }
             }
