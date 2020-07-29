@@ -55,7 +55,6 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
-//        this.supportActionBar!!.hide()  TODO
         val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         bottomNavBar.setOnNavigationItemSelectedListener(navListener)
         tokenCheck(this, SharedConfigs.token)
@@ -101,10 +100,15 @@ class HomeActivity : AppCompatActivity() {
             Log.d("SignallingClientAcc", "Home activity candidates ")
         }
         mSocket.on("call") {
-            SharedConfigs.callingOpponentId = it[0].toString()
-            SharedConfigs.isCalling = true
-            val intent = Intent(this, CallRoomActivity::class.java)
-            startActivity(intent)
+            if (!SharedConfigs.isCallingInProgress) {
+                SharedConfigs.callingOpponentId = it[0].toString()
+                SharedConfigs.isCalling = true
+                val intent = Intent(this, CallRoomActivity::class.java)
+                startActivity(intent)
+            } else {
+                mSocket.emit("callAccepted", SharedConfigs.callingOpponentId, false)
+                NotificationMessages.setNotificationMessage("Incoming Call", "Incoming Call", this, manager)
+            }
         }
 
         SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
@@ -147,8 +151,6 @@ class HomeActivity : AppCompatActivity() {
                 val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                 val date: Date = format.parse(tokenExpire!!)!!
                 val currentDate: Date = Calendar.getInstance().time
-                Log.i("+++", "on on destroy $tokenExpire")
-                Log.i("+++","response.errorBody() ${response.errorBody()?.string()} ,,,,, response.body()?.tokenExists ${response.body()?.tokenExists}")
                 if (response.body()?.tokenExists == false || date.time - currentDate.time <  86400000 ) {
                     SharedPreferencesManager.deleteUserAllInformation(context!!)
                     SharedConfigs.deleteToken()

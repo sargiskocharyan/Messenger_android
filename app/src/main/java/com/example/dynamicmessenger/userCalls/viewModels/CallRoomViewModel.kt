@@ -21,6 +21,8 @@ class CallRoomViewModel(application: Application) : AndroidViewModel(application
     val opponentInformation = MutableLiveData<User>()
     val opponentAvatarUrl = MutableLiveData<String>()
     val opponentAvatarBitmap = MutableLiveData<Bitmap>()
+    val isEnabledMicrophone = MutableLiveData<Boolean>(true)
+    val isEnabledVolume = MutableLiveData<Boolean>(true)
 
     fun getOpponentInfoFromNetwork() {
         val receiverId = SharedConfigs.callingOpponentId

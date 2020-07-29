@@ -18,7 +18,7 @@ class NotificationMessages {
             }
 
             val builder = NotificationCompat.Builder(context, "101")
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.drawable.ic_letter_d)
                 .setContentTitle(messageTitle)
                 .setContentText(message)
     //            .setContentIntent(pendingIntent)

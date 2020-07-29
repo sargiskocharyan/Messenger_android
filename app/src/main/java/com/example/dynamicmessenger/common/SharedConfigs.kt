@@ -18,6 +18,7 @@ object SharedConfigs {
     private lateinit var tokenRep: UserTokenRepository
     var callingOpponentId: String? = null
     var isCalling: Boolean = false //TODO
+    var isCallingInProgress: Boolean = false
     fun init(context: Context) {
         this.myContext = context
         userDao = SignedUserDatabase.getUserDatabase(context)!!.signedUserDao()

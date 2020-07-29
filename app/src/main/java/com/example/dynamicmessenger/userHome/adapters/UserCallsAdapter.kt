@@ -33,7 +33,6 @@ import java.util.*
 
 class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) : RecyclerView.Adapter<UserCallsAdapter.UserCallsViewHolder>() {
     private var data = mutableListOf<UserCalls>()
-    private val diskLruCache = DiskCache.getInstance(SharedConfigs.myContext)
 
     fun setAdapterData(userCalls: List<UserCalls>){
         data.clear()
@@ -49,6 +48,12 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
         data.addAll(newList)
     }
 
+    fun deleteItem(position: Int) {
+        viewModel.deleteCallByTime(data[position].time)
+        data.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
     override fun getItemCount(): Int {
         return data.size
     }
@@ -56,17 +61,17 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
     override fun onBindViewHolder(holder: UserCallsViewHolder, position: Int) {
         val item = data[position]
         holder.userCalls = item
-        if (item?.name != null) {
+        if (item.name != null) {
             holder.name.text = item.name
             holder.lastname.text = item.lastname
         } else {
-            holder.name.text = item?.username
+            holder.name.text = item.username
         }
 
-        holder.callTime.text = item?.time?.let { convertLongToTime(it) }
-        if (item?.avatarURL != null) {
-            if (diskLruCache.get(item.avatarURL!!) != null) {
-                holder.userImageView.setImageBitmap(diskLruCache.get(item.avatarURL!!)!!)
+        holder.callTime.text = convertLongToTime(item.time)
+        if (item.avatarURL != null) {
+            viewModel.getAvatar(item.avatarURL!!) {
+                holder.userImageView.setImageBitmap(it)
             }
         } else {
             holder.userImageView.setImageResource(R.drawable.ic_user_image)

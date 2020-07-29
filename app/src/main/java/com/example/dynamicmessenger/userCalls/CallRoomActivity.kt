@@ -56,6 +56,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         binding.viewModel = viewModel
         binding.signalingClient = SignallingClient.getInstance()
         binding.lifecycleOwner = this
+        SharedConfigs.isCallingInProgress = true
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !== PackageManager.PERMISSION_GRANTED
             || ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) !== PackageManager.PERMISSION_GRANTED) {
@@ -70,18 +71,24 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         viewModel.opponentAvatarBitmap.observe(this, androidx.lifecycle.Observer {
             binding.callerCircleImageView.setImageBitmap(it)
         })
-//        SocketEventsForVideoCalls.callAccepted.observe(this, androidx.lifecycle.Observer {
-//            SignallingClient.getInstance()!!.eventCallAccepted(it)
-//        })
-//        SocketEventsForVideoCalls.offer.observe(this, androidx.lifecycle.Observer {
-//            SignallingClient.getInstance()!!.eventOffer(it)
-//        })
-//        SocketEventsForVideoCalls.answer.observe(this, androidx.lifecycle.Observer {
-//            SignallingClient.getInstance()!!.eventAnswer(it)
-//        })
-//        SocketEventsForVideoCalls.candidates.observe(this, androidx.lifecycle.Observer {
-//            SignallingClient.getInstance()!!.eventCandidates(it)
-//        })
+
+        binding.disableMicrophoneCircleImageView.setOnClickListener {
+            if (viewModel.isEnabledMicrophone.value!!) {
+                viewModel.isEnabledMicrophone.value = false
+                localAudioTrack.setEnabled(false)
+            } else {
+                viewModel.isEnabledMicrophone.value = true
+                localAudioTrack.setEnabled(true)
+            }
+        }
+
+        binding.disableAudioCircleImageView.setOnClickListener {
+            if (viewModel.isEnabledVolume.value!!) {
+                viewModel.isEnabledVolume.value = false
+            } else {
+                viewModel.isEnabledVolume.value = true
+            }
+        }
 
         binding.acceptCallCardView.setOnClickListener {
             if (SharedConfigs.isCalling) {
@@ -126,8 +133,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     private fun initViews() {
-        localVideoView = findViewById(R.id.localView)
-        remoteVideoView = findViewById(R.id.remoteView)
+        localVideoView = binding.localView
+        remoteVideoView = binding.remoteView
     }
 
     private fun initVideos() {
@@ -425,6 +432,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
         localPeer = null
         SharedConfigs.callingOpponentId = null
+        SharedConfigs.isCallingInProgress = false
         SignallingClient.getInstance()!!.isCallingNotProgress.value = true
         SignallingClient.destroyInstance()
 //        if (surfaceTextureHelper != null) {

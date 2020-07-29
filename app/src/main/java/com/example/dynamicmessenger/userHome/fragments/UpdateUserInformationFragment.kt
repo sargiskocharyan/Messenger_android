@@ -3,7 +3,6 @@ package com.example.dynamicmessenger.userHome.fragments
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,8 +11,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
@@ -26,12 +23,15 @@ import com.example.dynamicmessenger.network.authorization.models.UniversityPrope
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UpdateUserInformationViewModel
+import com.example.dynamicmessenger.utils.DatePickerHelper
 import com.example.dynamicmessenger.utils.Validations
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.*
 
 class UpdateUserInformationFragment : Fragment() {
     private lateinit var viewModel: UpdateUserInformationViewModel
     private lateinit var binding: FragmentUpdateUserInformationBinding
+    private lateinit var datePicker: DatePickerHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,6 +67,7 @@ class UpdateUserInformationFragment : Fragment() {
         //Bottom bar
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.GONE
+        datePicker = DatePickerHelper(requireContext(), true)
 
         //Toolbar
         setHasOptionsMenu(true)
@@ -96,6 +97,10 @@ class UpdateUserInformationFragment : Fragment() {
                 }
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
+        }
+
+        binding.birthDateEditText.setOnClickListener {
+            showDatePickerDialog()
         }
 
         binding.continueButton.setOnClickListener {
@@ -158,6 +163,21 @@ class UpdateUserInformationFragment : Fragment() {
         }
 
         return binding.root
+    }
+    private fun showDatePickerDialog() {
+        val cal = Calendar.getInstance()
+        val d = cal.get(Calendar.DAY_OF_MONTH)
+        val m = cal.get(Calendar.MONTH)
+        val y = cal.get(Calendar.YEAR)
+        datePicker.showDialog(d, m, y, object : DatePickerHelper.Callback {
+            @SuppressLint("SetTextI18n")
+            override fun onDateSelected(dayOfMonth: Int, month: Int, year: Int) {
+                val dayStr = if (dayOfMonth < 10) "0${dayOfMonth}" else "$dayOfMonth"
+                val mon = month + 1
+                val monthStr = if (mon < 10) "0${mon}" else "$mon"
+                binding.birthDateEditText.text = "$monthStr/$dayStr/$year"
+            }
+        })
     }
 
     private fun configureTopNavBar(toolbar: Toolbar) {

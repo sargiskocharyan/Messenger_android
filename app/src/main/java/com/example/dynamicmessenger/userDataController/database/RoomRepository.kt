@@ -51,6 +51,10 @@ class UserCallsRepository(private val userCallsDao: UserCallsDao) {
         userCallsDao.insert(userCalls)
     }
 
+    suspend fun deleteCallByTime(time: Long) {
+        userCallsDao.deleteCallByTime(time)
+    }
+
     suspend fun delete() {
         userCallsDao.deleteAll()
     }

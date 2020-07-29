@@ -65,7 +65,6 @@ class UpdateUserInformationViewModel(application: Application) : AndroidViewMode
         viewModelScope.launch {
             try {
                 val response = DeleteUserApi.retrofitService.deleteUserResponseAsync(SharedConfigs.token)
-                Log.i("+++", "delete user $response")
                 if (response.isSuccessful) {
                     closure(true)
                 }

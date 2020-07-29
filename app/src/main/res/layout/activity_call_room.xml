@@ -15,7 +15,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@drawable/gradient">
 
         <FrameLayout
             android:id="@+id/activity_main"
@@ -37,11 +38,11 @@
 
             <org.webrtc.SurfaceViewRenderer
                 android:id="@+id/localView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:visibility="invisible"
                 android:layout_margin="30dp"
-                android:layout_gravity="bottom|end" />
+                android:layout_gravity="top|end" />
 
         </FrameLayout>
 
@@ -115,6 +116,34 @@
                     android:padding="10dp"
                     android:src="@drawable/ic_baseline_call_24" />
             </androidx.cardview.widget.CardView>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/disableMicrophoneCircleImageView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_baseline_mic_on_24"
+                android:background="@drawable/foreground_for_little_camera"
+                app:setCircleImageVisible="@{!signalingClient.isCallingNotProgress}"
+                app:setMicrophoneImage="@{viewModel.isEnabledMicrophone}"
+                app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
+                app:layout_constraintEnd_toStartOf="@+id/hangUpCallCardView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/disableAudioCircleImageView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:padding="10dp"
+                android:src="@drawable/ic_baseline_volume_up_24"
+                android:background="@drawable/foreground_for_little_camera"
+                app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/hangUpCallCardView"
+                app:layout_constraintTop_toTopOf="parent"
+                app:setCircleImageVisible="@{!signalingClient.isCallingNotProgress}"
+                app:setVolumeImage="@{viewModel.isEnabledVolume}" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

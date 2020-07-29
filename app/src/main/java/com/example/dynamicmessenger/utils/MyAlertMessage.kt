@@ -11,8 +11,7 @@ class MyAlertMessage {
             AlertDialog.Builder(context)
                 .setTitle(R.string.error_message)
                 .setMessage(message)
-                .setPositiveButton(R.string.ok,
-                    DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+                .setPositiveButton(R.string.ok) { dialog, _ -> dialog.dismiss() }
                 .create().show()
         }
     }

@@ -111,3 +111,21 @@ fun setImageViewBitmap(Image: ImageView, bitmap: Bitmap?) {
     }
     Image.setImageBitmap(bitmap)
 }
+
+@BindingAdapter("setMicrophoneImage")
+fun setMicrophoneImage(circleImage: CircleImageView, answer: Boolean) {
+    if (answer) {
+        circleImage.setImageResource(R.drawable.ic_baseline_mic_on_24)
+    } else {
+        circleImage.setImageResource(R.drawable.ic_baseline_mic_off_24)
+    }
+}
+
+@BindingAdapter("setVolumeImage")
+fun setVolumeImage(circleImage: CircleImageView, answer: Boolean) {
+    if (answer) {
+        circleImage.setImageResource(R.drawable.ic_baseline_volume_up_24)
+    } else {
+        circleImage.setImageResource(R.drawable.ic_baseline_volume_off_24)
+    }
+}

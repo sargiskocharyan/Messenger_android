@@ -1,15 +1,12 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
@@ -18,7 +15,6 @@ import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
-import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomDiffUtilCallback
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
 import com.github.nkzawa.socketio.client.Socket
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -42,7 +38,6 @@ class ChatRoomFragment : Fragment() {
 //        val receiverAvatar = SharedPreferencesManager.getReceiverAvatarUrl(requireContext())
         val receiverInfo = HomeActivity.receiverChatInfo
         val receiverID = HomeActivity.receiverID!!
-        Log.i("+++","receiver id $receiverID")
         val receiverAvatar = receiverInfo?.recipientAvatarURL
         adapter = ChatRoomAdapter(requireContext(), myID)
         val linearLayoutManager = LinearLayoutManager(requireContext())

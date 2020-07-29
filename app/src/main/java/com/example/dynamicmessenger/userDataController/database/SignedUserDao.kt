@@ -37,6 +37,9 @@ interface UserCallsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(userCalls: UserCalls)
 
+    @Query("DELETE FROM user_calls WHERE time = :time")
+    suspend fun deleteCallByTime(time: Long)
+
     @Query("DELETE FROM user_calls")
     suspend fun deleteAll()
 }
