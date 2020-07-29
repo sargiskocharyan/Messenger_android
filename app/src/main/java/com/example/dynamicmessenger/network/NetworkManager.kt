@@ -1,28 +1,37 @@
 package com.example.dynamicmessenger.network
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import androidx.core.content.ContextCompat.getSystemService
 import com.example.dynamicmessenger.common.MyHeaders
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs.myContext
 import com.example.dynamicmessenger.network.authorization.models.*
-import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.*
+import okhttp3.Cache
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
-import retrofit2.http.Headers
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
+import javax.security.cert.CertificateException
 
 
-private const val BASE_URL = ResponseUrls.herokuIP
-//private const val BASE_URL = ResponseUrls.ErosServerIP
+//private const val BASE_URL = ResponseUrls.herokuIP
+private const val BASE_URL = ResponseUrls.ErosServerIP
 private const val ERO_URL = ResponseUrls.ErosServerIP
-//private const val ERO_URL = ""
 
 private var cacheSize: Long = 10 * 1024 * 1024 // 10 MB
 
@@ -35,6 +44,56 @@ fun networkAvailable(context: Context): Boolean? {
     if (activeNetwork != null && activeNetwork.isConnected)
         isConnected = true
     return isConnected
+}
+
+fun getUnsafeOkHttpClient(): OkHttpClient? {
+    return try {
+        // Create a trust manager that does not validate certificate chains
+        val trustAllCerts =
+            arrayOf<TrustManager>(
+                object : X509TrustManager {
+                    @SuppressLint("TrustAllX509TrustManager")
+                    @Throws(CertificateException::class)
+                    override fun checkClientTrusted(
+                        chain: Array<X509Certificate>,
+                        authType: String
+                    ) {
+                    }
+
+                    @SuppressLint("TrustAllX509TrustManager")
+                    @Throws(CertificateException::class)
+                    override fun checkServerTrusted(
+                        chain: Array<X509Certificate>,
+                        authType: String
+                    ) {
+                    }
+
+                    override fun getAcceptedIssuers(): Array<X509Certificate?>? {
+                        return arrayOfNulls(0)
+                    }
+                }
+            )
+
+        // Install the all-trusting trust manager
+        val sslContext = SSLContext.getInstance("SSL")
+        sslContext.init(null, trustAllCerts, SecureRandom())
+        // Create an ssl socket factory with our all-trusting manager
+        val sslSocketFactory: SSLSocketFactory = sslContext.socketFactory
+        OkHttpClient.Builder()
+            .sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
+            .cache(cache)
+            .addInterceptor { chain ->
+                var request = chain.request()
+                request = if (networkAvailable(myContext)!!)
+                    request.newBuilder().header("Cache-Control", "public, max-age=" + 10).build()
+                else
+                    request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build()
+                chain.proceed(request)
+            }
+            .hostnameVerifier { _, _ -> true }.build()
+    } catch (e: Exception) {
+        throw RuntimeException(e)
+    }
 }
 
 val okHttpClient: OkHttpClient = OkHttpClient.Builder()
@@ -58,7 +117,7 @@ private val retrofit = Retrofit.Builder()
 //    .addConverterFactory(LENIENT_FACTORY.create(moshi = moshi))
     .addCallAdapterFactory(CoroutineCallAdapterFactory())
     .baseUrl(BASE_URL)
-    .client(okHttpClient)
+    .client(getUnsafeOkHttpClient()!!)
     .build()
 
 private val retrofitEro = Retrofit.Builder()

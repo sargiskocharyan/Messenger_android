@@ -13,12 +13,26 @@ import com.example.dynamicmessenger.network.ContactsApi
 import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.database.DiskCache
+import com.example.dynamicmessenger.userDataController.database.SavedUserRepository
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class UserContactsViewModel(application: Application) : AndroidViewModel(application) {
     private val diskLruCache = DiskCache.getInstance(application)
+    private val usersDao = SignedUserDatabase.getUserDatabase(application)!!.savedUserDao()
+    private val usersRepository = SavedUserRepository(usersDao)
+
+    fun saveUser(user: User) {
+        viewModelScope.launch(Dispatchers.IO) {
+            usersRepository.insert(user)
+        }
+    }
+
+    fun getUserById(id: String): User? {
+        return usersRepository.getUserById(id)
+    }
 
     fun getUserContactsFromNetwork(context: Context?, closure: (List<User>) -> Unit) {
         viewModelScope.launch {

@@ -3,7 +3,6 @@ package com.example.dynamicmessenger.userHome.fragments
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,8 +11,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
@@ -26,29 +23,30 @@ import com.example.dynamicmessenger.network.authorization.models.UniversityPrope
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UpdateUserInformationViewModel
+import com.example.dynamicmessenger.utils.DatePickerHelper
 import com.example.dynamicmessenger.utils.Validations
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.*
 
 class UpdateUserInformationFragment : Fragment() {
     private lateinit var viewModel: UpdateUserInformationViewModel
+    private lateinit var binding: FragmentUpdateUserInformationBinding
+    private lateinit var datePicker: DatePickerHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FragmentUpdateUserInformationBinding =
-                        DataBindingUtil.inflate(inflater,
-                            R.layout.fragment_update_user_information,
-                            container,false)
+        binding = FragmentUpdateUserInformationBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(UpdateUserInformationViewModel::class.java)
         binding.lifecycleOwner = this
         binding.updateUserViewModel = viewModel
-        binding.editTextUsername.addTextChangedListener(object : TextWatcher {
+        binding.usernameEditText.addTextChangedListener(object : TextWatcher {
             @SuppressLint("ResourceAsColor")
             override fun afterTextChanged(s: Editable?) {
-                if (Validations.isUsernameValid(binding.editTextUsername.text.toString())
-                    && Validations.isNameValid(binding.editTextName.text.toString())
-                    && Validations.isLastNameValid(binding.editTextLastname.text.toString())) {
+                if (Validations.isUsernameValid(binding.usernameEditText.text.toString())
+                    && Validations.isNameValid(binding.nameEditText.text.toString())
+                    && Validations.isLastNameValid(binding.lastNameEditText.text.toString())) {
                     binding.continueButton.isEnabled = true
                     binding.continueButton.setBackgroundResource(R.drawable.enable_button_design)
                 } else {
@@ -62,13 +60,14 @@ class UpdateUserInformationFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
         var university: String = ""
-        binding.editTextName.text.append(SharedConfigs.signedUser?.name ?: "")
-        binding.editTextLastname.text.append(SharedConfigs.signedUser?.lastname ?: "")
-        binding.editTextUsername.text.append(SharedConfigs.signedUser?.username ?: "")
+        binding.nameEditText.text.append(SharedConfigs.signedUser?.name ?: "")
+        binding.lastNameEditText.text.append(SharedConfigs.signedUser?.lastname ?: "")
+        binding.usernameEditText.text.append(SharedConfigs.signedUser?.username ?: "")
 
         //Bottom bar
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.GONE
+        datePicker = DatePickerHelper(requireContext(), true)
 
         //Toolbar
         setHasOptionsMenu(true)
@@ -84,8 +83,8 @@ class UpdateUserInformationFragment : Fragment() {
                 allUniversity
             )
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.spinnerUniversity.adapter = adapter
-            binding.spinnerUniversity.onItemSelectedListener = object :
+            binding.universitySpinner.adapter = adapter
+            binding.universitySpinner.onItemSelectedListener = object :
                 AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>,
@@ -100,13 +99,17 @@ class UpdateUserInformationFragment : Fragment() {
             }
         }
 
+        binding.birthDateEditText.setOnClickListener {
+            showDatePickerDialog()
+        }
+
         binding.continueButton.setOnClickListener {
-            val birthDate = binding.editTextBirthDate.text.toString()
-            val name = binding.editTextName.text.toString()
-            val lastname = binding.editTextLastname.text.toString()
-            val username = binding.editTextUsername.text.toString()
+            val birthDate = binding.birthDateEditText.text.toString()
+            val name = binding.nameEditText.text.toString()
+            val lastname = binding.lastNameEditText.text.toString()
+            val username = binding.usernameEditText.text.toString()
             val phoneNumber = binding.editTextPhoneNumber.text.toString()
-            val updateUserTask = UpdateUserTask(name, lastname, username, university, phoneNumber, null, null, null, birthDate)
+            val updateUserTask = UpdateUserTask(name, lastname, username, university, phoneNumber, birthday = birthDate)
             viewModel.updateUserNetwork(updateUserTask, context){closure ->
                 if (closure) {
                     val selectedFragment = UserInformationFragment()
@@ -119,7 +122,7 @@ class UpdateUserInformationFragment : Fragment() {
             }
         }
 
-        binding.textViewDeactivateAccount.setOnClickListener {
+        binding.deactivateAccountTextView.setOnClickListener {
             val deactivateUserAccountDialog = DeactivateUserDialog { userAnswer ->
                 if (userAnswer) {
                     viewModel.deactivateUserAccount {
@@ -139,7 +142,7 @@ class UpdateUserInformationFragment : Fragment() {
             deactivateUserAccountDialog.show(requireActivity().supportFragmentManager, "Dialog")
         }
 
-        binding.textViewDeleteAccount.setOnClickListener {
+        binding.deleteAccountTextView.setOnClickListener {
             val deleteUserAccountDialog = DeleteUserDialog { userAnswer ->
                 if (userAnswer) {
                     viewModel.deleteUserAccount {
@@ -161,14 +164,25 @@ class UpdateUserInformationFragment : Fragment() {
 
         return binding.root
     }
+    private fun showDatePickerDialog() {
+        val cal = Calendar.getInstance()
+        val d = cal.get(Calendar.DAY_OF_MONTH)
+        val m = cal.get(Calendar.MONTH)
+        val y = cal.get(Calendar.YEAR)
+        datePicker.showDialog(d, m, y, object : DatePickerHelper.Callback {
+            @SuppressLint("SetTextI18n")
+            override fun onDateSelected(dayOfMonth: Int, month: Int, year: Int) {
+                val dayStr = if (dayOfMonth < 10) "0${dayOfMonth}" else "$dayOfMonth"
+                val mon = month + 1
+                val monthStr = if (mon < 10) "0${mon}" else "$mon"
+                binding.birthDateEditText.text = "$monthStr/$dayStr/$year"
+            }
+        })
+    }
 
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.title = ""
         toolbar.elevation = 10.0F
-        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-//        toolbar.inflateMenu(R.menu.chat_top_bar)
-        toolbar.background = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white))
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }

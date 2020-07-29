@@ -18,15 +18,15 @@ import com.example.dynamicmessenger.databinding.FragmentFinishRegistrationBindin
 class FinishRegistrationFragment : Fragment() {
 
     private lateinit var viewModel: FinishRegistrationViewModel
+    private lateinit var binding: FragmentFinishRegistrationBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 //        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-        val binding: FragmentFinishRegistrationBinding =
-            FragmentFinishRegistrationBinding.inflate(layoutInflater)
-        viewModel = ViewModelProvider(this).get(FinishRegistrationViewModel::class.java)
+        binding = FragmentFinishRegistrationBinding.inflate(layoutInflater)
+//        viewModel = ViewModelProvider(this).get(FinishRegistrationViewModel::class.java)
 
         binding.nextButton.setOnClickListener {
             val intent = Intent(activity, HomeActivity::class.java)

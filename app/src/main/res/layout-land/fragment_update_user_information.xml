@@ -21,7 +21,10 @@
             android:layout_height="?attr/actionBarSize"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/white"
+            app:title=" "
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
 
             <TextView
                 android:id="@+id/textViewInformation"
@@ -53,19 +56,18 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <EditText
-                        android:id="@+id/editTextBirthDate"
+                    <Button
+                        android:id="@+id/birthDateEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="32dp"
                         android:ems="10"
-                        android:hint="@string/birth_date"
-                        android:inputType="textPersonName" />
+                        android:hint="@string/birth_date" />
 
                     <Spinner
-                        android:id="@+id/spinnerUniversity"
+                        android:id="@+id/universitySpinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
@@ -86,7 +88,7 @@
                         android:inputType="phone" />
 
                     <EditText
-                        android:id="@+id/editTextName"
+                        android:id="@+id/nameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
@@ -97,7 +99,7 @@
                         android:inputType="textPersonName" />
 
                     <EditText
-                        android:id="@+id/editTextLastname"
+                        android:id="@+id/lastNameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
@@ -108,7 +110,7 @@
                         android:inputType="textPersonName" />
 
                     <EditText
-                        android:id="@+id/editTextUsername"
+                        android:id="@+id/usernameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
@@ -148,18 +150,18 @@
                     app:layout_constraintTop_toTopOf="@+id/linearLayout" />
 
                 <TextView
-                    android:id="@+id/textViewDeleteAccount"
+                    android:id="@+id/deleteAccountTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Delete Account"
                     android:textColor="#F44336"
-                    app:layout_constraintEnd_toStartOf="@+id/textViewDeactivateAccount"
+                    app:layout_constraintEnd_toStartOf="@+id/deactivateAccountTextView"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textViewDeactivateAccount" />
+                    app:layout_constraintTop_toTopOf="@+id/deactivateAccountTextView" />
 
                 <TextView
-                    android:id="@+id/textViewDeactivateAccount"
+                    android:id="@+id/deactivateAccountTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="60dp"
@@ -169,7 +171,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/textViewDeleteAccount"
+                    app:layout_constraintStart_toEndOf="@+id/deleteAccountTextView"
                     app:layout_constraintTop_toBottomOf="@+id/continueButton" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 

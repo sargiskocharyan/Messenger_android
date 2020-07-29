@@ -28,15 +28,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class UserChatsAdapter(val context: Context, job: Job, val activity: Activity) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
+class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
     var data = mutableListOf<Chat>()
     private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
     private val diskLruCache = DiskCache.getInstance(context)
-
-    fun setAdapterData(newList: List<Chat>) {
-        data.clear()
-        data.addAll(newList)
-    }
 
     fun setAdapterDataNotify(newList: List<Chat>) {
         data.clear()

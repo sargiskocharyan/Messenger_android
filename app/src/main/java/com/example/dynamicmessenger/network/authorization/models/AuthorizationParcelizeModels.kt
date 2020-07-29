@@ -15,11 +15,13 @@ import java.text.SimpleDateFormat
 data class MailExistProperty(val mailExist: Boolean, val code: String) : Parcelable
 
 @Parcelize
-data class LoginProperty(val token: String, val user: User) : Parcelable
+data class LoginProperty(val token: String, val tokenExpire: String, val user: User) : Parcelable
 
 @Parcelize
+@Entity(tableName = "user")
 data class User (
     val gender : String?,
+    @PrimaryKey
     val _id: String,
     var name: String?,
     val lastname: String?,
@@ -42,7 +44,7 @@ data class University(
     @ColumnInfo(name = "universityNameRU") val nameRU: String,
     @ColumnInfo(name = "universityNameEN") val nameEN: String) : Parcelable {
     override fun toString(): String {
-        return when (SharedConfigs.appLang) {
+        return when (SharedConfigs.appLang.value) {
             AppLangKeys.AM ->  name
             AppLangKeys.RU ->  nameRU
             else -> nameEN
@@ -51,23 +53,27 @@ data class University(
 }
 
 @Parcelize
-data class UserTokenProperty(val tokenExists: Boolean) : Parcelable
+data class UserTokenProperty(val tokenExists: Boolean?, val Error: String?) : Parcelable
 
 @Parcelize
 data class Users(val users: List<User>) : Parcelable
 
 @Parcelize
+@Entity(tableName = "chat")
 data class Chat(
+    @PrimaryKey
     val id: String,
     val name: String?,
     val lastname: String?,
     val username: String?,
+    @Embedded
     val message: Message?,
     val recipientAvatarURL: String?,
     val chatCreateDay: String) : Parcelable
 
 @Parcelize
 data class Message(
+    @Embedded
     val sender: Sender,
     val text: String,
     var createdAt: String,
@@ -77,12 +83,12 @@ data class Message(
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         val area1 = format.parse(createdAt)
         val area2 = format.parse(other.createdAt)
-        if(area1 == area2){
-            return 0;
-        }else if(area1 < area2){
-            return -1;
+        if (area1 == area2) {
+            return 0
+        } else if(area1 < area2) {
+            return -1
         }
-        return 1;
+        return 1
     }
 
 }
@@ -99,7 +105,7 @@ data class ChatRoom(val sender: Sender, val text: String, val reciever: String) 
 @Parcelize
 data class UniversityProperty(val _id: String, val name: String, val nameRU: String , val nameEN: String) : Parcelable {
     override fun toString(): String {
-        return when (SharedConfigs.appLang) {
+        return when (SharedConfigs.appLang.value) {
             AppLangKeys.AM ->  name
             AppLangKeys.RU ->  nameRU
             else -> nameEN

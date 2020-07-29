@@ -1,126 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activitys.MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.dynamicmessenger.authorization.viewModels.EmailAndPhoneViewModel" />
+    </data>
 
-    <TextView
-        android:id="@+id/firstPageCommentText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="60dp"
-        android:text="@string/enter_your_email"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/loginRegisterEmailEditText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/ConfirmEmailTextComment"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/email_will_be_used_to_confirm"
-        app:layout_constraintEnd_toEndOf="@+id/loginRegisterEmailEditText"
-        app:layout_constraintStart_toStartOf="@+id/loginRegisterEmailEditText"
-        app:layout_constraintTop_toBottomOf="@+id/loginRegisterEmailEditText" />
-
-    <EditText
-        android:id="@+id/loginRegisterEmailEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="150dp"
-        android:layout_marginEnd="32dp"
-        android:autofillHints="@string/email"
-        android:background="@drawable/edittext_red_underline"
-        android:ems="10"
-        android:hint="@string/email"
-        android:inputType="textEmailAddress"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/customGradientView3" />
-
-    <Button
-        android:id="@+id/continueButton"
-        style="@style/ButtonStyle"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginBottom="110dp"
-        android:background="@drawable/disable_button_design"
-        android:enabled="false"
-        android:text="@string/continue_button"
-        app:layout_constraintBottom_toBottomOf="@+id/customGradientView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.example.dynamicmessenger.customViews.CustomGradientView
-        android:id="@+id/customGradientView3"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        app:downEndColor="@color/GradientEndColor"
-        app:downStartColor="@color/GradientStartColor"
-        app:endColor="@color/GradientEndColorDark"
-        app:isTopView="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:startColor="@color/GradientStartColorDark" />
+        android:layout_height="match_parent"
+        tools:context=".activitys.MainActivity">
 
-    <com.example.dynamicmessenger.customViews.CustomGradientView
-        android:id="@+id/customGradientView"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        app:downEndColor="@color/GradientEndColor"
-        app:downStartColor="@color/GradientStartColor"
-        app:endColor="@color/GradientEndColorDark"
-        app:isTopView="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:startColor="@color/GradientStartColorDark" />
+        <TextView
+            android:id="@+id/firstPageCommentText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="60dp"
+            android:text="@string/enter_your_email"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/loginRegisterEmailEditText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminateDrawable="@drawable/progress_bar"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/ConfirmEmailTextComment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/email_will_be_used_to_confirm"
+            app:layout_constraintEnd_toEndOf="@+id/loginRegisterEmailEditText"
+            app:layout_constraintStart_toStartOf="@+id/loginRegisterEmailEditText"
+            app:layout_constraintTop_toBottomOf="@+id/loginRegisterEmailEditText" />
 
-    <TextView
-        android:id="@+id/emailHintTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginBottom="40dp"
-        android:text="@string/email"
-        android:textSize="12sp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/loginRegisterEmailEditText"
-        app:layout_constraintStart_toStartOf="@+id/loginRegisterEmailEditText"
-        app:layout_constraintTop_toTopOf="@+id/loginRegisterEmailEditText" />
+        <EditText
+            android:id="@+id/loginRegisterEmailEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="150dp"
+            android:layout_marginEnd="32dp"
+            android:autofillHints="@string/email"
+            android:background="@drawable/edittext_red_underline"
+            android:ems="10"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:text="@={viewModel.userEnteredEmail}"
+            app:setEditTextBackground="@{viewModel.isEmailValid}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/customGradientView3" />
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/animationView"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        app:layout_constraintBottom_toTopOf="@+id/firstPageCommentText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/customGradientView3"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        app:lottie_rawRes="@raw/message_lottie" />
+        <Button
+            android:id="@+id/continueButton"
+            style="@style/ButtonStyle"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="110dp"
+            android:background="@drawable/disable_button_design"
+            android:enabled="false"
+            android:text="@string/continue_button"
+            android:onClick="@{viewModel::checkIsMailExist}"
+            app:setContinueButtonConfiguration="@{viewModel.isEmailValid}"
+            app:layout_constraintBottom_toBottomOf="@+id/customGradientView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.example.dynamicmessenger.customViews.CustomGradientView
+            android:id="@+id/customGradientView3"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            app:downEndColor="@color/GradientEndColor"
+            app:downStartColor="@color/GradientStartColor"
+            app:endColor="@color/GradientEndColorDark"
+            app:isTopView="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:startColor="@color/GradientStartColorDark" />
+
+        <com.example.dynamicmessenger.customViews.CustomGradientView
+            android:id="@+id/customGradientView"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            app:downEndColor="@color/GradientEndColor"
+            app:downStartColor="@color/GradientStartColor"
+            app:endColor="@color/GradientEndColorDark"
+            app:isTopView="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:startColor="@color/GradientStartColorDark" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateDrawable="@drawable/progress_bar"
+            android:visibility="invisible"
+            app:setProgressBarVisible="@{viewModel.progressBarVisibility}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/emailHintTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="40dp"
+            android:text="@string/email"
+            android:textSize="12sp"
+            android:visibility="invisible"
+            app:setTextViewVisible="@{viewModel.hintVisibility}"
+            app:setHintColour="@{viewModel.isEmailValid}"
+            app:layout_constraintBottom_toBottomOf="@+id/loginRegisterEmailEditText"
+            app:layout_constraintStart_toStartOf="@+id/loginRegisterEmailEditText"
+            app:layout_constraintTop_toTopOf="@+id/loginRegisterEmailEditText" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animationView"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            app:layout_constraintBottom_toTopOf="@+id/firstPageCommentText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/customGradientView3"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/message_lottie" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -10,17 +10,26 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 
 class ChatRoomAdapter(val context: Context, private val myID: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var data = listOf<ChatRoom>()
+    var data = mutableListOf<ChatRoom>()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
     var receiverImage: Bitmap? = null
+
+    fun submitList(newList: List<ChatRoom>) {
+        val userChatDiffUtilCallback = ChatRoomDiffUtilCallback(data, newList)
+        val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
+        authorDiffResult.dispatchUpdatesTo(this)
+        data.clear()
+        data.addAll(newList)
+    }
 
 
     override fun getItemCount(): Int {

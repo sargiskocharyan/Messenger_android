@@ -17,8 +17,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
 import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userHome.adapters.UserChatsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserChatViewModel
 import com.github.nkzawa.socketio.client.Socket
@@ -52,7 +54,7 @@ class UserChatFragment : Fragment() {
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.VISIBLE
 
-        val adapter = UserChatsAdapter(requireContext(), activityJob, requireActivity())
+        val adapter = UserChatsAdapter(requireContext(), activityJob)
         updateRecyclerViewFromDatabase(adapter)
 
         binding.root.setHasTransientState(true)
@@ -62,6 +64,7 @@ class UserChatFragment : Fragment() {
         binding.chatsRecyclerView.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatsRecyclerView.layoutManager = linearLayoutManager
+        adapter.setAdapterDataNotify(viewModel.getUserChats().sortedWith(compareBy { chat -> chat.message }).reversed())
 
         HomeActivity.opponentUser = null
         HomeActivity.isAddContacts = null
@@ -96,9 +99,9 @@ class UserChatFragment : Fragment() {
         binding.userChatSwipeRefreshLayout.isRefreshing = true
         viewModel.getUserChatsFromNetwork(requireContext(), binding.userChatSwipeRefreshLayout) {
             val list = it.sortedWith(compareBy { chat -> chat.message }).reversed()
-            adapter.setAdapterData(list)
             adapter.submitList(list)
             binding.userChatSwipeRefreshLayout.isRefreshing = false
+            scrollToTop(binding)
         }
     }
 
@@ -106,19 +109,22 @@ class UserChatFragment : Fragment() {
         binding.userChatSwipeRefreshLayout.isRefreshing = true
         viewModel.getUserChatsFromNetwork(requireContext(), binding.userChatSwipeRefreshLayout) {
             val list = it.sortedWith(compareBy { chat -> chat.message }).reversed()
-            adapter.setAdapterDataNotify(list)
+            adapter.submitList(list)
             binding.userChatSwipeRefreshLayout.isRefreshing = false
+            scrollToTop(binding)
         }
     }
 
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.title = ""
         toolbar.elevation = 10.0F
-        toolbar.background = ColorDrawable(ContextCompat.getColor(requireContext(), R.color.white))
         toolbar.setOnMenuItemClickListener {
             Toast.makeText(requireContext(), "sexmir", Toast.LENGTH_SHORT).show()
             return@setOnMenuItemClickListener true
         }
+    }
+
+    private fun scrollToTop(binding: FragmentUserChatBinding) {
+        binding.chatsRecyclerView.scrollToPosition(0)
     }
 }

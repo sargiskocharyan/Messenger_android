@@ -8,14 +8,18 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.common.SharedConfigs
+import com.example.dynamicmessenger.databinding.ActivityCallRoomBinding
+import com.example.dynamicmessenger.userCalls.viewModels.CallRoomViewModel
 import com.example.dynamicmessenger.userCalls.webRtc.CustomPeerConnectionObserver
 import com.example.dynamicmessenger.userCalls.webRtc.CustomSdpObserver
 import com.example.dynamicmessenger.userCalls.webRtc.SignallingClient
@@ -42,24 +46,76 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     private var gotUserMedia = false
     private var peerIceServers: MutableList<PeerConnection.IceServer> = ArrayList()
     private val ALL_PERMISSIONS_CODE = 1
+    private lateinit var binding: ActivityCallRoomBinding
+    private lateinit var viewModel: CallRoomViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_call_room)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_call_room)
+        viewModel = ViewModelProvider(this).get(CallRoomViewModel::class.java)
+        binding.viewModel = viewModel
+        binding.signalingClient = SignallingClient.getInstance()
+        binding.lifecycleOwner = this
+        SharedConfigs.isCallingInProgress = true
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !== PackageManager.PERMISSION_GRANTED
             || ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) !== PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO), ALL_PERMISSIONS_CODE)
         } else {
             start()
         }
+        viewModel.getOpponentInfoFromNetwork()
+        viewModel.opponentAvatarUrl.observe(this, androidx.lifecycle.Observer {
+            viewModel.getAvatar(it)
+        })
+        viewModel.opponentAvatarBitmap.observe(this, androidx.lifecycle.Observer {
+            binding.callerCircleImageView.setImageBitmap(it)
+        })
 
-        CallRoomActivity.socket.connect()
-        val callYelenaButton: Button = findViewById(R.id.call_yelena)
-        val callErikButton: Button = findViewById(R.id.call_erik)
-        callYelenaButton.setOnClickListener {
-            SignallingClient.getInstance()!!.callOpponentYelena()
+        binding.disableMicrophoneCircleImageView.setOnClickListener {
+            if (viewModel.isEnabledMicrophone.value!!) {
+                viewModel.isEnabledMicrophone.value = false
+                localAudioTrack.setEnabled(false)
+            } else {
+                viewModel.isEnabledMicrophone.value = true
+                localAudioTrack.setEnabled(true)
+            }
         }
-        callErikButton.setOnClickListener {
-            SignallingClient.getInstance()!!.callOpponentErik()
+
+        binding.disableAudioCircleImageView.setOnClickListener {
+            if (viewModel.isEnabledVolume.value!!) {
+                viewModel.isEnabledVolume.value = false
+            } else {
+                viewModel.isEnabledVolume.value = true
+            }
+        }
+
+        binding.acceptCallCardView.setOnClickListener {
+            if (SharedConfigs.isCalling) {
+                Log.d("SignallingClient", "accept call on click")
+                SignallingClient.getInstance()!!.emitCallAccepted(true)
+            } else {
+                SignallingClient.getInstance()!!.callOpponent()
+            }
+            SignallingClient.getInstance()!!.isCallingNotProgress.value = false
+        }
+
+        binding.hangUpCallCardView.setOnClickListener {
+            SignallingClient.getInstance()!!.emitCallAccepted(false)
+            SignallingClient.getInstance()!!.isStarted = false
+            SharedConfigs.isCalling = false
+            try {
+                if (localPeer != null) {
+                    localPeer!!.close()
+                }
+                peerConnectionFactory.dispose()
+                localPeer = null
+                updateVideoViews(false)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+//            SignallingClient.getInstance()!!.close()
+            onBackPressed()
         }
     }
 
@@ -77,9 +133,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     private fun initViews() {
-//        val hangup: Button = findViewById(R.id.end_call)
-        localVideoView = findViewById(R.id.localView)
-        remoteVideoView = findViewById(R.id.remoteView)
+        localVideoView = binding.localView
+        remoteVideoView = binding.remoteView
     }
 
     private fun initVideos() {
@@ -142,7 +197,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         audioSource = peerConnectionFactory.createAudioSource(audioConstraints)
         localAudioTrack = peerConnectionFactory.createAudioTrack("101", audioSource)
         videoCapturerAndroid?.startCapture(1024, 720, 30)
-        localVideoView.visibility = View.VISIBLE
+//        localVideoView.visibility = View.VISIBLE
         localVideoTrack.addSink(localVideoView)
         localVideoView.setMirror(true)
         remoteVideoView.setMirror(true)
@@ -155,6 +210,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     override fun onTryToStart() {
         runOnUiThread {
             if (!SignallingClient.getInstance()!!.isStarted && SignallingClient.getInstance()!!.isChannelReady) {
+                Log.d("SignallingClient", "on try to start")
                 createPeerConnection()
                 SignallingClient.getInstance()!!.isStarted = true
                 if (SignallingClient.getInstance()!!.isInitiator) {
@@ -223,6 +279,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         runOnUiThread {
             try {
                 remoteVideoView.visibility = View.VISIBLE
+                localVideoView.visibility = View.VISIBLE
                 videoTrack.addSink(remoteVideoView)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -250,11 +307,10 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
     }
     override fun onOfferReceived(data: JSONObject?) {
-        showToast("Received Offer")
         runOnUiThread {
-//            if (!SignallingClient.getInstance()!!.isInitiator && !SignallingClient.getInstance()!!.isStarted) {
-            onTryToStart()
-//            }
+            if (!SignallingClient.getInstance()!!.isInitiator && !SignallingClient.getInstance()!!.isStarted) {
+                onTryToStart()
+            }
             try {
                 if (data != null) {
                     localPeer?.setRemoteDescription(
@@ -292,7 +348,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     private fun doAnswer() {
-        localPeer!!.createAnswer(object : CustomSdpObserver("localCreateAns") {
+        localPeer?.createAnswer(object : CustomSdpObserver("localCreateAns") {
             override fun onCreateSuccess(sessionDescription: SessionDescription) {
                 super.onCreateSuccess(sessionDescription)
                 localPeer!!.setLocalDescription(
@@ -305,10 +361,9 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     override fun onAnswerReceived(data: JSONObject?) {
-        showToast("Received Answer")
         try {
             if (data != null) {
-                localPeer!!.setRemoteDescription(
+                localPeer?.setRemoteDescription(
                     CustomSdpObserver("SignallingClient localSetRemote"),
                     SessionDescription(
                         SessionDescription.Type.fromCanonicalForm(
@@ -344,7 +399,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         runOnUiThread {
             var params = localVideoView.layoutParams
             if (remoteVisible) {
-                params.height = dpToPx(100)
+                params.height = dpToPx(130)
                 params.width = dpToPx(100)
             } else {
                 params = FrameLayout.LayoutParams(
@@ -362,7 +417,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                 localPeer!!.close()
             }
             localPeer = null
-            SignallingClient.getInstance()!!.close()
+//            SignallingClient.getInstance()!!.close()
             updateVideoViews(false)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -370,9 +425,16 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     override fun onDestroy() {
-//        SignallingClient.getInstance()!!.close()
         super.onDestroy()
-        CallRoomActivity.socket.disconnect()
+//        SignallingClient.getInstance()!!.close()
+        if (localPeer != null) {
+            localPeer!!.close()
+        }
+        localPeer = null
+        SharedConfigs.callingOpponentId = null
+        SharedConfigs.isCallingInProgress = false
+        SignallingClient.getInstance()!!.isCallingNotProgress.value = true
+        SignallingClient.destroyInstance()
 //        if (surfaceTextureHelper != null) {
         surfaceTextureHelper.dispose()
 //            surfaceTextureHelper = null
@@ -420,6 +482,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 
     companion object {
         private const val TAG = "MainActivity"
-        val socket = SocketManager.getErosSocketInstance()!!
+//        val socket = SocketManager.getErosSocketInstance()!!
     }
 }

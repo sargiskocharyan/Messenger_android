@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
@@ -13,24 +14,30 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.ActivityMainBinding
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserTokenDao
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.utils.LocalizationUtil
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
+    private lateinit var tokenDao: UserTokenDao
+    private lateinit var tokenRep: UserTokenRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this,
             R.layout.activity_main
         )
+        tokenDao = SignedUserDatabase.getUserDatabase(this)!!.userTokenDao()
+        tokenRep = UserTokenRepository(tokenDao)
         //TODO: binding adapter
         changeDarkMode()
-        val tokenDao = SignedUserDatabase.getUserDatabase(application)!!.userTokenDao()
-        val tokenRep = UserTokenRepository(tokenDao)
 
         if (tokenRep.getToken() != "") {
+            SharedConfigs.token = tokenRep.getToken()
             val intent = Intent(this,HomeActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -45,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value))
+        super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value!!.value))
     }
 
     private fun changeDarkMode() {
@@ -56,11 +63,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //TODO: move to viewModel as LiveData  Share data between fragments
-    companion object {
-        var userMailExists: Boolean? = null
-        var userCode: String? = null
-        var userMail: String? = null
-    }
 }
 

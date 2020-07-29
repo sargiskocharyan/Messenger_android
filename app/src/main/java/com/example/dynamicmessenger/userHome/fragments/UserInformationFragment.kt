@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
@@ -43,12 +42,7 @@ class UserInformationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding =
-            DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_user_information,
-                container, false
-            )
+        binding = FragmentUserInformationBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(UserInformationViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -60,6 +54,9 @@ class UserInformationFragment : Fragment() {
         changeDarkMode()
 //        popupMenu(binding)
 
+        SharedConfigs.appLang.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewModel.appLanguage.value = it
+        })
         binding.languageConstraintLayout.setOnClickListener {
             binding.languagePopupMenuLinearLayout.visibility = View.VISIBLE
             binding.darkModeConstraintLayout.visibility = View.INVISIBLE
@@ -81,12 +78,14 @@ class UserInformationFragment : Fragment() {
         binding.darkModeSwitch.isChecked = SharedConfigs.getDarkMode()
 
         binding.darkModeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 SharedConfigs.setDarkMode(true)
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 SharedConfigs.setDarkMode(false)
+                LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
             }
         }
 
@@ -106,9 +105,7 @@ class UserInformationFragment : Fragment() {
         }
 
 //        SharedConfigs.signedUser?.avatarURL?.let { imageLoader.display(it, binding.userProfileImageView, R.drawable.ic_user_image) }
-        viewModel.getAvatar {
-            binding.userProfileImageView.setImageBitmap(it)
-        }
+        viewModel.getAvatar()
 
         binding.uploadUserImageImageView.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
@@ -159,23 +156,20 @@ class UserInformationFragment : Fragment() {
 
     private fun popupMenu(binding: FragmentUserInformationBinding) {
         binding.languageEn.setOnClickListener {
-            SharedConfigs.appLang = AppLangKeys.EN
-            binding.languageImage.setImageResource(R.drawable.ic_united_kingdom)
-            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
+            SharedConfigs.changeAppLanguage(AppLangKeys.EN)
+            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
             requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this).commit()
         }
 
         binding.languageRu.setOnClickListener {
-            SharedConfigs.appLang = AppLangKeys.RU
-            binding.languageImage.setImageResource(R.drawable.ic_russia)
-            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
+            SharedConfigs.changeAppLanguage(AppLangKeys.RU)
+            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
             requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this).commit()
         }
 
         binding.languageAm.setOnClickListener {
-            SharedConfigs.appLang = AppLangKeys.AM
-            binding.languageImage.setImageResource(R.drawable.ic_armenia)
-            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value)
+            SharedConfigs.changeAppLanguage(AppLangKeys.AM)
+            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
             requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this).commit()
         }
     }

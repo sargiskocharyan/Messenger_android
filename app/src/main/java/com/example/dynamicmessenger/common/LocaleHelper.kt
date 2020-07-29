@@ -35,11 +35,11 @@ object LocaleHelper {
     }
 
     private fun getPersistedData(): String {
-        return SharedConfigs.appLang.value
+        return SharedConfigs.appLang.value!!.value
     }
 
     private fun persist(context: Context, language: String) {
-        SharedConfigs.appLang.value = AppLangKeys.valueOf(language).value
+        SharedConfigs.appLang.value!!.value = AppLangKeys.valueOf(language).value
     }
 
     @TargetApi(Build.VERSION_CODES.N)

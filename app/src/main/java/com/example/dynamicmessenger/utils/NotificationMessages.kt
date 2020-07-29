@@ -1,15 +1,12 @@
 package com.example.dynamicmessenger.utils
 
-import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Context.NOTIFICATION_SERVICE
 import android.graphics.Color
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat.getSystemService
 import com.example.dynamicmessenger.R
 
 
@@ -21,7 +18,7 @@ class NotificationMessages {
             }
 
             val builder = NotificationCompat.Builder(context, "101")
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.drawable.ic_letter_d)
                 .setContentTitle(messageTitle)
                 .setContentText(message)
     //            .setContentIntent(pendingIntent)

@@ -14,12 +14,23 @@ import com.example.dynamicmessenger.network.AddContactApi
 import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.AddUserContactTask
 import com.example.dynamicmessenger.userDataController.database.DiskCache
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserCalls
+import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
 import kotlinx.coroutines.launch
 
 class OpponentInformationViewModel(application: Application) : AndroidViewModel(application) {
 
     private val diskLruCache = DiskCache.getInstance(application)
     private val context = application
+    private val callsDao = SignedUserDatabase.getUserDatabase(application)!!.userCallsDao()
+    private val callsRepository = UserCallsRepository(callsDao)
+
+    fun saveCall(userCalls: UserCalls) {
+        viewModelScope.launch {
+            callsRepository.insert(userCalls)
+        }
+    }
 
     fun getAvatar(closure: (Bitmap) -> Unit) {
         viewModelScope.launch {
