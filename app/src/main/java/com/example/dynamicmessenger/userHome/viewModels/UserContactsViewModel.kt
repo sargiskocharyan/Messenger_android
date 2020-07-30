@@ -7,10 +7,14 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.ContactsApi
 import com.example.dynamicmessenger.network.LoadAvatarApi
+import com.example.dynamicmessenger.network.SearchContactsApi
+import com.example.dynamicmessenger.network.authorization.models.SearchTask
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.userDataController.database.SavedUserRepository
@@ -23,6 +27,7 @@ class UserContactsViewModel(application: Application) : AndroidViewModel(applica
     private val diskLruCache = DiskCache.getInstance(application)
     private val usersDao = SignedUserDatabase.getUserDatabase(application)!!.savedUserDao()
     private val usersRepository = SavedUserRepository(usersDao)
+    val searchResult = MutableLiveData<String>()
 
     fun saveUser(user: User) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -45,6 +50,23 @@ class UserContactsViewModel(application: Application) : AndroidViewModel(applica
                 }
             } catch (e: Exception) {
                 Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun getSearchedContacts(name: String, closure: (List<User>) -> Unit) {
+        val task = SearchTask(name)
+        viewModelScope.launch {
+            try {
+                val response = SearchContactsApi.retrofitService.contactsSearchResponseAsync(SharedConfigs.token, task)
+                if (response.isSuccessful) {
+                    HomeActivity.isAddContacts = true
+                    closure(response.body()!!.users)
+                } else {
+//                    Toast.makeText(context, "Something gone a wrong", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                //                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
             }
         }
     }

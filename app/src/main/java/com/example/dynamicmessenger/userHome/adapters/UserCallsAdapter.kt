@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
@@ -22,10 +23,7 @@ import com.example.dynamicmessenger.network.GetUserInfoByIdApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
-import com.example.dynamicmessenger.userDataController.database.DiskCache
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
-import com.example.dynamicmessenger.userDataController.database.UserCalls
-import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
+import com.example.dynamicmessenger.userDataController.database.*
 import com.example.dynamicmessenger.userHome.viewModels.UserCallViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -77,6 +75,40 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
             holder.userImageView.setImageResource(R.drawable.ic_user_image)
         }
 
+        holder.callInformation.setOnClickListener {
+            if (viewModel.getUserById(data[position]._id) != null) {
+                Log.i("+++", "userContacts if")
+                HomeActivity.opponentUser = viewModel.getUserById(data[position]._id)
+                HomeActivity.receiverID = data[position]._id
+                (context as AppCompatActivity?)!!.supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.fragmentContainer , OpponentInformationFragment())
+                    .addToBackStack(null)
+                    .commit()
+            } else {
+                viewModel.viewModelScope.launch {
+                    try {
+                        val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, data[position]._id)
+                        if (response.isSuccessful) {
+                            response.body()?.let { user -> viewModel.saveUser(user) }
+                            Log.i("+++", "userContacts else ${response.body()}")
+                            HomeActivity.opponentUser = response.body()
+                            HomeActivity.receiverID = data[position]._id
+                            (context as AppCompatActivity?)!!.supportFragmentManager
+                                .beginTransaction()
+                                .replace(R.id.fragmentContainer , OpponentInformationFragment())
+                                .addToBackStack(null)
+                                .commit()
+                        } else {
+                            Log.i("+++else", "getOpponentInfoFromNetwork $response")
+                        }
+                    } catch (e: Exception) {
+                        Log.i("+++exception", "getOpponentInfoFromNetwork $e")
+                    }
+                }
+            }
+        }
+
     }
     @SuppressLint("SimpleDateFormat")
     fun convertLongToTime(time: Long): String {
@@ -105,6 +137,7 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
         val lastname: TextView = itemView.findViewById(R.id.callUserLastnameTextView)
         val userImageView: ImageView = itemView.findViewById(R.id.callUserImageView)
         val callTime: TextView = itemView.findViewById(R.id.callMessageTimeTextView)
+        val callInformation: ImageView = itemView.findViewById(R.id.callInformationImageView)
         init {
             itemView.setOnClickListener {
                 SharedConfigs.callingOpponentId = userCalls!!._id

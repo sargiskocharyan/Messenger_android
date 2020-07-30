@@ -130,9 +130,9 @@ class HomeActivity : AppCompatActivity() {
         BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.call -> selectedFragment = UserCallFragment()
-                R.id.chanel -> selectedFragment = UserChanelFragment()
+//                R.id.chanel -> selectedFragment = UserChanelFragment()
                 R.id.chat -> selectedFragment = UserChatFragment()
-                R.id.group -> selectedFragment = UserGroupFragment()
+//                R.id.group -> selectedFragment = UserGroupFragment()
                 R.id.user -> selectedFragment = UserInformationFragment()
             }
             Log.i("+++BottomNavigationView", selectedFragment.toString())

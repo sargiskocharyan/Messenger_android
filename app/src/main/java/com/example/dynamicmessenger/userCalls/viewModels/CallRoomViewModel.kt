@@ -15,6 +15,7 @@ import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.database.DiskCache
 import kotlinx.coroutines.launch
+import org.webrtc.PeerConnection
 
 class CallRoomViewModel(application: Application) : AndroidViewModel(application) {
     private val diskLruCache = DiskCache.getInstance(application)
@@ -23,6 +24,7 @@ class CallRoomViewModel(application: Application) : AndroidViewModel(application
     val opponentAvatarBitmap = MutableLiveData<Bitmap>()
     val isEnabledMicrophone = MutableLiveData<Boolean>(true)
     val isEnabledVolume = MutableLiveData<Boolean>(true)
+    val connectionStatus = MutableLiveData<PeerConnection.IceConnectionState>()
 
     fun getOpponentInfoFromNetwork() {
         val receiverId = SharedConfigs.callingOpponentId

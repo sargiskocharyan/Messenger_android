@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,11 +46,16 @@ class UserContactsFragment : Fragment() {
         binding.contactsRecyclerView.layoutManager = linearLayoutManager
 
         HomeActivity.isAddContacts = false
+        viewModel.searchResult.observe(viewLifecycleOwner, Observer {
+            viewModel.getSearchedContacts(it) {name ->
+                updateRecycleView(adapter, name)
+            }
+        })
 
         //Toolbar
         setHasOptionsMenu(true)
         val toolbar: Toolbar = binding.addUserContactsToolbar
-        configureTopNavBar(toolbar, adapter)
+        configureTopNavBar(toolbar)
 
         return binding.root
     }
@@ -77,16 +83,14 @@ class UserContactsFragment : Fragment() {
         adapter.submitList(data)
     }
 
-    private fun configureTopNavBar(toolbar: Toolbar, adapter: UserContactsAdapter) {
+    private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         toolbar.elevation = 10.0F
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
         toolbar.setOnMenuItemClickListener {
-            val contactSearchDialog = ContactsSearchDialog(coroutineScope) {myList ->
-                updateRecycleView(adapter, myList)
-            }
+            val contactSearchDialog = ContactsSearchDialog(viewModel.searchResult)
             contactSearchDialog.show(requireActivity().supportFragmentManager, "Dialog")
 
             return@setOnMenuItemClickListener true

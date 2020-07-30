@@ -5,9 +5,7 @@ import android.app.Activity
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -19,6 +17,7 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
 import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
+import com.example.dynamicmessenger.dialogs.ContactsSearchDialog
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userHome.adapters.UserChatsAdapter
@@ -89,6 +88,13 @@ class UserChatFragment : Fragment() {
         return binding.root
     }
 
+    //for show toolbar menu
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        val inflater: MenuInflater = requireActivity().menuInflater
+        inflater.inflate(R.menu.plus_top_bar, menu)
+        super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         HomeActivity.receiverChatInfo = null
@@ -119,7 +125,13 @@ class UserChatFragment : Fragment() {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         toolbar.elevation = 10.0F
         toolbar.setOnMenuItemClickListener {
-            Toast.makeText(requireContext(), "sexmir", Toast.LENGTH_SHORT).show()
+            val selectedFragment = UserContactsFragment()
+            activity?.supportFragmentManager
+                ?.beginTransaction()
+                ?.replace(R.id.fragmentContainer, selectedFragment)
+                ?.addToBackStack(null)
+                ?.commit()
+
             return@setOnMenuItemClickListener true
         }
     }

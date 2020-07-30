@@ -13,38 +13,31 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/activityCallRoomConstraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        tools:context="com.example.dynamicmessenger.userCalls.CallRoomActivity"
         android:background="@drawable/gradient">
 
-        <FrameLayout
-            android:id="@+id/activity_main"
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/remoteView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:context="com.example.dynamicmessenger.userCalls.CallRoomActivity">
+            app:layout_constraintTop_toTopOf="parent" />
 
-
-            <org.webrtc.SurfaceViewRenderer
-                android:id="@+id/remoteView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone" />
-
-            <org.webrtc.SurfaceViewRenderer
-                android:id="@+id/localView"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:visibility="invisible"
-                android:layout_margin="30dp"
-                android:layout_gravity="top|end" />
-
-        </FrameLayout>
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/localView"
+            android:layout_width="100dp"
+            android:layout_height="130dp"
+            android:layout_margin="30dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/callerCircleImageView"
@@ -53,8 +46,8 @@
             android:layout_marginBottom="20dp"
             app:setCircleImageVisible="@{signalingClient.isCallingNotProgress}"
             app:layout_constraintBottom_toTopOf="@+id/callerNameTextView"
-            app:layout_constraintEnd_toEndOf="@+id/activity_main"
-            app:layout_constraintStart_toStartOf="@+id/activity_main" />
+            app:layout_constraintEnd_toEndOf="@+id/activityCallRoomConstraintLayout"
+            app:layout_constraintStart_toStartOf="@+id/activityCallRoomConstraintLayout" />
 
         <TextView
             android:id="@+id/callerNameTextView"
@@ -63,87 +56,77 @@
             android:textSize="24sp"
             android:text="@{viewModel.opponentInformation.username}"
             app:setTextViewVisible="@{signalingClient.isCallingNotProgress}"
-            app:layout_constraintBottom_toBottomOf="@+id/activity_main"
+            app:layout_constraintBottom_toBottomOf="@+id/activityCallRoomConstraintLayout"
             app:layout_constraintEnd_toEndOf="@+id/callerCircleImageView"
             app:layout_constraintStart_toStartOf="@+id/callerCircleImageView"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="caller name" />
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="@+id/activity_main"
-            app:layout_constraintEnd_toEndOf="parent"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/hangUpCallCardView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="40dp"
+            android:backgroundTint="@android:color/holo_red_light"
+            app:cardCornerRadius="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/acceptCallCardView"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/hangUpCallCardView"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:backgroundTint="@android:color/holo_red_light"
-                app:cardCornerRadius="50dp"
-                app:layout_constraintEnd_toStartOf="@+id/acceptCallCardView"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_baseline_call_end_24" />
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/acceptCallCardView"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:backgroundTint="@android:color/holo_green_light"
-                app:setCardViewVisible="@{signalingClient.isCallingNotProgress}"
-                app:cardCornerRadius="50dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/hangUpCallCardView"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_baseline_call_24" />
-            </androidx.cardview.widget.CardView>
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/disableMicrophoneCircleImageView"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:padding="10dp"
-                android:src="@drawable/ic_baseline_mic_on_24"
-                android:background="@drawable/foreground_for_little_camera"
-                app:setCircleImageVisible="@{!signalingClient.isCallingNotProgress}"
-                app:setMicrophoneImage="@{viewModel.isEnabledMicrophone}"
-                app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
-                app:layout_constraintEnd_toStartOf="@+id/hangUpCallCardView"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView" />
+                android:src="@drawable/ic_baseline_call_end_24" />
+        </androidx.cardview.widget.CardView>
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/disableAudioCircleImageView"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/acceptCallCardView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:backgroundTint="@android:color/holo_green_light"
+            app:cardCornerRadius="50dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/hangUpCallCardView"
+            app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView"
+            app:setCardViewVisible="@{signalingClient.isCallingNotProgress}">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:padding="10dp"
-                android:src="@drawable/ic_baseline_volume_up_24"
-                android:background="@drawable/foreground_for_little_camera"
-                app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/hangUpCallCardView"
-                app:layout_constraintTop_toTopOf="parent"
-                app:setCircleImageVisible="@{!signalingClient.isCallingNotProgress}"
-                app:setVolumeImage="@{viewModel.isEnabledVolume}" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:src="@drawable/ic_baseline_call_24" />
+        </androidx.cardview.widget.CardView>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/disableMicrophoneCircleImageView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_mic_on_24"
+            android:background="@drawable/foreground_for_little_camera"
+            app:setCircleImageVisible="@{!signalingClient.isCallingNotProgress}"
+            app:setMicrophoneImage="@{viewModel.isEnabledMicrophone}"
+            app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
+            app:layout_constraintEnd_toStartOf="@+id/hangUpCallCardView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/disableAudioCircleImageView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/foreground_for_little_camera"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_volume_up_24"
+            app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/hangUpCallCardView"
+            app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView"
+            app:setCircleImageVisible="@{!signalingClient.isCallingNotProgress}"
+            app:setVolumeImage="@{viewModel.isEnabledVolume}" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
