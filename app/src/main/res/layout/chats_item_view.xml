@@ -30,6 +30,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline1" />
 
+    <ImageView
+        android:id="@+id/chatUserOnlineStatus"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:src="@drawable/background_for_online_status"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toEndOf="@+id/chatUserImageView" />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline1"
         android:layout_width="wrap_content"

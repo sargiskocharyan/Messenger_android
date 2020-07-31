@@ -36,9 +36,9 @@ class ChatRoomFragment : Fragment() {
         val myID = SharedConfigs.signedUser!!._id
 //        val receiverID = SharedPreferencesManager.getReceiverID(requireContext())
 //        val receiverAvatar = SharedPreferencesManager.getReceiverAvatarUrl(requireContext())
-        val receiverInfo = HomeActivity.receiverChatInfo
         val receiverID = HomeActivity.receiverID!!
-        val receiverAvatar = receiverInfo?.recipientAvatarURL
+        val receiverInfo = viewModel.getUserById(receiverID)
+        val receiverAvatar = receiverInfo?.avatarURL
         adapter = ChatRoomAdapter(requireContext(), myID)
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatRecyclerView.adapter = adapter
@@ -51,7 +51,7 @@ class ChatRoomFragment : Fragment() {
         setHasOptionsMenu(true)
         val toolbar: Toolbar = binding.chatRoomToolbar
         configureTopNavBar(toolbar)
-        binding.userChatToolbarTitle.text = HomeActivity.receiverChatInfo?.username ?: ""
+        binding.userChatToolbarTitle.text = receiverInfo?.username ?: ""
 
         viewModel.getAvatar(receiverAvatar) {
             adapter.receiverImage = it

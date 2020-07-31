@@ -57,7 +57,7 @@ class OpponentInformationFragment : Fragment() {
         binding.callOpponentImageView.setOnClickListener {
             val opponentUser = HomeActivity.opponentUser!!
             val currentDate = System.currentTimeMillis()
-            val userCalls = UserCalls(opponentUser._id, opponentUser.name , opponentUser.lastname, opponentUser.username, opponentUser.avatarURL, currentDate)
+            val userCalls = UserCalls(opponentUser._id, opponentUser.name , opponentUser.lastname, opponentUser.username, opponentUser.avatarURL, currentDate, 1)
             SharedConfigs.callingOpponentId = opponentUser._id
             viewModel.saveCall(userCalls)
             val intent = Intent(activity, CallRoomActivity::class.java)

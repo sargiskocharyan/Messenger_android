@@ -303,7 +303,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         showToast("Remote Peer Joined")
     }
 
-    override fun onRemoteHangUp(msg: String?) {
+    override fun onRemoteHangUp() {
         showToast("Remote Peer hungup")
         runOnUiThread { hangup() }
     }
@@ -430,13 +430,16 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 //        } catch (e: Exception) {
 //            e.printStackTrace()
 //        }
-        SignallingClient.getInstance()!!.emitCallAccepted(false)
+        if (SignallingClient.getInstance()!!.isCallingNotProgress.value == false) {
+            SignallingClient.getInstance()!!.leaveRoom()
+        } else {
+            SignallingClient.getInstance()!!.emitCallAccepted(false)
+        }
         SignallingClient.getInstance()!!.isStarted = false
         SharedConfigs.isCalling = false
         try {
             if (localPeer != null) {
                 localPeer!!.close()
-//                localPeer!!.co
             }
             peerConnectionFactory.dispose()
             localPeer = null

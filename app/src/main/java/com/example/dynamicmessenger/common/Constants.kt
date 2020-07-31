@@ -82,3 +82,12 @@ enum class AppLangKeys(var value: String) {
 enum class AppMode {
     dark, light
 }
+
+enum class MyFragments {
+    CALLS,
+    CHATS,
+    INFORMATION,
+    CONTACTS,
+    CHAT_ROOM,
+    OPPONENT_INFORMATION
+}

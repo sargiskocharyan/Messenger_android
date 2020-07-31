@@ -15,6 +15,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.common.MyFragments
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
 import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
 import com.example.dynamicmessenger.dialogs.ContactsSearchDialog
@@ -97,7 +99,6 @@ class UserChatFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        HomeActivity.receiverChatInfo = null
         activityJob.cancel()
     }
 
@@ -126,6 +127,7 @@ class UserChatFragment : Fragment() {
         toolbar.elevation = 10.0F
         toolbar.setOnMenuItemClickListener {
             val selectedFragment = UserContactsFragment()
+            SharedConfigs.lastFragment = MyFragments.CHATS
             activity?.supportFragmentManager
                 ?.beginTransaction()
                 ?.replace(R.id.fragmentContainer, selectedFragment)

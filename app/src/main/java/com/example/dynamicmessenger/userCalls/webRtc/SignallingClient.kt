@@ -174,6 +174,14 @@ class SignallingClient {
         }
     }
 
+    fun onCallEnded() {
+        callback.onRemoteHangUp()
+    }
+
+    fun leaveRoom() {
+        mSocket.emit("leaveRoom", roomName)
+    }
+
     fun emitMessage(message: SessionDescription) {
         try {
             Log.d("SignallingClient", "emitMessage() called with: message = [$message]")
@@ -246,7 +254,7 @@ class SignallingClient {
 //    }
 
     interface SignalingInterface {
-        fun onRemoteHangUp(msg: String?)
+        fun onRemoteHangUp()
         fun onOfferReceived(data: JSONObject?)
         fun onAnswerReceived(data: JSONObject?)
         fun onIceCandidateReceived(data: JSONObject?)

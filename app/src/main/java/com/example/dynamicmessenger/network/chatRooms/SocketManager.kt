@@ -103,6 +103,10 @@ object SocketManager {
         signalingClient?.onCandidate(array)
     }
 
+    fun onCallEnded() {
+        signalingClient?.onCallEnded()
+    }
+
     fun sendMessage(receiverID: String, editText: EditText) {
         mSocket?.emit("sendMessage" , editText.text.toString() , receiverID)
         editText.text.clear()

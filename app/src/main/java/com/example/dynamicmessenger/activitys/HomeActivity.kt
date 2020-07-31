@@ -25,6 +25,7 @@ import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userCalls.SocketEventsForVideoCalls
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userDataController.database.UserTokenDao
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.userHome.fragments.*
@@ -99,7 +100,17 @@ class HomeActivity : AppCompatActivity() {
             socketManager.onCandidate(it)
             Log.d("SignallingClientAcc", "Home activity candidates ")
         }
+        mSocket.on("callEnded") {
+            socketManager.onCallEnded()
+            Log.d("SignallingClientAcc", "Home activity call Ended ")
+        }
         mSocket.on("call") {
+            val currentDate = System.currentTimeMillis()
+            val opponentUser = viewModel.getUserById(it[0].toString())
+            opponentUser?.let {user ->
+                val userCalls = UserCalls(user._id, user.name , user.lastname, user.username, user.avatarURL, currentDate, 2)
+                viewModel.saveCall(userCalls)
+            }
             if (!SharedConfigs.isCallingInProgress) {
                 SharedConfigs.callingOpponentId = it[0].toString()
                 SharedConfigs.isCalling = true
@@ -177,11 +188,6 @@ class HomeActivity : AppCompatActivity() {
             set(value) {
                 field = value
                 Log.i("+++", "Opponent user set $value")
-            }
-        var receiverChatInfo: Chat? = null
-            set(value) {
-                field = value
-                Log.i("+++", "receiver Chat Info set $value")
             }
         var receiverID: String? = null
             set(value) {

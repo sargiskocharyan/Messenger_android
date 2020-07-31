@@ -103,6 +103,7 @@
         app:srcCompat="@drawable/ic_baseline_info_24" />
 
     <ImageView
+        android:id="@+id/callState"
         android:layout_width="16dp"
         android:layout_height="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/callUserImageView"

@@ -55,27 +55,14 @@
                     app:layout_constraintTop_toTopOf="@+id/userProfileImageView" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/circleImageView"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:background="@drawable/foreground_for_little_camera"
-                    android:src="@drawable/ic_baseline_photo_camera_24"
-                    app:civ_border_color="#FFFFFF"
-                    app:civ_border_width="2dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/userProfileImageView"
-                    app:layout_constraintEnd_toEndOf="@+id/userProfileImageView" />
-
-                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/uploadUserImageImageView"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:background="@drawable/foreground_for_little_camera"
-                    android:padding="1dp"
+                    android:padding="2dp"
                     android:src="@drawable/ic_baseline_photo_camera_24"
                     app:layout_constraintBottom_toBottomOf="@+id/userProfileImageView"
-                    app:layout_constraintEnd_toEndOf="@+id/userProfileImageView"
-                    app:layout_constraintStart_toStartOf="@+id/circleImageView"
-                    app:layout_constraintTop_toTopOf="@+id/circleImageView" />
+                    app:layout_constraintEnd_toEndOf="@+id/userProfileImageView" />
 
                 <TextView
                     android:id="@+id/username"

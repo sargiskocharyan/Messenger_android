@@ -75,6 +75,11 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
             holder.userImageView.setImageResource(R.drawable.ic_user_image)
         }
 
+        when (item.callingState) {
+            1 -> holder.callState.setImageResource(R.drawable.ic_outgoing_call)
+            2 -> holder.callState.setImageResource(R.drawable.ic_incoming_call)
+        }
+
         holder.callInformation.setOnClickListener {
             if (viewModel.getUserById(data[position]._id) != null) {
                 Log.i("+++", "userContacts if")
@@ -138,11 +143,13 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
         val userImageView: ImageView = itemView.findViewById(R.id.callUserImageView)
         val callTime: TextView = itemView.findViewById(R.id.callMessageTimeTextView)
         val callInformation: ImageView = itemView.findViewById(R.id.callInformationImageView)
+        val callState: ImageView = itemView.findViewById(R.id.callState)
         init {
             itemView.setOnClickListener {
                 SharedConfigs.callingOpponentId = userCalls!!._id
                 val intent = Intent(context, CallRoomActivity::class.java)
                 userCalls!!.time = System.currentTimeMillis()
+                userCalls!!.callingState = 1
                 viewModel.saveCall(userCalls!!)
                 context.startActivity(intent)
                 (context as Activity?)!!.overridePendingTransition(1, 1)

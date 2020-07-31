@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.SaveToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class SignedUserRepository(private val signedUserDao: SignedUserDao) {
     val signedUser: SignedUser = signedUserDao.getSignedUser()
@@ -89,5 +91,17 @@ class UserChatsRepository(private val userChatsDao: UserChatsDao) {
 
     suspend fun deleteAll() {
         userChatsDao.deleteAll()
+    }
+}
+
+class UserContactsRepository(private val userContactsDao: UserContactsDao) {
+    val getUserAllChats: List<Contacts> = userContactsDao.getAllContacts()
+
+    suspend fun insert(contacts: List<Contacts>) {
+        userContactsDao.insert(contacts)
+    }
+
+    suspend fun deleteAll() {
+        userContactsDao.deleteAll()
     }
 }

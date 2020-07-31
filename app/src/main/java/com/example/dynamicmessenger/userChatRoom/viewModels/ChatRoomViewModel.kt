@@ -14,11 +14,20 @@ import com.example.dynamicmessenger.network.ChatRoomApi
 import com.example.dynamicmessenger.network.GetUserInfoByIdApi
 import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
+import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.database.DiskCache
+import com.example.dynamicmessenger.userDataController.database.SavedUserRepository
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import kotlinx.coroutines.launch
 
 class ChatRoomViewModel(application: Application) : AndroidViewModel(application) {
     private val diskLruCache = DiskCache.getInstance(application)
+    private val usersDao = SignedUserDatabase.getUserDatabase(application)!!.savedUserDao()
+    private val usersRepository = SavedUserRepository(usersDao)
+
+    fun getUserById(id: String): User? {
+        return usersRepository.getUserById(id)
+    }
 
     fun getMessagesFromNetwork(context: Context?, receiverID: String, closure: (List<ChatRoom>) -> Unit) {
         viewModelScope.launch {

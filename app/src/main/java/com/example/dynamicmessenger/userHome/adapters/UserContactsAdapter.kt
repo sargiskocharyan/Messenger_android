@@ -25,6 +25,7 @@ import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFr
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
 import kotlinx.coroutines.launch
+import com.example.dynamicmessenger.common.MyFragments as MyFragments
 
 class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewModel): RecyclerView.Adapter<UserContactsAdapter.UserContactsViewHolder>() {
     var data = mutableListOf<User>()
@@ -76,15 +77,19 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         val contactsUserImageView: ImageView = itemView.findViewById(R.id.contactsUserImageView)
         init {
             itemView.setOnClickListener {
-                if (viewModel.getUserById(userContact!!._id) != null) {
-                    Log.i("+++", "userContacts if")
+                if (SharedConfigs.lastFragment == MyFragments.CHATS) {
                     HomeActivity.opponentUser = viewModel.getUserById(userContact!!._id)
                     HomeActivity.receiverID = userContact!!._id
                     (context as AppCompatActivity?)!!.supportFragmentManager
                         .beginTransaction()
-                        .replace(R.id.fragmentContainer , OpponentInformationFragment())
+                        .replace(R.id.fragmentContainer , ChatRoomFragment())
                         .addToBackStack(null)
                         .commit()
+                    return@setOnClickListener
+                }
+                if (viewModel.getUserById(userContact!!._id) != null) {
+                    Log.i("+++", "userContacts if")
+                    nextPage(viewModel.getUserById(userContact!!._id))
                 } else {
                     viewModel.viewModelScope.launch {
                         try {
@@ -92,13 +97,7 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
                             if (response.isSuccessful) {
                                 response.body()?.let { user -> viewModel.saveUser(user) }
                                 Log.i("+++", "userContacts else ${response.body()}")
-                                HomeActivity.opponentUser = response.body()
-                                HomeActivity.receiverID = userContact!!._id
-                                (context as AppCompatActivity?)!!.supportFragmentManager
-                                    .beginTransaction()
-                                    .replace(R.id.fragmentContainer , OpponentInformationFragment())
-                                    .addToBackStack(null)
-                                    .commit()
+                                nextPage(response.body())
                             } else {
                                 Log.i("+++else", "getOpponentInfoFromNetwork $response")
                             }
@@ -108,6 +107,16 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
                     }
                 }
             }
+        }
+
+        private fun nextPage(opponentUser: User?) {
+            HomeActivity.opponentUser = opponentUser
+            HomeActivity.receiverID = userContact!!._id
+            (context as AppCompatActivity?)!!.supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragmentContainer , OpponentInformationFragment())
+                .addToBackStack(null)
+                .commit()
         }
     }
 

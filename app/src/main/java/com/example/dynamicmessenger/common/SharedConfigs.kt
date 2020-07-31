@@ -19,6 +19,7 @@ object SharedConfigs {
     var callingOpponentId: String? = null
     var isCalling: Boolean = false //TODO
     var isCallingInProgress: Boolean = false
+    var lastFragment: MyFragments? = null
     fun init(context: Context) {
         this.myContext = context
         userDao = SignedUserDatabase.getUserDatabase(context)!!.signedUserDao()

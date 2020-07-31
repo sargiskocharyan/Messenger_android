@@ -69,7 +69,8 @@ data class Chat(
     @Embedded
     val message: Message?,
     val recipientAvatarURL: String?,
-    val chatCreateDay: String) : Parcelable
+    val chatCreateDay: String,
+    val online: Boolean?) : Parcelable
 
 @Parcelize
 data class Message(
