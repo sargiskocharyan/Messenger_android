@@ -421,3 +421,20 @@ object LoadAvatarApi {
         )
     }
 }
+
+//Online users
+interface JsonPlaceHolderGetOnlineUsersApi {
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.onlineUsers)
+    suspend fun getOnlineUsers(@Header (MyHeaders.tokenAuthorization) header: String,
+                               @Body userArray : OnlineUsersTask) :
+            Response<OnlineUsers>
+}
+
+object GetOnlineUsersApi {
+    val retrofitService : JsonPlaceHolderGetOnlineUsersApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderGetOnlineUsersApi::class.java
+        )
+    }
+}

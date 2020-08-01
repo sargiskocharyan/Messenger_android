@@ -69,8 +69,7 @@ data class Chat(
     @Embedded
     val message: Message?,
     val recipientAvatarURL: String?,
-    val chatCreateDay: String,
-    val online: Boolean?) : Parcelable
+    val chatCreateDay: String) : Parcelable
 
 @Parcelize
 data class Message(
@@ -121,4 +120,5 @@ data class UniversityPropertyList(val list: List<UniversityProperty>) : Parcelab
     }
 }
 
-
+@Parcelize
+data class OnlineUsers(val usersOnline: List<String>) : Parcelable

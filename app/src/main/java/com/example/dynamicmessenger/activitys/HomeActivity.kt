@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.viewModels.HomeActivityViewModel
+import com.example.dynamicmessenger.common.MyTime
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.UserTokenVerifyApi
@@ -62,6 +63,8 @@ class HomeActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(HomeActivityViewModel::class.java)
         tokenDao = SignedUserDatabase.getUserDatabase(this)!!.userTokenDao()
         tokenRep = UserTokenRepository(tokenDao)
+
+        viewModel.repeat()
 
         //socket
         socketManager = SocketManager
@@ -146,7 +149,6 @@ class HomeActivity : AppCompatActivity() {
 //                R.id.group -> selectedFragment = UserGroupFragment()
                 R.id.user -> selectedFragment = UserInformationFragment()
             }
-            Log.i("+++BottomNavigationView", selectedFragment.toString())
             supportFragmentManager.beginTransaction().replace(
                 R.id.fragmentContainer,
                 selectedFragment
@@ -162,7 +164,7 @@ class HomeActivity : AppCompatActivity() {
                 val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                 val date: Date = format.parse(tokenExpire!!)!!
                 val currentDate: Date = Calendar.getInstance().time
-                if (response.body()?.tokenExists == false || date.time - currentDate.time <  86400000 ) {
+                if (response.body()?.tokenExists == false || date.time - currentDate.time <  MyTime.oneDay ) {
                     SharedPreferencesManager.deleteUserAllInformation(context!!)
                     SharedConfigs.deleteToken()
                     SharedConfigs.deleteSignedUser()

@@ -56,6 +56,7 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
         return data.size
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: UserCallsViewHolder, position: Int) {
         val item = data[position]
         holder.userCalls = item
@@ -73,6 +74,18 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
             }
         } else {
             holder.userImageView.setImageResource(R.drawable.ic_user_image)
+        }
+
+        val hours = item.duration / (1000 * 60 * 60) % 24
+        val minutes = item.duration / (1000 * 60) % 60
+        val seconds = (item.duration / 1000) % 60
+
+        if (minutes == 0L && hours == 0L) {
+            holder.callDuration.text = "${seconds}s"
+        } else if (hours == 0L) {
+            holder.callDuration.text = "${minutes}m ${seconds}s"
+        } else {
+            holder.callDuration.text = "${hours}h ${minutes}m ${seconds}s"
         }
 
         when (item.callingState) {
@@ -120,7 +133,7 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
         val date = Date(time)
         val currentDate: Date = Calendar.getInstance().time
         return if ((currentDate.day == date.day) && (currentDate.month == date.month) && (currentDate.year == date.year)) {
-            val newFormat = SimpleDateFormat("HH:mm:ss")
+            val newFormat = SimpleDateFormat("HH:mm")
             newFormat.format(date)
         } else if ((currentDate.day != date.day) || (currentDate.month != date.month) && (currentDate.year == date.year)) {
             val newFormat = SimpleDateFormat("MMMM-dd")
@@ -142,6 +155,7 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
         val lastname: TextView = itemView.findViewById(R.id.callUserLastnameTextView)
         val userImageView: ImageView = itemView.findViewById(R.id.callUserImageView)
         val callTime: TextView = itemView.findViewById(R.id.callMessageTimeTextView)
+        val callDuration: TextView = itemView.findViewById(R.id.callDurationTextView)
         val callInformation: ImageView = itemView.findViewById(R.id.callInformationImageView)
         val callState: ImageView = itemView.findViewById(R.id.callState)
         init {

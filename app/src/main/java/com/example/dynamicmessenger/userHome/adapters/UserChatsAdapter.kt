@@ -11,10 +11,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
@@ -92,10 +94,14 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
         } else  {
             holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
         }
-        if (item.online == true) {
-            holder.chatUserOnlineStatus.visibility = View.VISIBLE
-        } else {
-            holder.chatUserOnlineStatus.visibility = View.INVISIBLE
+        SharedConfigs.onlineUsers?.let {onlineUsers ->
+            onlineUsers.observeForever {
+                if (it.contains(holder.chat!!.id)) {
+                    holder.chatUserOnlineStatus.visibility = View.VISIBLE
+                } else {
+                    holder.chatUserOnlineStatus.visibility = View.INVISIBLE
+                }
+            }
         }
     }
 

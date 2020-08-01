@@ -46,6 +46,7 @@ class UserTokenRepository(private val userTokenDao: UserTokenDao) {
 class UserCallsRepository(private val userCallsDao: UserCallsDao) {
     fun getUserCalls() = userCallsDao.getUserCalls()
     val getUserCalls: LiveData<List<UserCalls>> = userCallsDao.getUserCalls()
+    val getLastCall = userCallsDao.getLastCall()
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread

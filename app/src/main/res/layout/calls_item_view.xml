@@ -6,13 +6,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:id="@+id/callLastMessageTextView"
+        android:id="@+id/callDurationTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
         android:lines="1"
         android:text="10 Seconds"
-        android:textSize="10sp"
+        android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="@+id/callUserImageView"
         app:layout_constraintEnd_toStartOf="@+id/callMessageTimeTextView"
         app:layout_constraintHorizontal_bias="0.0"

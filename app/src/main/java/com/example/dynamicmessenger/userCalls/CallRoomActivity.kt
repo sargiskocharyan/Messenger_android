@@ -233,9 +233,11 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                 override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState) {
                     Log.i("++++", "iceConnection State $iceConnectionState")
 //                    viewModel.connectionStatus.value = iceConnectionState
-//                    if (iceConnectionState == PeerConnection.IceConnectionState.FAILED || iceConnectionState == PeerConnection.IceConnectionState.CLOSED) {
-//                        hangup()
-//                    }
+                    if (iceConnectionState == PeerConnection.IceConnectionState.FAILED || iceConnectionState == PeerConnection.IceConnectionState.CLOSED) {
+                            Log.i("+++++++++", "hangup")
+//                            hangup()
+                            onRemoteHangUp()
+                    }
                     super.onIceConnectionChange(iceConnectionState)
                 }
 
@@ -420,16 +422,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 //    }
 
     private fun hangup() {
-//        try {
-//            if (localPeer != null) {
-//                localPeer!!.close()
-//            }
-//            localPeer = null
-////            SignallingClient.getInstance()!!.close()
-////            updateVideoViews(false)
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
+        viewModel.saveCall()
         if (SignallingClient.getInstance()!!.isCallingNotProgress.value == false) {
             SignallingClient.getInstance()!!.leaveRoom()
         } else {
@@ -441,8 +434,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
             if (localPeer != null) {
                 localPeer!!.close()
             }
-            peerConnectionFactory.dispose()
             localPeer = null
+            peerConnectionFactory.dispose()
 //                updateVideoViews(false)
         } catch (e: Exception) {
             e.printStackTrace()

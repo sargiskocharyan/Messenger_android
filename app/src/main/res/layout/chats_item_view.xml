@@ -12,8 +12,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="5dp"
         android:lines="1"
-        android:text="TextView"
         android:textSize="14sp"
+        tools:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toStartOf="@+id/messageTime"
         app:layout_constraintStart_toEndOf="@+id/chatUserImageView"
@@ -35,7 +35,7 @@
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:src="@drawable/background_for_online_status"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="@+id/chatUserImageView" />
 
@@ -60,8 +60,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="40dp"
         android:lines="1"
-        android:text="UserName"
         android:textSize="18sp"
+        tools:text="UserName"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/chatsLastMessage"
         app:layout_constraintEnd_toStartOf="@+id/messageTime"
@@ -75,8 +75,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:lines="1"
-        android:text="Lastname"
         android:textSize="18sp"
+        tools:text="Lastname"
         app:layout_constraintBottom_toBottomOf="@+id/chatsUserName"
         app:layout_constraintStart_toEndOf="@+id/chatsUserName"
         app:layout_constraintTop_toTopOf="@+id/chatsUserName" />
@@ -86,8 +86,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
-        android:text="TextView"
         android:textSize="14sp"
+        tools:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
