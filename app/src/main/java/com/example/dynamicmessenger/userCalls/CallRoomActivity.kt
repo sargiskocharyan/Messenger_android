@@ -104,17 +104,9 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
 
         binding.hangUpCallCardView.setOnClickListener {
+            SignallingClient.getInstance()!!.leaveRoom()
             hangup()
         }
-
-        viewModel.connectionStatus.observe(this, androidx.lifecycle.Observer {
-            Log.i("++++", "connection status $it")
-//            if (it == PeerConnection.IceConnectionState.FAILED || it == PeerConnection.IceConnectionState.CLOSED) {
-//                hangup()
-//            }
-        })
-
-
 
     }
 
@@ -234,9 +226,11 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                     Log.i("++++", "iceConnection State $iceConnectionState")
 //                    viewModel.connectionStatus.value = iceConnectionState
                     if (iceConnectionState == PeerConnection.IceConnectionState.FAILED || iceConnectionState == PeerConnection.IceConnectionState.CLOSED) {
-                            Log.i("+++++++++", "hangup")
-//                            hangup()
-                            onRemoteHangUp()
+                        Log.i("+++++++++", "hangup")
+                        onRemoteHangUp()
+                    }
+                    if (iceConnectionState == PeerConnection.IceConnectionState.FAILED) {
+                        SignallingClient.getInstance()!!.leaveRoom()
                     }
                     super.onIceConnectionChange(iceConnectionState)
                 }
@@ -423,9 +417,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 
     private fun hangup() {
         viewModel.saveCall()
-        if (SignallingClient.getInstance()!!.isCallingNotProgress.value == false) {
-            SignallingClient.getInstance()!!.leaveRoom()
-        } else {
+        if (SignallingClient.getInstance()!!.isCallingNotProgress.value == true) {
             SignallingClient.getInstance()!!.emitCallAccepted(false)
         }
         SignallingClient.getInstance()!!.isStarted = false

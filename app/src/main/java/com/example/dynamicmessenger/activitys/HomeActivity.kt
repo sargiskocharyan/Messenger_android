@@ -1,5 +1,6 @@
 package com.example.dynamicmessenger.activitys
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.NotificationManager
@@ -156,6 +157,7 @@ class HomeActivity : AppCompatActivity() {
             true
         }
 
+    @SuppressLint("SimpleDateFormat")
     private fun tokenCheck(context: Context?, token: String) {
         coroutineScope.launch {
             try {
