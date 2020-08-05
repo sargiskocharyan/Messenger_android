@@ -3,6 +3,7 @@ package com.example.dynamicmessenger.common
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.dynamicmessenger.userDataController.database.*
@@ -19,6 +20,8 @@ object SharedConfigs {
     var callingOpponentId: String? = null
     var isCalling: Boolean = false //TODO
     var isCallingInProgress: Boolean = false
+    var lastFragment: MyFragments? = null
+    var onlineUsers = MutableLiveData<List<String>>()
     fun init(context: Context) {
         this.myContext = context
         userDao = SignedUserDatabase.getUserDatabase(context)!!.signedUserDao()

@@ -1,22 +1,20 @@
 package com.example.dynamicmessenger.userHome.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
-import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
 import com.example.dynamicmessenger.databinding.FragmentUserContactsBinding
 import com.example.dynamicmessenger.dialogs.ContactsSearchDialog
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userHome.adapters.UserContactsAdapter
-import com.example.dynamicmessenger.userHome.adapters.UserContactsDiffUtilCallback
 import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,8 +23,6 @@ import kotlinx.coroutines.Job
 
 class UserContactsFragment : Fragment() {
     lateinit var viewModel: UserContactsViewModel
-    private var fragmentJob = Job()
-    private val coroutineScope = CoroutineScope(fragmentJob + Dispatchers.Main)
     private lateinit var binding: FragmentUserContactsBinding
 
     override fun onCreateView(
@@ -45,11 +41,19 @@ class UserContactsFragment : Fragment() {
         binding.contactsRecyclerView.layoutManager = linearLayoutManager
 
         HomeActivity.isAddContacts = false
+        viewModel.getSavedContacts().observe(viewLifecycleOwner, Observer {
+            updateRecycleView(adapter, it)
+        })
+        viewModel.searchResult.observe(viewLifecycleOwner, Observer {
+            viewModel.getSearchedContacts(it) {name ->
+                updateRecycleView(adapter, name)
+            }
+        })
 
         //Toolbar
         setHasOptionsMenu(true)
         val toolbar: Toolbar = binding.addUserContactsToolbar
-        configureTopNavBar(toolbar, adapter)
+        configureTopNavBar(toolbar)
 
         return binding.root
     }
@@ -61,14 +65,10 @@ class UserContactsFragment : Fragment() {
         super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        fragmentJob.cancel()
-    }
-
     private fun updateRecycleViewFromNetwork(adapter: UserContactsAdapter) {
         viewModel.getUserContactsFromNetwork(requireContext()) {
             adapter.setAdapterDataNotify(it)
+            viewModel.saveContacts(it)
         }
     }
 
@@ -77,16 +77,14 @@ class UserContactsFragment : Fragment() {
         adapter.submitList(data)
     }
 
-    private fun configureTopNavBar(toolbar: Toolbar, adapter: UserContactsAdapter) {
+    private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         toolbar.elevation = 10.0F
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
         toolbar.setOnMenuItemClickListener {
-            val contactSearchDialog = ContactsSearchDialog(coroutineScope) {myList ->
-                updateRecycleView(adapter, myList)
-            }
+            val contactSearchDialog = ContactsSearchDialog(viewModel.searchResult)
             contactSearchDialog.show(requireActivity().supportFragmentManager, "Dialog")
 
             return@setOnMenuItemClickListener true

@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.SaveToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class SignedUserRepository(private val signedUserDao: SignedUserDao) {
     val signedUser: SignedUser = signedUserDao.getSignedUser()
@@ -44,6 +46,8 @@ class UserTokenRepository(private val userTokenDao: UserTokenDao) {
 class UserCallsRepository(private val userCallsDao: UserCallsDao) {
     fun getUserCalls() = userCallsDao.getUserCalls()
     val getUserCalls: LiveData<List<UserCalls>> = userCallsDao.getUserCalls()
+    val getLastCall = userCallsDao.getLastCall()
+    fun getCallByTime(time: Long) = userCallsDao.getCallByTime(time)
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
@@ -89,5 +93,17 @@ class UserChatsRepository(private val userChatsDao: UserChatsDao) {
 
     suspend fun deleteAll() {
         userChatsDao.deleteAll()
+    }
+}
+
+class UserContactsRepository(private val userContactsDao: UserContactsDao) {
+    val getUserAllContacts: List<Contacts> = userContactsDao.getAllContacts()
+
+    suspend fun insert(contacts: List<Contacts>) {
+        userContactsDao.insert(contacts)
+    }
+
+    suspend fun deleteAll() {
+        userContactsDao.deleteAll()
     }
 }

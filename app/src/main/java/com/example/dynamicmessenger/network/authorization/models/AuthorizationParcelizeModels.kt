@@ -75,7 +75,10 @@ data class Chat(
 data class Message(
     @Embedded
     val sender: Sender,
-    val text: String,
+    @Embedded
+    val call: Call?,
+    val type: String,
+    val text: String?,
     var createdAt: String,
     val reciever: String) : Parcelable, Comparable<Message> {
     @SuppressLint("SimpleDateFormat")
@@ -95,12 +98,26 @@ data class Message(
 
 @Parcelize
 data class Sender(
-                @PrimaryKey
-                @ColumnInfo(name = "senderId") val id: String,
-                @ColumnInfo(name = "senderName")val name: String) : Parcelable
+    @PrimaryKey
+    @ColumnInfo(name = "senderId") val id: String,
+    @ColumnInfo(name = "senderName")val name: String) : Parcelable
 
 @Parcelize
-data class ChatRoom(val sender: Sender, val text: String, val reciever: String) : Parcelable
+data class Call(
+    val Status: String?,
+    val callSuggestTime: String?,
+    @ColumnInfo(name = "callType")
+    val type: String?,
+    val duration: Double?) : Parcelable
+
+@Parcelize
+data class ChatRoom(
+    val sender: Sender,
+    val call: Call?,
+    val type: String,
+    val text: String?,
+    val reciever: String,
+    val createdAt: String) : Parcelable
 
 @Parcelize
 data class UniversityProperty(val _id: String, val name: String, val nameRU: String , val nameEN: String) : Parcelable {
@@ -120,4 +137,5 @@ data class UniversityPropertyList(val list: List<UniversityProperty>) : Parcelab
     }
 }
 
-
+@Parcelize
+data class OnlineUsers(val usersOnline: List<String>) : Parcelable

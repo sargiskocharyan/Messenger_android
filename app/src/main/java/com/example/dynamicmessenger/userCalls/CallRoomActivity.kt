@@ -15,6 +15,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
@@ -23,6 +24,8 @@ import com.example.dynamicmessenger.userCalls.viewModels.CallRoomViewModel
 import com.example.dynamicmessenger.userCalls.webRtc.CustomPeerConnectionObserver
 import com.example.dynamicmessenger.userCalls.webRtc.CustomSdpObserver
 import com.example.dynamicmessenger.userCalls.webRtc.SignallingClient
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.*
@@ -101,22 +104,10 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
 
         binding.hangUpCallCardView.setOnClickListener {
-            SignallingClient.getInstance()!!.emitCallAccepted(false)
-            SignallingClient.getInstance()!!.isStarted = false
-            SharedConfigs.isCalling = false
-            try {
-                if (localPeer != null) {
-                    localPeer!!.close()
-                }
-                peerConnectionFactory.dispose()
-                localPeer = null
-                updateVideoViews(false)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-//            SignallingClient.getInstance()!!.close()
-            onBackPressed()
+            SignallingClient.getInstance()!!.leaveRoom()
+            hangup()
         }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -231,6 +222,29 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         localPeer = peerConnectionFactory.createPeerConnection(
             rtcConfig,
             object : CustomPeerConnectionObserver("localPeerCreation") {
+                override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState) {
+                    Log.i("++++", "iceConnection State $iceConnectionState")
+//                    viewModel.connectionStatus.value = iceConnectionState
+                    if (iceConnectionState == PeerConnection.IceConnectionState.FAILED || iceConnectionState == PeerConnection.IceConnectionState.CLOSED) {
+                        Log.i("+++++++++", "hangup")
+                        onRemoteHangUp()
+                    }
+                    if (iceConnectionState == PeerConnection.IceConnectionState.FAILED) {
+                        SignallingClient.getInstance()!!.leaveRoom()
+                    }
+                    if (iceConnectionState == PeerConnection.IceConnectionState.CONNECTED) {
+                        if (!SignallingClient.getInstance()!!.callStarted) {
+                            SignallingClient.getInstance()!!.callStarted()
+                        } else {
+                            SignallingClient.getInstance()!!.reconnectToCall()
+                        }
+                    }
+//                    if (iceConnectionState == PeerConnection.IceConnectionState.) {
+//                        SignallingClient.getInstance()!!.callStarted()
+//                    }
+                    super.onIceConnectionChange(iceConnectionState)
+                }
+
                 override fun onIceCandidate(iceCandidate: IceCandidate) {
                     super.onIceCandidate(iceCandidate)
                     onIceCandidateReceived(iceCandidate)
@@ -295,7 +309,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         showToast("Remote Peer Joined")
     }
 
-    override fun onRemoteHangUp(msg: String?) {
+    override fun onRemoteHangUp() {
         showToast("Remote Peer hungup")
         runOnUiThread { hangup() }
     }
@@ -319,7 +333,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                     )
                 }
                 doAnswer()
-                updateVideoViews(true)
+//                updateVideoViews(true)
             } catch (e: JSONException) {
                 e.printStackTrace()
             }
@@ -372,7 +386,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                     )
                 )
             }
-            updateVideoViews(true)
+//            updateVideoViews(true)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
@@ -395,33 +409,41 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
     }
 
-    private fun updateVideoViews(remoteVisible: Boolean) {
-        runOnUiThread {
-            var params = localVideoView.layoutParams
-            if (remoteVisible) {
-                params.height = dpToPx(130)
-                params.width = dpToPx(100)
-            } else {
-                params = FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-            }
-            localVideoView.layoutParams = params
-        }
-    }
+//    private fun updateVideoViews(remoteVisible: Boolean) {
+//        runOnUiThread {
+//            var params = localVideoView.layoutParams
+//            if (remoteVisible) {
+//                params.height = dpToPx(130)
+//                params.width = dpToPx(100)
+//            } else {
+//                params = FrameLayout.LayoutParams(
+//                    ViewGroup.LayoutParams.MATCH_PARENT,
+//                    ViewGroup.LayoutParams.MATCH_PARENT
+//                )
+//            }
+//            localVideoView.layoutParams = params
+//        }
+//    }
 
     private fun hangup() {
+        viewModel.saveCall()
+        if (SignallingClient.getInstance()!!.isCallingNotProgress.value == true) {
+            SignallingClient.getInstance()!!.emitCallAccepted(false)
+        }
+        SignallingClient.getInstance()!!.isStarted = false
+        SharedConfigs.isCalling = false
         try {
             if (localPeer != null) {
                 localPeer!!.close()
             }
             localPeer = null
-//            SignallingClient.getInstance()!!.close()
-            updateVideoViews(false)
+            peerConnectionFactory.dispose()
+//                updateVideoViews(false)
         } catch (e: Exception) {
             e.printStackTrace()
         }
+//            SignallingClient.getInstance()!!.close()
+        onBackPressed()
     }
 
     override fun onDestroy() {

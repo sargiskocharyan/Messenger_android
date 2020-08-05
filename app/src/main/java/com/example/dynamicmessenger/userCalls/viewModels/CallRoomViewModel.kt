@@ -13,11 +13,15 @@ import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.GetUserInfoByIdApi
 import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.User
-import com.example.dynamicmessenger.userDataController.database.DiskCache
+import com.example.dynamicmessenger.userDataController.database.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.webrtc.PeerConnection
 
 class CallRoomViewModel(application: Application) : AndroidViewModel(application) {
     private val diskLruCache = DiskCache.getInstance(application)
+    private val callsDao = SignedUserDatabase.getUserDatabase(application)!!.userCallsDao()
+    private val callsRepository = UserCallsRepository(callsDao)
     val opponentInformation = MutableLiveData<User>()
     val opponentAvatarUrl = MutableLiveData<String>()
     val opponentAvatarBitmap = MutableLiveData<Bitmap>()
@@ -64,4 +68,16 @@ class CallRoomViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
+
+    fun saveCall() {
+        val lastCall = getLastCall()
+        val duration = System.currentTimeMillis() - lastCall?.time!!
+        lastCall.duration = duration
+        viewModelScope.launch(Dispatchers.IO) {
+            callsRepository.insert(lastCall)
+        }
+    }
+
+    private fun getLastCall() = callsRepository.getLastCall
+
 }

@@ -7,8 +7,10 @@ import android.widget.EditText
 import androidx.recyclerview.widget.DiffUtil
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs
+import com.example.dynamicmessenger.network.authorization.models.Call
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 import com.example.dynamicmessenger.network.authorization.models.Message
+import com.example.dynamicmessenger.network.authorization.models.Sender
 import com.example.dynamicmessenger.userCalls.webRtc.SignallingClient
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomDiffUtilCallback
@@ -103,6 +105,10 @@ object SocketManager {
         signalingClient?.onCandidate(array)
     }
 
+    fun onCallEnded() {
+        signalingClient?.onCallEnded()
+    }
+
     fun sendMessage(receiverID: String, editText: EditText) {
         mSocket?.emit("sendMessage" , editText.text.toString() , receiverID)
         editText.text.clear()
@@ -114,7 +120,7 @@ object SocketManager {
                 val data = args[0] as JSONObject
                 val gson = Gson()
                 val gsonMessage = gson.fromJson(data.toString(), Message::class.java)
-                val message = ChatRoom(gsonMessage.sender,gsonMessage.text,gsonMessage.reciever)
+                val message = ChatRoom(gsonMessage.sender,null , gsonMessage.type, gsonMessage.text!!, gsonMessage.reciever, gsonMessage.createdAt)//TODO change
                 try {
                     if (message.sender.id == chatID || message.reciever == chatID) {
                         val newData = adapter.data.toMutableList()
@@ -152,7 +158,7 @@ object SocketManager {
                     val data = args[0] as JSONObject
                     val gson = Gson()
                     val gsonMessage = gson.fromJson(data.toString(), Message::class.java)
-                    val message = ChatRoom(gsonMessage.sender,gsonMessage.text,gsonMessage.reciever)
+                    val message = ChatRoom(gsonMessage.sender,null , gsonMessage.type, gsonMessage.text!!, gsonMessage.reciever, gsonMessage.createdAt)
                     closure(message)
                 } catch (e: JSONException) {
                     Log.i("+++", "onMessageForNotification $e")

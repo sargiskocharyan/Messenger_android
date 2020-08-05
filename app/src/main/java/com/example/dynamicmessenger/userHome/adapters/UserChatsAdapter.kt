@@ -11,10 +11,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
@@ -92,6 +94,15 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
         } else  {
             holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
         }
+        SharedConfigs.onlineUsers?.let {onlineUsers ->
+            onlineUsers.observeForever {
+                if (it.contains(holder.chat!!.id)) {
+                    holder.chatUserOnlineStatus.visibility = View.VISIBLE
+                } else {
+                    holder.chatUserOnlineStatus.visibility = View.INVISIBLE
+                }
+            }
+        }
     }
 
     private fun getAvatar(imageView: ImageView, recipientAvatarURL: String?) {
@@ -124,6 +135,7 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
         val lastMessage: TextView = itemView.findViewById(R.id.chatsLastMessage)
         val messageTime: TextView = itemView.findViewById(R.id.messageTime)
         val chatUserImageView: ImageView = itemView.findViewById(R.id.chatUserImageView)
+        val chatUserOnlineStatus: ImageView = itemView.findViewById(R.id.chatUserOnlineStatus)
         init {
             itemView.setOnClickListener {
                 (context as AppCompatActivity?)!!.supportFragmentManager
@@ -131,7 +143,6 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
                     .replace(R.id.fragmentContainer , ChatRoomFragment())
                     .addToBackStack(null)
                     .commit()
-                HomeActivity.receiverChatInfo = chat
                 HomeActivity.receiverID = chat!!.id
             }
         }

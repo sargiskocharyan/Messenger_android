@@ -8,16 +8,17 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.LoadAvatarApi
-import com.example.dynamicmessenger.userDataController.database.DiskCache
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
-import com.example.dynamicmessenger.userDataController.database.UserCalls
-import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
+import com.example.dynamicmessenger.network.authorization.models.User
+import com.example.dynamicmessenger.userDataController.database.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class UserCallViewModel(application: Application) : AndroidViewModel(application) {
     private val callsDao = SignedUserDatabase.getUserDatabase(application)!!.userCallsDao()
     private val callsRepository = UserCallsRepository(callsDao)
     private val diskLruCache = DiskCache.getInstance(application)
+    private val usersDao = SignedUserDatabase.getUserDatabase(application)!!.savedUserDao()
+    private val usersRepository = SavedUserRepository(usersDao)
 
     fun saveCall(userCalls: UserCalls) {
         viewModelScope.launch {
@@ -30,6 +31,17 @@ class UserCallViewModel(application: Application) : AndroidViewModel(application
             callsRepository.deleteCallByTime(time)
         }
     }
+
+    fun getUserById(id: String): User? {
+        return usersRepository.getUserById(id)
+    }
+
+    fun saveUser(user: User) {
+        viewModelScope.launch(Dispatchers.IO) {
+            usersRepository.insert(user)
+        }
+    }
+
 
     fun getAvatar(avatarURL: String, closure: (Bitmap) -> Unit) {
         viewModelScope.launch {

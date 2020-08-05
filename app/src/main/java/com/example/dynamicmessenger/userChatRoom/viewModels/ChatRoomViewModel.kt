@@ -14,11 +14,20 @@ import com.example.dynamicmessenger.network.ChatRoomApi
 import com.example.dynamicmessenger.network.GetUserInfoByIdApi
 import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
+import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.database.DiskCache
+import com.example.dynamicmessenger.userDataController.database.SavedUserRepository
+import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import kotlinx.coroutines.launch
 
 class ChatRoomViewModel(application: Application) : AndroidViewModel(application) {
     private val diskLruCache = DiskCache.getInstance(application)
+    private val usersDao = SignedUserDatabase.getUserDatabase(application)!!.savedUserDao()
+    private val usersRepository = SavedUserRepository(usersDao)
+
+    fun getUserById(id: String): User? {
+        return usersRepository.getUserById(id) //TODO change for download from internet if user not saved in DB
+    }
 
     fun getMessagesFromNetwork(context: Context?, receiverID: String, closure: (List<ChatRoom>) -> Unit) {
         viewModelScope.launch {
@@ -30,6 +39,7 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
                     Toast.makeText(context, "User chat room else", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
+                Log.i("+++exception", e.toString())
                 Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
             }
         }

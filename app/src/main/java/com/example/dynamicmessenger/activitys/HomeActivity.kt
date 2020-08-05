@@ -1,5 +1,6 @@
 package com.example.dynamicmessenger.activitys
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.NotificationManager
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.viewModels.HomeActivityViewModel
+import com.example.dynamicmessenger.common.MyTime
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.UserTokenVerifyApi
@@ -25,6 +27,7 @@ import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userCalls.SocketEventsForVideoCalls
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userDataController.database.UserTokenDao
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
 import com.example.dynamicmessenger.userHome.fragments.*
@@ -62,6 +65,8 @@ class HomeActivity : AppCompatActivity() {
         tokenDao = SignedUserDatabase.getUserDatabase(this)!!.userTokenDao()
         tokenRep = UserTokenRepository(tokenDao)
 
+        viewModel.repeat()
+
         //socket
         socketManager = SocketManager
         try {
@@ -76,7 +81,7 @@ class HomeActivity : AppCompatActivity() {
             try {
                 Log.i("+++mSocket", selectedFragment.toString())
                 if (selectedFragment != UserChatFragment() && it.sender.id != SharedConfigs.signedUser?._id ?: true){
-                    NotificationMessages.setNotificationMessage(it.sender.name, it.text, this, manager)
+                    NotificationMessages.setNotificationMessage(it.sender.name, it.text!!, this, manager)
                 }
             } catch (e: Exception) {
                 Log.i("+++catch", e.toString())
@@ -99,7 +104,17 @@ class HomeActivity : AppCompatActivity() {
             socketManager.onCandidate(it)
             Log.d("SignallingClientAcc", "Home activity candidates ")
         }
+        mSocket.on("callEnded") {
+            socketManager.onCallEnded()
+            Log.d("SignallingClientAcc", "Home activity call Ended ")
+        }
         mSocket.on("call") {
+            val currentDate = System.currentTimeMillis()
+            val opponentUser = viewModel.getUserById(it[0].toString())
+            opponentUser?.let {user ->
+                val userCalls = UserCalls(user._id, user.name , user.lastname, user.username, user.avatarURL, currentDate, 2)
+                viewModel.saveCall(userCalls)
+            }
             if (!SharedConfigs.isCallingInProgress) {
                 SharedConfigs.callingOpponentId = it[0].toString()
                 SharedConfigs.isCalling = true
@@ -130,12 +145,11 @@ class HomeActivity : AppCompatActivity() {
         BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.call -> selectedFragment = UserCallFragment()
-                R.id.chanel -> selectedFragment = UserChanelFragment()
+//                R.id.chanel -> selectedFragment = UserChanelFragment()
                 R.id.chat -> selectedFragment = UserChatFragment()
-                R.id.group -> selectedFragment = UserGroupFragment()
+//                R.id.group -> selectedFragment = UserGroupFragment()
                 R.id.user -> selectedFragment = UserInformationFragment()
             }
-            Log.i("+++BottomNavigationView", selectedFragment.toString())
             supportFragmentManager.beginTransaction().replace(
                 R.id.fragmentContainer,
                 selectedFragment
@@ -143,6 +157,7 @@ class HomeActivity : AppCompatActivity() {
             true
         }
 
+    @SuppressLint("SimpleDateFormat")
     private fun tokenCheck(context: Context?, token: String) {
         coroutineScope.launch {
             try {
@@ -151,7 +166,7 @@ class HomeActivity : AppCompatActivity() {
                 val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                 val date: Date = format.parse(tokenExpire!!)!!
                 val currentDate: Date = Calendar.getInstance().time
-                if (response.body()?.tokenExists == false || date.time - currentDate.time <  86400000 ) {
+                if (response.body()?.tokenExists == false || date.time - currentDate.time <  MyTime.oneDay ) {
                     SharedPreferencesManager.deleteUserAllInformation(context!!)
                     SharedConfigs.deleteToken()
                     SharedConfigs.deleteSignedUser()
@@ -178,11 +193,6 @@ class HomeActivity : AppCompatActivity() {
                 field = value
                 Log.i("+++", "Opponent user set $value")
             }
-        var receiverChatInfo: Chat? = null
-            set(value) {
-                field = value
-                Log.i("+++", "receiver Chat Info set $value")
-            }
         var receiverID: String? = null
             set(value) {
                 field = value
@@ -192,6 +202,11 @@ class HomeActivity : AppCompatActivity() {
             set(value) {
                 field = value
                 Log.i("+++", "is Add Contacts set $value")
+            }
+        var callTime: Long? = null
+            set(value) {
+                field = value
+                Log.i("+++", "call Time set $value")
             }
     }
 }

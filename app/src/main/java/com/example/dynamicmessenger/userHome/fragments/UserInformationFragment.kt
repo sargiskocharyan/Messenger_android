@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.common.AppLangKeys
+import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
@@ -68,6 +69,7 @@ class UserInformationFragment : Fragment() {
 
         binding.contactConstraintLayout.setOnClickListener {
             val selectedFragment = UserContactsFragment()
+            SharedConfigs.lastFragment = MyFragments.INFORMATION
             activity?.supportFragmentManager
                 ?.beginTransaction()
                 ?.replace(R.id.fragmentContainer, selectedFragment)

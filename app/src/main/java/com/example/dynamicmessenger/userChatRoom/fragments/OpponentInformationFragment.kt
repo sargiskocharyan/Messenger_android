@@ -12,15 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
-import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentOpponentInformationBinding
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userChatRoom.viewModels.OpponentInformationViewModel
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserCalls
-import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
-import java.util.*
 
 class OpponentInformationFragment : Fragment() {
 
@@ -33,9 +29,8 @@ class OpponentInformationFragment : Fragment() {
     ): View? {
         viewModel = ViewModelProvider(this).get(OpponentInformationViewModel::class.java)
         binding = FragmentOpponentInformationBinding.inflate(layoutInflater)
-
-        val callsDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userCallsDao()
-        val callsRepository = UserCallsRepository(callsDao)
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
 
         //Toolbar
         setHasOptionsMenu(true)
@@ -47,17 +42,13 @@ class OpponentInformationFragment : Fragment() {
         }
 
         binding.addToContactsImageView.setOnClickListener {
-            viewModel.addUserToContacts {
-                if (it) {
-                    binding.addToContactsImageView.visibility = View.GONE
-                }
-            }
+            viewModel.addUserToContacts()
         }
 
         binding.callOpponentImageView.setOnClickListener {
             val opponentUser = HomeActivity.opponentUser!!
             val currentDate = System.currentTimeMillis()
-            val userCalls = UserCalls(opponentUser._id, opponentUser.name , opponentUser.lastname, opponentUser.username, opponentUser.avatarURL, currentDate)
+            val userCalls = UserCalls(opponentUser._id, opponentUser.name , opponentUser.lastname, opponentUser.username, opponentUser.avatarURL, currentDate, 1)
             SharedConfigs.callingOpponentId = opponentUser._id
             viewModel.saveCall(userCalls)
             val intent = Intent(activity, CallRoomActivity::class.java)
@@ -76,7 +67,6 @@ class OpponentInformationFragment : Fragment() {
 
         configurePage()
 
-
         return binding.root
     }
 
@@ -91,21 +81,12 @@ class OpponentInformationFragment : Fragment() {
     private fun configurePage() {
         val opponentUser = HomeActivity.opponentUser
         //TODO:binding
-        binding.opponentInformationToolbarTextView.text = opponentUser?.username
-        binding.opponentInfo.text = opponentUser?.info
-        binding.opponentInfoUsernameTextView.text = opponentUser?.username
-        binding.opponentInfoNameTextView.text = opponentUser?.name
-        binding.opponentInfoLastNameTextView.text = opponentUser?.lastname
-        binding.opponentInfoPhoneTextView.text = opponentUser?.phoneNumber
-        binding.opponentInfoEmailTextView.text = opponentUser?.email
-        binding.opponentInfoGenderTextView.text = opponentUser?.gender
         binding.opponentInfoBirthDateTextView.text = opponentUser?.birthday?.substring(0, 10)
-        binding.opponentInfoAddressTextView.text = opponentUser?.address
 
         if (HomeActivity.isAddContacts == false) {
-            binding.addToContactsImageView.visibility = View.GONE
+//            binding.addToContactsImageView.visibility = View.GONE
         } else if (HomeActivity.isAddContacts == null) {
-            binding.addToContactsImageView.visibility = View.GONE
+//            binding.addToContactsImageView.visibility = View.GONE
             binding.sendMessageImageView.visibility = View.GONE
         }
     }

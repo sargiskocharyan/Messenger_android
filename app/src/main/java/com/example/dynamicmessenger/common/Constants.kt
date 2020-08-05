@@ -25,10 +25,17 @@ class ResponseUrls {
         const val deleteUser = "users/me"
         const val deactivateUser = "deactivate/me"
         const val userInfoById = "user"
+        const val onlineUsers = "onlineusers"
+        const val removeContact = "removecontact"
 
 //        users/me/avatar
 //        users/5ee76c90bfa0980017a39013/avatar
     }
+}
+
+object MyTime {
+    const val oneDay = 86400000
+    const val threeMinutes = 180000L
 }
 
 class SharedPrefConstants {
@@ -81,4 +88,13 @@ enum class AppLangKeys(var value: String) {
 
 enum class AppMode {
     dark, light
+}
+
+enum class MyFragments {
+    CALLS,
+    CHATS,
+    INFORMATION,
+    CONTACTS,
+    CHAT_ROOM,
+    OPPONENT_INFORMATION
 }

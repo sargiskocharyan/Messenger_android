@@ -105,11 +105,11 @@ fun setCircleImageBitmap(circleImage: CircleImageView, bitmap: Bitmap?) {
 }
 
 @BindingAdapter("setImageViewBitmap")
-fun setImageViewBitmap(Image: ImageView, bitmap: Bitmap?) {
+fun setImageViewBitmap(image: ImageView, bitmap: Bitmap?) {
     if (bitmap == null) {
-        Image.setImageResource(R.drawable.ic_user_image)
+        image.setImageResource(R.drawable.ic_user_image)
     }
-    Image.setImageBitmap(bitmap)
+    image.setImageBitmap(bitmap)
 }
 
 @BindingAdapter("setMicrophoneImage")
@@ -127,5 +127,14 @@ fun setVolumeImage(circleImage: CircleImageView, answer: Boolean) {
         circleImage.setImageResource(R.drawable.ic_baseline_volume_up_24)
     } else {
         circleImage.setImageResource(R.drawable.ic_baseline_volume_off_24)
+    }
+}
+
+@BindingAdapter("setAddContactImage")
+fun setAddContactImage(image: ImageView, answer: Boolean) {
+    if (!answer) {
+        image.setImageResource(R.drawable.ic_baseline_person_add_24)
+    } else {
+        image.setImageResource(R.drawable.ic_baseline_person_add_disabled_24)
     }
 }

@@ -1,5 +1,6 @@
 package com.example.dynamicmessenger.userDataController.database
 
+import android.util.Log
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -28,12 +29,19 @@ data class UserToken(
 
 @Entity(tableName = "user_calls")
 data class UserCalls(
-//    @ColumnInfo(name = "name")
     val _id: String,
     val name: String?,
     val lastname: String?,
     val username: String?,
     var avatarURL: String?,
     @PrimaryKey
-    var time: Long
+    var time: Long = System.currentTimeMillis(),
+    var callingState: Int,   //1-outgoing video call, 2-incoming video call
+    var duration: Long = time
+)
+
+@Entity(tableName = "contacts")
+data class Contacts(
+    @PrimaryKey
+    val _id: String
 )

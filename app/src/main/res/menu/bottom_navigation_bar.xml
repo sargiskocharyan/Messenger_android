@@ -8,21 +8,21 @@
         app:showAsAction="ifRoom"
         android:title=""/>
 
-    <item
-        android:id="@+id/chanel"
-        android:icon="@drawable/ic_channel"
-        app:showAsAction="ifRoom"
-        android:title=""/>
+<!--    <item-->
+<!--        android:id="@+id/chanel"-->
+<!--        android:icon="@drawable/ic_channel"-->
+<!--        app:showAsAction="ifRoom"-->
+<!--        android:title=""/>-->
     <item
         android:id="@+id/chat"
         android:icon="@drawable/ic_chat"
         app:showAsAction="ifRoom"
         android:title=""/>
-    <item
-        android:id="@+id/group"
-        android:icon="@drawable/ic_group"
-        app:showAsAction="ifRoom"
-        android:title=""/>
+<!--    <item-->
+<!--        android:id="@+id/group"-->
+<!--        android:icon="@drawable/ic_group"-->
+<!--        app:showAsAction="ifRoom"-->
+<!--        android:title=""/>-->
     <item
         android:id="@+id/user"
         android:icon="@drawable/ic_user"

@@ -22,7 +22,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:background="@color/white"
+                android:background="@color/toolBarColor"
                 app:title=" "
                 app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
 
@@ -38,7 +38,7 @@
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:paddingBottom="50dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/updateUserInformationToolbar">
@@ -56,36 +56,17 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <Button
-                            android:id="@+id/birthDateEditText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="32dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="32dp"
-                            android:ems="10"
-                            android:hint="@string/birth_date" />
-
-                        <Spinner
-                            android:id="@+id/universitySpinner"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="32dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="32dp"
-                            android:ems="10"
-                            android:inputType="textPersonName" />
-
                         <EditText
-                            android:id="@+id/editTextPhoneNumber"
+                            android:id="@+id/usernameEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginEnd="32dp"
+                            android:text="@={updateUserViewModel.userEnteredUsername}"
                             android:ems="10"
-                            android:hint="@string/number"
-                            android:inputType="phone" />
+                            android:hint="@string/username"
+                            android:inputType="textPersonName" />
 
                         <EditText
                             android:id="@+id/nameEditText"
@@ -94,6 +75,7 @@
                             android:layout_marginStart="32dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginEnd="32dp"
+                            android:text="@={updateUserViewModel.userEnteredName}"
                             android:ems="10"
                             android:hint="@string/name"
                             android:inputType="textPersonName" />
@@ -105,20 +87,99 @@
                             android:layout_marginStart="32dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginEnd="32dp"
+                            android:text="@={updateUserViewModel.userEnteredLastName}"
                             android:ems="10"
                             android:hint="@string/last_name"
                             android:inputType="textPersonName" />
 
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="32dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/hide_personal_data"
+                                android:textSize="18sp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <Switch
+                                android:id="@+id/hidePersonalDataSwitch"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <Spinner
+                            android:id="@+id/genderSpinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="32dp"
+                            android:text="@string/select_gender" />
+
                         <EditText
-                            android:id="@+id/usernameEditText"
+                            android:id="@+id/userInfoEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="32dp"
+                            android:text="@={updateUserViewModel.userEnteredInfo}" />
+
+                        <Spinner
+                            android:id="@+id/universitySpinner"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginEnd="32dp"
                             android:ems="10"
-                            android:hint="@string/username"
                             android:inputType="textPersonName" />
+
+                        <Button
+                            android:id="@+id/birthDateEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="32dp"
+                            android:ems="10"
+                            android:text="@{updateUserViewModel.userEnteredDate}"
+
+                            android:hint="@string/birth_date" />
+
+                        <EditText
+                            android:id="@+id/editTextPhoneNumber"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="32dp"
+                            android:text="@={updateUserViewModel.userEnteredPhoneNumber}"
+                            android:ems="10"
+                            android:hint="@string/number"
+                            android:inputType="phone" />
+
+                        <EditText
+                            android:id="@+id/updateEmailEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="32dp"
+                            android:text="@={updateUserViewModel.userEnteredEmail}"
+                            android:hint="@string/email" />
+
                     </LinearLayout>
 
                     <Button
@@ -131,11 +192,10 @@
                         android:layout_marginEnd="32dp"
                         android:background="@drawable/disable_button_design"
                         android:enabled="false"
-                        android:text="@string/continue_button"
+                        android:text="@string/update_information"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
 
                     <ProgressBar
                         android:id="@+id/progressBar"
@@ -155,6 +215,7 @@
                         android:layout_height="wrap_content"
                         android:text="Delete Account"
                         android:textColor="#F44336"
+                        android:layout_marginBottom="50dp"
                         app:layout_constraintEnd_toStartOf="@+id/deactivateAccountTextView"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
@@ -174,9 +235,6 @@
                         app:layout_constraintStart_toEndOf="@+id/deleteAccountTextView"
                         app:layout_constraintTop_toBottomOf="@+id/continueButton" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
             </androidx.core.widget.NestedScrollView>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-
 </layout>

@@ -41,9 +41,8 @@ class UpdateUserInformationFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(UpdateUserInformationViewModel::class.java)
         binding.lifecycleOwner = this
         binding.updateUserViewModel = viewModel
-        binding.usernameEditText.addTextChangedListener(object : TextWatcher {
+        viewModel.userEnteredUsername.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             @SuppressLint("ResourceAsColor")
-            override fun afterTextChanged(s: Editable?) {
                 if (Validations.isUsernameValid(binding.usernameEditText.text.toString())
                     && Validations.isNameValid(binding.nameEditText.text.toString())
                     && Validations.isLastNameValid(binding.lastNameEditText.text.toString())) {
@@ -53,16 +52,11 @@ class UpdateUserInformationFragment : Fragment() {
                     binding.continueButton.isEnabled = false
                     binding.continueButton.setBackgroundResource(R.drawable.disable_button_design)
                 }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
-        var university: String = ""
-        binding.nameEditText.text.append(SharedConfigs.signedUser?.name ?: "")
-        binding.lastNameEditText.text.append(SharedConfigs.signedUser?.lastname ?: "")
-        binding.usernameEditText.text.append(SharedConfigs.signedUser?.username ?: "")
+
+        viewModel.userEnteredName.value = SharedConfigs.signedUser?.name ?: ""
+        viewModel.userEnteredLastName.value = SharedConfigs.signedUser?.lastname ?: ""
+        viewModel.userEnteredUsername.value = SharedConfigs.signedUser?.username ?: ""
 
         //Bottom bar
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
@@ -74,6 +68,7 @@ class UpdateUserInformationFragment : Fragment() {
         val toolbar: Toolbar = binding.updateUserInformationToolbar
         configureTopNavBar(toolbar)
 
+        var university: String = ""
         var allUniversity: List<UniversityProperty>
         viewModel.getAllUniversity(requireContext()){
             allUniversity = it
@@ -105,11 +100,11 @@ class UpdateUserInformationFragment : Fragment() {
 
         binding.continueButton.setOnClickListener {
             val birthDate = binding.birthDateEditText.text.toString()
-            val name = binding.nameEditText.text.toString()
-            val lastname = binding.lastNameEditText.text.toString()
-            val username = binding.usernameEditText.text.toString()
-            val phoneNumber = binding.editTextPhoneNumber.text.toString()
-            val updateUserTask = UpdateUserTask(name, lastname, username, university, phoneNumber, birthday = birthDate)
+            val name = viewModel.userEnteredName.value
+            val lastName = viewModel.userEnteredLastName.value
+            val username = viewModel.userEnteredUsername.value
+            val phoneNumber = viewModel.userEnteredPhoneNumber.value
+            val updateUserTask = UpdateUserTask(name, lastName, username, university, phoneNumber, birthday = birthDate)
             viewModel.updateUserNetwork(updateUserTask, context){closure ->
                 if (closure) {
                     val selectedFragment = UserInformationFragment()
