@@ -22,6 +22,7 @@ import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.GetUserInfoByIdApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
+import com.example.dynamicmessenger.userCalls.fragments.CallInformationFragment
 import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
 import com.example.dynamicmessenger.userDataController.database.*
 import com.example.dynamicmessenger.userHome.viewModels.UserCallViewModel
@@ -98,9 +99,10 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
                 Log.i("+++", "userContacts if")
                 HomeActivity.opponentUser = viewModel.getUserById(data[position]._id)
                 HomeActivity.receiverID = data[position]._id
+                HomeActivity.callTime = data[position].time
                 (context as AppCompatActivity?)!!.supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.fragmentContainer , OpponentInformationFragment())
+                    .replace(R.id.fragmentContainer , CallInformationFragment())
                     .addToBackStack(null)
                     .commit()
             } else {
@@ -112,9 +114,10 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
                             Log.i("+++", "userContacts else ${response.body()}")
                             HomeActivity.opponentUser = response.body()
                             HomeActivity.receiverID = data[position]._id
+                            HomeActivity.callTime = data[position].time
                             (context as AppCompatActivity?)!!.supportFragmentManager
                                 .beginTransaction()
-                                .replace(R.id.fragmentContainer , OpponentInformationFragment())
+                                .replace(R.id.fragmentContainer , CallInformationFragment())
                                 .addToBackStack(null)
                                 .commit()
                         } else {

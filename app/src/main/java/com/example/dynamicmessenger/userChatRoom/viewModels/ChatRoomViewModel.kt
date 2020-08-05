@@ -26,7 +26,7 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
     private val usersRepository = SavedUserRepository(usersDao)
 
     fun getUserById(id: String): User? {
-        return usersRepository.getUserById(id)
+        return usersRepository.getUserById(id) //TODO change for download from internet if user not saved in DB
     }
 
     fun getMessagesFromNetwork(context: Context?, receiverID: String, closure: (List<ChatRoom>) -> Unit) {
@@ -39,6 +39,7 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
                     Toast.makeText(context, "User chat room else", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
+                Log.i("+++exception", e.toString())
                 Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
             }
         }

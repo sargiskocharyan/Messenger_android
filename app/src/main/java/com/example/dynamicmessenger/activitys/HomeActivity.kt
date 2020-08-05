@@ -81,7 +81,7 @@ class HomeActivity : AppCompatActivity() {
             try {
                 Log.i("+++mSocket", selectedFragment.toString())
                 if (selectedFragment != UserChatFragment() && it.sender.id != SharedConfigs.signedUser?._id ?: true){
-                    NotificationMessages.setNotificationMessage(it.sender.name, it.text, this, manager)
+                    NotificationMessages.setNotificationMessage(it.sender.name, it.text!!, this, manager)
                 }
             } catch (e: Exception) {
                 Log.i("+++catch", e.toString())
@@ -202,6 +202,11 @@ class HomeActivity : AppCompatActivity() {
             set(value) {
                 field = value
                 Log.i("+++", "is Add Contacts set $value")
+            }
+        var callTime: Long? = null
+            set(value) {
+                field = value
+                Log.i("+++", "call Time set $value")
             }
     }
 }

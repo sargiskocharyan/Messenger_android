@@ -399,13 +399,6 @@ object GetUserInfoByIdApi {
     }
 }
 
-private val retrofitImage = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
-//    .addConverterFactory(LENIENT_FACTORY.create(moshi = moshi))
-    .addCallAdapterFactory(CoroutineCallAdapterFactory())
-    .baseUrl("https://storage.googleapis.com/")//39
-    .build()
-
 //Load Avatar
 interface JsonPlaceHolderLoadAvatarApi {
     @GET
@@ -435,6 +428,23 @@ object GetOnlineUsersApi {
     val retrofitService : JsonPlaceHolderGetOnlineUsersApi by lazy {
         retrofit.create(
             JsonPlaceHolderGetOnlineUsersApi::class.java
+        )
+    }
+}
+
+//Remove contact
+interface JsonPlaceHolderRemoveContactApi {
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.removeContact)
+    suspend fun removeContact(@Header (MyHeaders.tokenAuthorization) header: String,
+                               @Body userId : RemoveContactTask) :
+            Response<Void>
+}
+
+object RemoveContactApi {
+    val retrofitService : JsonPlaceHolderRemoveContactApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderRemoveContactApi::class.java
         )
     }
 }

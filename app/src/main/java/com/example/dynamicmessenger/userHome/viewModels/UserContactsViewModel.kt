@@ -44,7 +44,7 @@ class UserContactsViewModel(application: Application) : AndroidViewModel(applica
     fun getSavedContacts(): LiveData<List<User>> {
         val contacts = MutableLiveData<List<User>>()
         val contactsList = mutableListOf<User>()
-        val savedContacts = contactsRepository.getUserAllChats
+        val savedContacts = contactsRepository.getUserAllContacts
         savedContacts.forEach {
             getUserById(it._id)?.let { it1 ->
                 contactsList.add(it1)

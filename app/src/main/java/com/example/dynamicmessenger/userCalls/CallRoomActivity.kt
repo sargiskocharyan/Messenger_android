@@ -232,6 +232,16 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                     if (iceConnectionState == PeerConnection.IceConnectionState.FAILED) {
                         SignallingClient.getInstance()!!.leaveRoom()
                     }
+                    if (iceConnectionState == PeerConnection.IceConnectionState.CONNECTED) {
+                        if (!SignallingClient.getInstance()!!.callStarted) {
+                            SignallingClient.getInstance()!!.callStarted()
+                        } else {
+                            SignallingClient.getInstance()!!.reconnectToCall()
+                        }
+                    }
+//                    if (iceConnectionState == PeerConnection.IceConnectionState.) {
+//                        SignallingClient.getInstance()!!.callStarted()
+//                    }
                     super.onIceConnectionChange(iceConnectionState)
                 }
 

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.dynamicmessenger.userCalls.viewModels.CallInformationViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        tools:context="com.example.dynamicmessenger.userCalls.fragments.CallInformationFragment">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/callInformationToolBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:background="@color/toolBarColor"
+            android:elevation="10dp"
+            app:title=" "
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Call information"
+                android:textSize="20sp" />
+        </androidx.appcompat.widget.Toolbar>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/callInformationAvatarImageView"
+            android:layout_width="110dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/foreground_for_image"
+            tools:src="@drawable/ic_user_image"
+            app:setCircleImageBitmap="@{viewModel.opponentAvatarBitmap}"
+            app:layout_constraintDimensionRatio="w,1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/callInformationToolBar" />
+
+        <TextView
+            android:id="@+id/callInformationNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@{viewModel.callInformation.username}"
+            app:layout_constraintEnd_toEndOf="@+id/callInformationAvatarImageView"
+            app:layout_constraintStart_toStartOf="@+id/callInformationAvatarImageView"
+            app:layout_constraintTop_toBottomOf="@+id/callInformationAvatarImageView"
+            tools:text="name" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="@+id/callInformationNameTextView"
+            app:layout_constraintStart_toStartOf="@+id/callInformationNameTextView"
+            app:layout_constraintTop_toBottomOf="@+id/callInformationNameTextView"
+            tools:text="Vide or audio" />
+
+        <ImageView
+            android:id="@+id/callInformationVideoCallImageView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/background_for_buttons"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_videocam_24"
+            app:layout_constraintEnd_toStartOf="@+id/callInformationCallImageView"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/callInformationMessageImageView"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+        <ImageView
+            android:id="@+id/callInformationMessageImageView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/background_for_buttons"
+            android:padding="10dp"
+            android:src="@drawable/ic_speech_bubble"
+            app:layout_constraintEnd_toStartOf="@+id/callInformationVideoCallImageView"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/callInformationVideoCallImageView" />
+
+        <ImageView
+            android:id="@+id/callInformationCallImageView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/background_for_buttons"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_call_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/callInformationVideoCallImageView"
+            app:layout_constraintTop_toTopOf="@+id/callInformationVideoCallImageView" />
+
+        <TextView
+            android:id="@+id/callInformationMessageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Message"
+            app:layout_constraintEnd_toEndOf="@+id/callInformationMessageImageView"
+            app:layout_constraintStart_toStartOf="@+id/callInformationMessageImageView"
+            app:layout_constraintTop_toBottomOf="@+id/callInformationMessageImageView" />
+
+        <TextView
+            android:id="@+id/callInformationVideoTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Video"
+            app:layout_constraintEnd_toEndOf="@+id/callInformationVideoCallImageView"
+            app:layout_constraintStart_toStartOf="@+id/callInformationVideoCallImageView"
+            app:layout_constraintTop_toBottomOf="@+id/callInformationVideoCallImageView" />
+
+        <TextView
+            android:id="@+id/callInformationCallTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Call"
+            app:layout_constraintEnd_toEndOf="@+id/callInformationCallImageView"
+            app:layout_constraintStart_toStartOf="@+id/callInformationCallImageView"
+            app:layout_constraintTop_toBottomOf="@+id/callInformationCallImageView" />
+
+        <View
+            android:id="@+id/blackViewCallInformation"
+            style="@style/BlackLineStyle"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/callInformationVideoTextView" />
+
+        <TextView
+            android:id="@+id/callingTimeDayTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:text="@{viewModel.callTimeDay}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/blackViewCallInformation"
+            tools:text="today" />
+
+        <TextView
+            android:id="@+id/callTimeHourTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@{viewModel.callTimeHour}"
+            tools:text="17:55"
+            app:layout_constraintStart_toStartOf="@+id/callingTimeDayTextView"
+            app:layout_constraintTop_toBottomOf="@+id/callingTimeDayTextView" />
+
+        <TextView
+            android:id="@+id/callStateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@{viewModel.callState}"
+            tools:text="Outgoing call"
+            app:layout_constraintBottom_toBottomOf="@+id/callTimeHourTextView"
+            app:layout_constraintStart_toEndOf="@+id/callTimeHourTextView"
+            app:layout_constraintTop_toTopOf="@+id/callTimeHourTextView" />
+
+        <TextView
+            android:id="@+id/callDurationTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@{viewModel.callDuration}"
+            tools:text="0 sec"
+            app:layout_constraintEnd_toEndOf="@+id/callStateTextView"
+            app:layout_constraintStart_toStartOf="@+id/callStateTextView"
+            app:layout_constraintTop_toBottomOf="@+id/callStateTextView" />
+
+        <View
+            android:id="@+id/blackView2CallInformation"
+            style="@style/BlackLineStyle"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/callDurationTextView" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

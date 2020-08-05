@@ -92,7 +92,7 @@ class ChatRoomDiffUtilCallback(private val oldList: List<ChatRoom>, private val 
     override fun getNewListSize() = newList.size
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].text == newList[newItemPosition].text
+        return oldList[oldItemPosition].createdAt == newList[newItemPosition].createdAt
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

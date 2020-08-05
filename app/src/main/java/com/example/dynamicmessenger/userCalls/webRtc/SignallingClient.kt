@@ -4,7 +4,10 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.github.nkzawa.emitter.Emitter
+import com.github.nkzawa.socketio.client.Ack
 import com.github.nkzawa.socketio.client.Socket
+import com.google.gson.Gson
 import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.IceCandidate
@@ -22,6 +25,7 @@ class SignallingClient {
     val isCallingNotProgress = MutableLiveData<Boolean>(true)
     val isCalling = MutableLiveData<Boolean>(true)
     var isStarted = false
+    var callStarted = false
     private lateinit var callback: SignalingInterface
 
     fun init(signalingInterface: SignalingInterface) {
@@ -242,7 +246,19 @@ class SignallingClient {
 
     fun callOpponent() {
         Log.d("SignallingClient", "call call")
-        mSocket.emit("call", SharedConfigs.callingOpponentId)
+        mSocket.emit("call", SharedConfigs.callingOpponentId, Ack {
+            roomName = it[0] as String?
+        })
+    }
+
+    fun callStarted() {
+        val currentTime = System.currentTimeMillis()
+        callStarted = true
+        mSocket.emit("callStarted", roomName)
+    }
+
+    fun reconnectToCall() {
+        mSocket.emit("reconnectCallRoom", roomName)
     }
 
 

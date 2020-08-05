@@ -47,6 +47,7 @@ class UserCallsRepository(private val userCallsDao: UserCallsDao) {
     fun getUserCalls() = userCallsDao.getUserCalls()
     val getUserCalls: LiveData<List<UserCalls>> = userCallsDao.getUserCalls()
     val getLastCall = userCallsDao.getLastCall()
+    fun getCallByTime(time: Long) = userCallsDao.getCallByTime(time)
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
@@ -96,7 +97,7 @@ class UserChatsRepository(private val userChatsDao: UserChatsDao) {
 }
 
 class UserContactsRepository(private val userContactsDao: UserContactsDao) {
-    val getUserAllChats: List<Contacts> = userContactsDao.getAllContacts()
+    val getUserAllContacts: List<Contacts> = userContactsDao.getAllContacts()
 
     suspend fun insert(contacts: List<Contacts>) {
         userContactsDao.insert(contacts)

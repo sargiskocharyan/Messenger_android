@@ -37,6 +37,9 @@ interface UserCallsDao {
     @Query("SELECT * FROM user_calls ORDER BY time DESC LIMIT 1")
     fun getLastCall(): UserCalls?
 
+    @Query("SELECT * FROM user_calls WHERE time = :time")
+    fun getCallByTime(time: Long): UserCalls?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(userCalls: UserCalls)
 
