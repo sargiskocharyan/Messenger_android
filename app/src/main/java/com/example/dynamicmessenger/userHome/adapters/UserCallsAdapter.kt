@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
@@ -20,10 +19,8 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.GetUserInfoByIdApi
-import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userCalls.fragments.CallInformationFragment
-import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
 import com.example.dynamicmessenger.userDataController.database.*
 import com.example.dynamicmessenger.userHome.viewModels.UserCallViewModel
 import kotlinx.coroutines.launch
@@ -148,7 +145,7 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserCallsAdapter.UserCallsViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.calls_item_view, parent, false)
+            .inflate(R.layout.item_view_calls, parent, false)
         return UserCallsViewHolder(view, context)
     }
 

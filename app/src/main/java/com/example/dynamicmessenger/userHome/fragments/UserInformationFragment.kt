@@ -129,7 +129,7 @@ class UserInformationFragment : Fragment() {
                 ?.commit()
         }
 
-        binding.informationConstraintLayout.setOnClickListener {
+        binding.userInformationConstraintLayout.setOnClickListener {
             binding.languagePopupMenuLinearLayout.visibility = View.GONE
         }
 

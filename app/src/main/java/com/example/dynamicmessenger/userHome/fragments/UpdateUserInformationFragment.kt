@@ -9,12 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.common.SharedConfigs
@@ -25,7 +24,6 @@ import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UpdateUserInformationViewModel
 import com.example.dynamicmessenger.utils.DatePickerHelper
-import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.Validations
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.*
@@ -43,18 +41,18 @@ class UpdateUserInformationFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(UpdateUserInformationViewModel::class.java)
         binding.lifecycleOwner = this
         binding.updateUserViewModel = viewModel
-        viewModel.userEnteredUsername.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            @SuppressLint("ResourceAsColor")
-                if (Validations.isUsernameValid(binding.usernameEditText.text.toString())
-                    && Validations.isNameValid(binding.nameEditText.text.toString())
-                    && Validations.isLastNameValid(binding.lastNameEditText.text.toString())) {
-                    binding.continueButton.isEnabled = true
-                    binding.continueButton.setBackgroundResource(R.drawable.enable_button_design)
-                } else {
-                    binding.continueButton.isEnabled = false
-                    binding.continueButton.setBackgroundResource(R.drawable.disable_button_design)
-                }
-        })
+//        viewModel.userEnteredUsername.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+//            @SuppressLint("ResourceAsColor")
+//                if (Validations.isUsernameValid(binding.usernameEditText.text.toString())
+//                    && Validations.isNameValid(binding.nameEditText.text.toString())
+//                    && Validations.isLastNameValid(binding.lastNameEditText.text.toString())) {
+//                    binding.continueButton.isEnabled = true
+//                    binding.continueButton.setBackgroundResource(R.drawable.enable_button_design)
+//                } else {
+//                    binding.continueButton.isEnabled = false
+//                    binding.continueButton.setBackgroundResource(R.drawable.disable_button_design)
+//                }
+//        })
 
         //Bottom bar
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
@@ -65,6 +63,8 @@ class UpdateUserInformationFragment : Fragment() {
         setHasOptionsMenu(true)
         val toolbar: Toolbar = binding.updateUserInformationToolbar
         configureTopNavBar(toolbar)
+
+        setValidations()
 
         var selectedGender = ""
         val adapter = ArrayAdapter.createFromResource(requireContext(), R.array.genders, android.R.layout.simple_spinner_item)
@@ -91,6 +91,9 @@ class UpdateUserInformationFragment : Fragment() {
         }
 
         binding.continueButton.setOnClickListener {
+            if (viewModel.userEnteredName.value?.isEmpty()!!) { viewModel.userEnteredName.value = null }
+            if (viewModel.userEnteredLastName.value?.isEmpty()!!) { viewModel.userEnteredLastName.value = null }
+            if (viewModel.userEnteredPhoneNumber.value?.isEmpty()!!) { viewModel.userEnteredPhoneNumber.value = null }
             val birthDate = binding.birthDateDatePicker.text.toString()
             val name = viewModel.userEnteredName.value
             val lastName = viewModel.userEnteredLastName.value
@@ -177,5 +180,42 @@ class UpdateUserInformationFragment : Fragment() {
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
+    }
+
+    private fun setValidations() {
+        viewModel.userEnteredEmail.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewModel.isEmailValid.value = Validations.isEmailValid(it) || it.isEmpty()
+            viewModel.changeIsValidParameters()
+        })
+
+        viewModel.userEnteredUsername.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewModel.isUsernameValid.value = Validations.isNameValid(it)
+            if (Validations.isUsernameValid(it)) {
+                if (it.toLowerCase() == SharedConfigs.signedUser?.username?.toLowerCase()) {
+                    viewModel.isUsernameValid.value = true
+                } else {
+                    viewModel.checkUsernameExists().observe(viewLifecycleOwner, androidx.lifecycle.Observer { isUsernameFree ->
+                        if (isUsernameFree) {
+                            viewModel.isUsernameValid.value = true
+                        } else {
+                            viewModel.isUsernameValid.value = null
+                        }
+                    })
+                }
+            } else {
+                viewModel.isUsernameValid.value = false
+            }
+            viewModel.changeIsValidParameters()
+        })
+
+        viewModel.userEnteredName.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewModel.isNameValid.value = Validations.isNameValid(it) || it.isEmpty()
+            viewModel.changeIsValidParameters()
+        })
+
+        viewModel.userEnteredLastName.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            viewModel.isLastNameValid.value = Validations.isNameValid(it) || it.isEmpty()
+            viewModel.changeIsValidParameters()
+        })
     }
 }

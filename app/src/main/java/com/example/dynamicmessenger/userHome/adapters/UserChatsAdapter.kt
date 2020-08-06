@@ -1,7 +1,6 @@
 package com.example.dynamicmessenger.userHome.adapters
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.util.Log
@@ -11,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
@@ -20,7 +18,6 @@ import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.DiskCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,7 +52,7 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserChatsViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.chats_item_view, parent, false)
+            .inflate(R.layout.item_view_chats, parent, false)
         return UserChatsViewHolder(view, context)
     }
 

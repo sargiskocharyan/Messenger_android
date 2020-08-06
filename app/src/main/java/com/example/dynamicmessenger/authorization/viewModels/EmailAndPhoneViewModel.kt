@@ -22,7 +22,6 @@ class EmailAndPhoneViewModel(application: Application) : AndroidViewModel(applic
 
     @Bindable
     val userEnteredEmail = MutableLiveData<String>()
-    val hintVisibility = MutableLiveData<Boolean>()
     val isEmailValid = MutableLiveData<Boolean>()
     val progressBarVisibility = MutableLiveData<Boolean>()
 

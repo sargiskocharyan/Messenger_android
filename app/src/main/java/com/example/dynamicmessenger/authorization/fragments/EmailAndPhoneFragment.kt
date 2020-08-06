@@ -29,7 +29,6 @@ class EmailAndPhoneFragment : Fragment() {
         val mainActivityViewModel: MainActivityViewModel by activityViewModels()
 
         viewModel.userEnteredEmail.observe(viewLifecycleOwner, Observer {
-            viewModel.hintVisibility.value = it.isNotEmpty()
             viewModel.isEmailValid.value = Validations.isEmailValid(it)
             mainActivityViewModel.userMail = it
         })

@@ -13,23 +13,30 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/verificationCode"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="150dp"
+            android:layout_marginTop="80dp"
             android:layout_marginEnd="32dp"
-            android:background="@drawable/edittext_blue_underline"
             android:ems="10"
             android:hint="@string/enter_code"
             android:inputType="number"
-            android:text="@={viewModel.userEnteredCode}"
-            app:setEditTextBackground="@{viewModel.isCodeValid}"
+            app:errorEnabled="true"
+            app:setCodeErrorText="@{viewModel.isCodeValid}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/customGradientView5" />
+            app:layout_constraintTop_toBottomOf="@+id/customGradientView5">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:text="@={viewModel.userEnteredCode}"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/loginRegisterTextView"
@@ -71,6 +78,7 @@
             android:background="@drawable/enable_button_design"
             android:text="@string/continue_button"
             android:onClick="@{viewModel::loginNetwork}"
+            app:backgroundTint="@null"
             app:setContinueButtonConfiguration="@{viewModel.isCodeValid}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -113,20 +121,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/verificationCodeHintTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginBottom="40dp"
-            android:text="@string/verification_code"
-            android:textSize="12sp"
-            android:visibility="visible"
-            app:setTextViewVisible="@{viewModel.hintVisibility}"
-            app:setHintColour="@{viewModel.isCodeValid}"
-            app:layout_constraintBottom_toBottomOf="@+id/verificationCode"
-            app:layout_constraintStart_toStartOf="@+id/verificationCode"
-            app:layout_constraintTop_toTopOf="@+id/verificationCode" />
+<!--        <TextView-->
+<!--            android:id="@+id/verificationCodeHintTextView"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="5dp"-->
+<!--            android:layout_marginBottom="40dp"-->
+<!--            android:text="@string/verification_code"-->
+<!--            android:textSize="12sp"-->
+<!--            android:visibility="visible"-->
+<!--            app:setTextViewVisible="@{viewModel.hintVisibility}"-->
+<!--            app:setHintColour="@{viewModel.isCodeValid}"-->
+<!--            app:layout_constraintBottom_toBottomOf="@+id/verificationCode"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/verificationCode"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/verificationCode" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

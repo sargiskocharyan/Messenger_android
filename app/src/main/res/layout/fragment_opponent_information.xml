@@ -22,6 +22,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:background="@color/toolBarColor"
+            android:elevation="5dp"
             app:title=" "
             app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
 
@@ -67,42 +68,42 @@
                         android:id="@+id/addToContactsImageView"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:layout_marginTop="32dp"
+                        android:layout_marginTop="24dp"
                         android:background="@drawable/background_for_buttons"
                         android:padding="10dp"
-                        tools:src="@drawable/ic_baseline_person_add_24"
-                        app:setAddContactImage="@{viewModel.isUserInContacts}"
                         app:layout_constraintEnd_toStartOf="@+id/sendMessageImageView"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/opponentProfileAvatarImageView" />
+                        app:layout_constraintTop_toBottomOf="@+id/opponentProfileAvatarImageView"
+                        app:setAddContactImage="@{viewModel.isUserInContacts}"
+                        tools:src="@drawable/ic_baseline_person_add_24" />
 
                     <ImageView
                         android:id="@+id/sendMessageImageView"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:layout_marginTop="32dp"
+                        android:layout_marginTop="24dp"
                         android:background="@drawable/background_for_buttons"
                         android:padding="10dp"
                         android:src="@drawable/ic_speech_bubble"
                         app:layout_constraintEnd_toStartOf="@+id/callOpponentImageView"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/addToContactsImageView"
-                        app:layout_constraintTop_toBottomOf="@+id/opponentProfileAvatarImageView"/>
+                        app:layout_constraintTop_toBottomOf="@+id/opponentProfileAvatarImageView" />
 
                     <ImageView
                         android:id="@+id/callOpponentImageView"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:layout_marginTop="32dp"
+                        android:layout_marginTop="24dp"
                         android:background="@drawable/background_for_buttons"
                         android:padding="10dp"
                         android:src="@drawable/ic_baseline_videocam_24"
-                        app:setImageVisibility="@{viewModel.isUserInContacts}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toEndOf="@+id/sendMessageImageView"
-                        app:layout_constraintTop_toBottomOf="@+id/opponentProfileAvatarImageView" />
+                        app:layout_constraintTop_toBottomOf="@+id/opponentProfileAvatarImageView"
+                        app:setImageVisibility="@{viewModel.isUserInContacts}" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -111,6 +112,10 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="15dp">
+
+                    <View
+                        android:id="@+id/opponentInformationBlackView1"
+                        style="@style/BlackLineStyle"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -124,8 +129,245 @@
                         android:layout_marginTop="5dp"
                         android:text="@{viewModel.opponentUser.info}"
                         tools:text="infoinfoinfoinfoinfoinfoinfoibvcbcvbcvbcbnfoinfoinfoinfoinfoinfoinfoinfoinfoinfo" />
+                    <View
+                        android:id="@+id/opponentInformationBlackView2"
+                        style="@style/BlackLineStyle"/>
 
                 </LinearLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/username"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline7"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/opponentInfoUsernameTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:text="@{viewModel.opponentUser.username}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline7"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:text="Dacuke" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.4" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/name"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/opponentInfoNameTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:text="@{viewModel.opponentUser.name}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline8"
+                        app:layout_constraintTop_toTopOf="@+id/textView3"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:text="David" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.4" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:id="@+id/textView10"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/last_name"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline9"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/opponentInfoLastNameTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:text="@{viewModel.opponentUser.lastname}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline9"
+                        app:layout_constraintTop_toTopOf="@+id/textView10"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:text="Melikyan" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.4" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:id="@+id/textView11"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/phone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline10"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/opponentInfoPhoneTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:text="@{viewModel.opponentUser.phoneNumber}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline10"
+                        app:layout_constraintTop_toTopOf="@+id/textView11"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:text="094 80 80 80 80" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.4" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:id="@+id/textView12"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/email"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline11"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/opponentInfoEmailTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:text="@{viewModel.opponentUser.email}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline11"
+                        app:layout_constraintTop_toTopOf="@+id/textView12"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:text="david.melikyan.1999@mail.ru" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline11"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.4" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:id="@+id/textView14"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/gender"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline12"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/opponentInfoGenderTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:text="@{viewModel.opponentUser.gender}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline12"
+                        app:layout_constraintTop_toTopOf="@+id/textView14"
+                        app:layout_constraintVertical_bias="0.0"
+                        tools:text="Male" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline12"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.4" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -135,139 +377,30 @@
                     android:layout_marginBottom="20dp">
 
                     <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/username"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-
-                    <TextView
                         android:id="@+id/textView15"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="25dp"
-                        android:text="birth date"
-                        app:layout_constraintStart_toStartOf="@+id/textView14"
-                        app:layout_constraintTop_toBottomOf="@+id/textView14" />
-
-                    <TextView
-                        android:id="@+id/textView14"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="25dp"
-                        android:text="Gender"
-                        app:layout_constraintStart_toStartOf="@+id/textView12"
-                        app:layout_constraintTop_toBottomOf="@+id/textView12" />
-
-                    <TextView
-                        android:id="@+id/textView12"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="25dp"
-                        android:text="@string/email"
-                        app:layout_constraintEnd_toStartOf="@+id/guideline7"
-                        app:layout_constraintStart_toStartOf="@+id/textView11"
-                        app:layout_constraintTop_toBottomOf="@+id/textView11" />
-
-                    <TextView
-                        android:id="@+id/textView11"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="25dp"
-                        android:text="@string/phone"
-                        app:layout_constraintStart_toStartOf="@+id/textView10"
-                        app:layout_constraintTop_toBottomOf="@+id/textView10" />
-
-                    <TextView
-                        android:id="@+id/textView10"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="25dp"
-                        android:text="@string/last_name"
-                        app:layout_constraintStart_toStartOf="@+id/textView3"
-                        app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
-                    <TextView
-                        android:id="@+id/textView3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="25dp"
-                        android:text="@string/name"
-                        app:layout_constraintStart_toStartOf="@+id/textView2"
-                        app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-                    <TextView
-                        android:id="@+id/opponentInfoUsernameTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/guideline7"
+                        android:text="@string/birth_date_only"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline13"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        android:text="@{viewModel.opponentUser.username}"
-                        tools:text="Dacuke" />
+                        app:layout_constraintVertical_bias="0.0" />
 
                     <TextView
                         android:id="@+id/opponentInfoBirthDateTextView"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        app:layout_constraintStart_toStartOf="@+id/opponentInfoGenderTextView"
+                        android:layout_marginStart="15dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline13"
                         app:layout_constraintTop_toTopOf="@+id/textView15"
+                        app:layout_constraintVertical_bias="0.0"
                         tools:text="17.05.1999" />
 
-                    <TextView
-                        android:id="@+id/opponentInfoGenderTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.opponentUser.gender}"
-                        app:layout_constraintStart_toStartOf="@+id/opponentInfoEmailTextView"
-                        app:layout_constraintTop_toTopOf="@+id/textView14"
-                        tools:text="Male" />
-
-                    <TextView
-                        android:id="@+id/opponentInfoEmailTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.opponentUser.email}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/opponentInfoPhoneTextView"
-                        app:layout_constraintTop_toTopOf="@+id/textView12"
-                        tools:text="david.melikyan.1999@mail.ru" />
-
-                    <TextView
-                        android:id="@+id/opponentInfoPhoneTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.opponentUser.phoneNumber}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/opponentInfoLastNameTextView"
-                        app:layout_constraintTop_toTopOf="@+id/textView11"
-                        tools:text="094 80 80 80 80" />
-
-                    <TextView
-                        android:id="@+id/opponentInfoLastNameTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.opponentUser.lastname}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/opponentInfoNameTextView"
-                        app:layout_constraintTop_toTopOf="@+id/textView10"
-                        tools:text="Melikyan" />
-
-                    <TextView
-                        android:id="@+id/opponentInfoNameTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:text="@{viewModel.opponentUser.name}"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/opponentInfoUsernameTextView"
-                        app:layout_constraintTop_toTopOf="@+id/textView3"
-                        tools:text="David" />
-
                     <androidx.constraintlayout.widget.Guideline
-                        android:id="@+id/guideline7"
+                        android:id="@+id/guideline13"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"

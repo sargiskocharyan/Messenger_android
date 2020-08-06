@@ -64,8 +64,32 @@
     <string name="cancel">Չեղարկել</string>
     <string name="attention">Ուշադրություն</string>
     <string name="sms_comment">In this phone number will be sent SMS with the code</string>
-    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
-    <string name="next" translatable="false">Next</string>
     <string name="verification_code">Verification code</string>
     <string name="long_time_ago">Long time ago</string>
+    <string name="info">Տեղեկատվություն</string>
+    <string name="gender">Սեռ</string>
+    <string name="male">Արական</string>
+    <string name="female">Իգական</string>
+    <string name="add_to_contact">Ավելացնել կոնտակտներին</string>
+    <string name="calls">Զանգեր</string>
+    <string name="call">Զանգ</string>
+    <string name="you_have_no_calls">Դուք զանգեր չունեք</string>
+    <string name="this_user_is_not_in_your_contacts">Այս օգտվողը ձեր կոնտակտներում չէ</string>
+    <string name="your_session_expires_please_log_in_again">Ձեր նիստը լրանում է, խնդրում ենք կրկին մուտք գործեք</string>
+    <string name="reconnecting">Վերամիացում</string>
+    <string name="calling">Զանգ</string>
+    <string name="you_have_no_messages">Դուք հաղորդագրություն չունեք</string>
+    <string name="dynamics_user">Dynamic օգտատեր</string>
+    <string name="video">տեսազանգ</string>
+    <string name="audio">աուդիոզանգ</string>
+    <string name="message">հաղորդագրություն</string>
+    <string name="album">Ալբոմ</string>
+    <string name="camera">Տեսախցիկ</string>
+    <string name="choose_one_of_this_app_to_upload_photo">Լուսանկարը վերբեռնելու համար ընտրեք այս ծրագրերից մեկը</string>
+    <string name="today">Այսօր</string>
+    <string name="yesterday">Երեկ</string>
+    <string name="info_not_set">Տեղեկությունները սահմանված չեն</string>
+    <string name="the_username_must_contain_at_least_4_letters">Օգտագործողի անունը պետք է պարունակի առնվազն 4 տառ</string>
+    <string name="this_username_is_taken">Այս օգտվողի անունը զբաղված է</string>
+    <string name="birth_date_only">Ծննդյան օր</string>
 </resources>

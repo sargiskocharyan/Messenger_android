@@ -69,39 +69,28 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/firstPageCommentText" />
 
-            <EditText
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/loginRegisterEmailEditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="60dp"
-                android:layout_marginEnd="50dp"
-                android:autofillHints="@string/email"
-                android:background="@drawable/edittext_red_underline"
-                android:ems="10"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="120dp"
+                android:layout_marginEnd="32dp"
                 android:hint="@string/email"
-                android:inputType="textEmailAddress"
-                android:text="@={viewModel.userEnteredEmail}"
-                app:setEditTextBackground="@{viewModel.isEmailValid}"
+                app:errorEnabled="true"
+                app:setEmailErrorText="@{viewModel.isEmailValid()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/firstPageCommentText" />
+                app:layout_constraintTop_toBottomOf="@+id/customGradientView3">
 
-            <TextView
-                android:id="@+id/emailHintTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginBottom="40dp"
-                android:text="@string/email"
-                android:textSize="12sp"
-                android:visibility="invisible"
-                app:setTextViewVisible="@{viewModel.hintVisibility}"
-                app:setHintColour="@{viewModel.isEmailValid}"
-                app:layout_constraintBottom_toBottomOf="@+id/loginRegisterEmailEditText"
-                app:layout_constraintStart_toStartOf="@+id/loginRegisterEmailEditText"
-                app:layout_constraintTop_toTopOf="@+id/loginRegisterEmailEditText" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:text="@={viewModel.userEnteredEmail}"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/ConfirmEmailTextComment"
@@ -125,6 +114,7 @@
                 android:enabled="false"
                 android:text="@string/continue_button"
                 android:onClick="@{viewModel::checkIsMailExist}"
+                app:backgroundTint="@null"
                 app:setContinueButtonConfiguration="@{viewModel.isEmailValid}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

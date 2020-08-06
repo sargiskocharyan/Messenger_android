@@ -115,7 +115,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Message"
+            android:text="@string/message"
             app:layout_constraintEnd_toEndOf="@+id/callInformationMessageImageView"
             app:layout_constraintStart_toStartOf="@+id/callInformationMessageImageView"
             app:layout_constraintTop_toBottomOf="@+id/callInformationMessageImageView" />
@@ -125,7 +125,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Video"
+            android:text="@string/video"
             app:layout_constraintEnd_toEndOf="@+id/callInformationVideoCallImageView"
             app:layout_constraintStart_toStartOf="@+id/callInformationVideoCallImageView"
             app:layout_constraintTop_toBottomOf="@+id/callInformationVideoCallImageView" />
@@ -135,7 +135,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Call"
+            android:text="@string/call"
             app:layout_constraintEnd_toEndOf="@+id/callInformationCallImageView"
             app:layout_constraintStart_toStartOf="@+id/callInformationCallImageView"
             app:layout_constraintTop_toBottomOf="@+id/callInformationCallImageView" />

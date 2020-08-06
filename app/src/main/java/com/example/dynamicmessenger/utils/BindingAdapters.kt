@@ -8,6 +8,7 @@ import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.AppLangKeys
+import com.google.android.material.textfield.TextInputLayout
 import de.hdodenhof.circleimageview.CircleImageView
 
 //@BindingAdapter("languageIMG")
@@ -145,5 +146,50 @@ fun setImageVisibility(image: ImageView, answer: Boolean) {
         image.visibility = View.VISIBLE
     } else {
         image.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("setEmailErrorText")
+fun setEmailErrorText(textInputLayout: TextInputLayout, answer: Boolean) {
+    if (answer) {
+        textInputLayout.error = null
+    } else {
+        textInputLayout.error = textInputLayout.context.getString(R.string.incorrect_email)
+    }
+}
+
+@BindingAdapter("setCodeErrorText")
+fun setCodeErrorText(textInputLayout: TextInputLayout, answer: Boolean) {
+    if (answer) {
+        textInputLayout.error = null
+    } else {
+        textInputLayout.error = textInputLayout.context.getString(R.string.incorrect_code)
+    }
+}
+
+@BindingAdapter("setUsernameErrorText")
+fun setUsernameErrorText(textInputLayout: TextInputLayout, answer: Boolean?) {
+    when (answer) {
+        true -> textInputLayout.error = null
+        false -> textInputLayout.error = textInputLayout.context.getString(R.string.the_username_must_contain_at_least_4_letters)
+        null -> textInputLayout.error = textInputLayout.context.getString(R.string.this_username_is_taken)
+    }
+}
+
+@BindingAdapter("setNameErrorText")
+fun setNameErrorText(textInputLayout: TextInputLayout, answer: Boolean) {
+    if (answer) {
+        textInputLayout.error = null
+    } else {
+        textInputLayout.error = textInputLayout.context.getString(R.string.name_must_contain_at_least_2_letters)
+    }
+}
+
+@BindingAdapter("setLastNameErrorText")
+fun setLastNameErrorText(textInputLayout: TextInputLayout, answer: Boolean) {
+    if (answer) {
+        textInputLayout.error = null
+    } else {
+        textInputLayout.error = textInputLayout.context.getString(R.string.lastname_must_contain_at_least_2_letters)
     }
 }

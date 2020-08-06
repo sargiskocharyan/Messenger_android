@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 
 class ChatRoomAdapter(val context: Context, private val myID: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -48,11 +47,11 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == 0) {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.message_item_view, parent, false)
+                .inflate(R.layout.item_view_message_receiver, parent, false)
             ChatRoomViewHolder(view)
         } else {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.message_sender_item_view, parent, false)
+                .inflate(R.layout.item_view_message_sender, parent, false)
             ChatRoomSenderViewHolder(view)
         }
 

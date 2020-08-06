@@ -177,6 +177,7 @@
                     android:background="@drawable/disable_button_design"
                     android:enabled="false"
                     android:text="@string/update_information"
+                    app:backgroundTint="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout" />

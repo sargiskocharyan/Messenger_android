@@ -2,6 +2,7 @@ package com.example.dynamicmessenger.userCalls.viewModels
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -9,6 +10,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
@@ -22,6 +24,7 @@ class CallInformationViewModel(application: Application) : AndroidViewModel(appl
     private val diskLruCache = DiskCache.getInstance(application)
     private val callsDao = SignedUserDatabase.getUserDatabase(application)!!.userCallsDao()
     private val callsRepository = UserCallsRepository(callsDao)
+    private val context = application
     val callInformation = MutableLiveData<UserCalls>()
     val callTimeDay = MutableLiveData<String>()
     val callTimeHour = MutableLiveData<String>()
@@ -63,9 +66,9 @@ class CallInformationViewModel(application: Application) : AndroidViewModel(appl
         val newFormat = SimpleDateFormat("HH:mm")
         callTimeHour.value = newFormat.format(date)
         if ((currentDate.day == date.day) && (currentDate.month == date.month) && (currentDate.year == date.year)) {
-            callTimeDay.value = "Today"//TODO change string
+            callTimeDay.value = context.getString(R.string.today)
         } else if ((currentDate.day == date.day + 1) && (currentDate.month == date.month) && (currentDate.year == date.year)) {
-            callTimeDay.value = "Yesterday"
+            callTimeDay.value = context.getString(R.string.yesterday)
         } else {
             val newFormat = SimpleDateFormat("MMMM-dd")
             callTimeDay.value = newFormat.format(date)

@@ -17,6 +17,7 @@ import com.example.dynamicmessenger.network.*
 import com.example.dynamicmessenger.network.authorization.models.HideDataTask
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
+import com.example.dynamicmessenger.network.authorization.models.UsernameExistsTask
 import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.DatePickerHelper
 import com.example.dynamicmessenger.utils.MyAlertMessage
@@ -27,28 +28,29 @@ class UpdateUserInformationViewModel(application: Application) : AndroidViewMode
     private var datePicker = DatePickerHelper(application, true)
 
     @Bindable
-    val userEnteredUsername = MutableLiveData<String>(SharedConfigs.signedUser?.name)
+    val userEnteredUsername = MutableLiveData<String>(SharedConfigs.signedUser?.username)
     @Bindable
-    val userEnteredName = MutableLiveData<String>()
+    val userEnteredName = MutableLiveData<String>(SharedConfigs.signedUser?.name)
     @Bindable
-    val userEnteredLastName = MutableLiveData<String>()
+    val userEnteredLastName = MutableLiveData<String>(SharedConfigs.signedUser?.lastname)
     @Bindable
-    val userEnteredInfo = MutableLiveData<String>()
+    val userEnteredInfo = MutableLiveData<String>(SharedConfigs.signedUser?.info)
     @Bindable
-    val userEnteredPhoneNumber = MutableLiveData<String>()
+    val userEnteredPhoneNumber = MutableLiveData<String>(SharedConfigs.signedUser?.phoneNumber)
     @Bindable
-    val userEnteredEmail = MutableLiveData<String>()
+    val userEnteredEmail = MutableLiveData<String>(SharedConfigs.signedUser?.email)
+
+    val isEmailValid = MutableLiveData<Boolean>()
+    val isUsernameValid = MutableLiveData<Boolean>()
+    val isNameValid = MutableLiveData<Boolean>()
+    val isLastNameValid = MutableLiveData<Boolean>()
+    val isValidParameters = MutableLiveData<Boolean>()
 
     private val _userEnteredDate = MutableLiveData<String>()
     val userEnteredDate: LiveData<String> = _userEnteredDate
 
-    init {
-        userEnteredUsername.value = SharedConfigs.signedUser?.username
-        userEnteredName.value = SharedConfigs.signedUser?.name
-        userEnteredLastName.value = SharedConfigs.signedUser?.lastname
-        userEnteredInfo.value = SharedConfigs.signedUser?.info
-        userEnteredPhoneNumber.value = SharedConfigs.signedUser?.phoneNumber
-        userEnteredEmail.value = SharedConfigs.signedUser?.email
+    fun changeIsValidParameters() {
+        isValidParameters.value = isEmailValid.value ?: false && isUsernameValid.value ?: false && isNameValid.value ?: false && isLastNameValid.value ?: false
     }
 
     fun updateUserNetwork(updateUserTask: UpdateUserTask, context: Context?, closure: (Boolean) -> Unit) {
@@ -109,6 +111,25 @@ class UpdateUserInformationViewModel(application: Application) : AndroidViewMode
                 Log.i("+++", "delete user exception $e")
             }
         }
+    }
+
+    fun checkUsernameExists(): MutableLiveData<Boolean> {
+        val isUsernameExists = MutableLiveData<Boolean>()
+        viewModelScope.launch {
+            try {
+                val response = CheckUsernameExistsApi.retrofitService.checkUsernameExists(SharedConfigs.token, UsernameExistsTask(userEnteredUsername.value))
+                if (response.isSuccessful) {
+                    if (response.body()!!.usernameExists) {
+                        isUsernameExists.postValue(false)
+                    } else {
+                        isUsernameExists.postValue(true)
+                    }
+                }
+            } catch (e: Exception) {
+
+            }
+        }
+        return isUsernameExists
     }
 
     fun showDatePickerDialog() {//TODO

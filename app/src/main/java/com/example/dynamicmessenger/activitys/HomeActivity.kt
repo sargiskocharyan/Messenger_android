@@ -172,7 +172,7 @@ class HomeActivity : AppCompatActivity() {
                     SharedConfigs.deleteSignedUser()
                     AlertDialog.Builder(context)
                         .setTitle("Error")
-                        .setMessage("Your seans is out of time")
+                        .setMessage(getString(R.string.your_session_expires_please_log_in_again))
                         .setPositiveButton("ok") { _, _ ->
                             val intent = Intent(context, MainActivity::class.java)
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

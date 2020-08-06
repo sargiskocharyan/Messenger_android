@@ -34,8 +34,8 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
     val userEnteredLastName = MutableLiveData<String>()
     @Bindable
     val userEnteredUsername = MutableLiveData<String>()
-    val userEnteredGender = MutableLiveData<String>()
-    val isValidUsername = MutableLiveData<Boolean>()
+    val userEnteredGender = MutableLiveData<String?>()
+    val isValidUsername = MutableLiveData<Boolean?>()
     val isValidName = MutableLiveData<Boolean>()
     val isValidLastName = MutableLiveData<Boolean>()
     val isValidParameters = MutableLiveData<Boolean>()
@@ -47,14 +47,14 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
     }
 
     fun changeIsValidParameters() {
-        isValidParameters.value = isValidUsername.value!! && isValidName.value!! && isValidLastName.value!!
+        isValidParameters.value = isValidUsername.value ?: false && isValidName.value!! && isValidLastName.value!!
     }
 
     fun updateUserInformation(view: View) {
         viewModelScope.launch {
             try {
-                if (userEnteredName.value == "") {userEnteredName.value = null}
-                if (userEnteredLastName.value == "") {userEnteredLastName.value = null}
+                if (userEnteredName.value?.isEmpty()!!) {userEnteredName.value = null}
+                if (userEnteredLastName.value?.isEmpty()!!) {userEnteredLastName.value = null}
                 val usernameEditText = UpdateUserTask(userEnteredName.value, userEnteredLastName.value, userEnteredUsername.value, userEnteredGender.value)
                 val response = UpdateUserApi.retrofitService.updateUserResponseAsync(SharedConfigs.token ,usernameEditText)
                 if (response.isSuccessful) {
@@ -71,21 +71,23 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
         }
     }
 
-    fun checkUsernameExists() {
+    fun checkUsernameExists(): MutableLiveData<Boolean> {
+        val isUsernameExists = MutableLiveData<Boolean>()
         viewModelScope.launch {
             try {
                 val response = CheckUsernameExistsApi.retrofitService.checkUsernameExists(SharedConfigs.token, UsernameExistsTask(userEnteredUsername.value))
                 if (response.isSuccessful) {
                     if (response.body()!!.usernameExists) {
-                        Toast.makeText(getApplication(), "username is used", Toast.LENGTH_SHORT).show()
+                        isUsernameExists.postValue(false)
                     } else {
-                        Toast.makeText(getApplication(), "username free", Toast.LENGTH_SHORT).show()
+                        isUsernameExists.postValue(true)
                     }
                 }
             } catch (e: Exception) {
 
             }
         }
+        return isUsernameExists
     }
 
     fun skipRegistration(view: View) {

@@ -34,10 +34,40 @@ class PersonRegistrationFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        setValidations()
+
+        val adapter = ArrayAdapter.createFromResource(requireContext(), R.array.genders, android.R.layout.simple_spinner_item)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.registrationGenderSpinner.adapter = adapter
+        binding.registrationGenderSpinner.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View,
+                position: Int,
+                id: Long
+            ) {
+                when (position) {
+                    0 -> viewModel.userEnteredGender.value = null
+                    1 -> viewModel.userEnteredGender.value = "male"
+                    2 -> viewModel.userEnteredGender.value = "female"
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        return binding.root
+    }
+
+    private fun setValidations() {
         viewModel.userEnteredUsername.observe(viewLifecycleOwner, Observer {
             if (Validations.isUsernameValid(it)) {
-                viewModel.checkUsernameExists()
-                viewModel.isValidUsername.value = true
+                viewModel.checkUsernameExists().observe(viewLifecycleOwner, Observer { isUsernameFree ->
+                    if (isUsernameFree) {
+                        viewModel.isValidUsername.value = true
+                    } else {
+                        viewModel.isValidUsername.value = null
+                    }
+                })
             } else {
                 viewModel.isValidUsername.value = false
             }
@@ -53,26 +83,6 @@ class PersonRegistrationFragment : Fragment() {
             viewModel.isValidLastName.value = Validations.isLastNameValid(it) || it.isEmpty()
             viewModel.changeIsValidParameters()
         })
-
-        val adapter = ArrayAdapter.createFromResource(requireContext(), R.array.genders, android.R.layout.simple_spinner_item)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.registrationGenderSpinner.adapter = adapter
-        binding.registrationGenderSpinner.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View,
-                position: Int,
-                id: Long
-            ) {
-                when (position) {
-                    1 -> viewModel.userEnteredGender.value = "male"
-                    2 -> viewModel.userEnteredGender.value = "female"
-                }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-
-        return binding.root
     }
 }
 
