@@ -33,6 +33,9 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
     private val _lastName = MutableLiveData<String>()
     val lastName: LiveData<String> get() = _lastName
 
+    private val _phoneNumber = MutableLiveData<String>()
+    val phoneNumber: LiveData<String> get() = _phoneNumber
+
     val appLanguage = MutableLiveData<AppLangKeys>(AppLangKeys.EN)
 
     private val _avatarBitmap = MutableLiveData<Bitmap>()
@@ -55,6 +58,7 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
                     SharedConfigs.signedUser = user
                     Toast.makeText(context, "Avatar uploaded", Toast.LENGTH_SHORT).show()
                 } else {
+                    Log.i("+++", "error body ${response}")
                     Toast.makeText(context, "getUserAvatarFromNetwork else ", Toast.LENGTH_SHORT).show()
                 }
                 binding.imageUploadProgressBar.visibility = View.INVISIBLE
@@ -110,17 +114,10 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
 
     private fun setUserProperty() {
         val userObject = SharedConfigs.signedUser
-        _username.value = userObject?.username ?: ""
-        _email.value = userObject?.email ?: ""
-        _name.value = userObject?.name ?: "Name"
-        _lastName.value = userObject?.lastname ?: "Last Name"
-    }
-
-    fun setLanguageImage(): Int {
-        return when (SharedConfigs.appLang.value) {
-            AppLangKeys.EN -> R.drawable.ic_united_kingdom
-            AppLangKeys.RU -> R.drawable.ic_russia
-            else -> R.drawable.ic_armenia
-        }
+        _username.value = userObject?.username
+        _email.value = userObject?.email
+        _name.value = userObject?.name
+        _lastName.value = userObject?.lastname
+        _phoneNumber.value = userObject?.phoneNumber
     }
 }

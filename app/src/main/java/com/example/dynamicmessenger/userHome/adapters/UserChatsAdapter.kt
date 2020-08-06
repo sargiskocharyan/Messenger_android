@@ -60,7 +60,7 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
     }
 
 
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SimpleDateFormat", "SetTextI18n")
     override fun onBindViewHolder(holder: UserChatsViewHolder, position: Int) {
         val item = data[position]
         val timeInHours: String
@@ -88,7 +88,11 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
         holder.name.text = item.name ?: item.username
         holder.chat = item
         holder.lastname.text = item.lastname
-        holder.lastMessage.text = item.message?.text
+        if (item.message?.type == "call") {//TODO change for all types
+            holder.lastMessage.text = "${item.message.call?.type} call ${item.message.call?.duration}"
+        } else {
+            holder.lastMessage.text = item.message?.text
+        }
         if (item.recipientAvatarURL != null) {
             getAvatar(holder.chatUserImageView, item.recipientAvatarURL)
         } else  {

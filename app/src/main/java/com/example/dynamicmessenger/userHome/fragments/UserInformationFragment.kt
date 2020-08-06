@@ -48,20 +48,16 @@ class UserInformationFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        binding.university.text = SharedConfigs.signedUser?.university?.toString() ?: "University"
         val bottomNavBar: BottomNavigationView =
             requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.VISIBLE
         changeDarkMode()
-//        popupMenu(binding)
 
         SharedConfigs.appLang.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             viewModel.appLanguage.value = it
         })
         binding.languageConstraintLayout.setOnClickListener {
             binding.languagePopupMenuLinearLayout.visibility = View.VISIBLE
-            binding.darkModeConstraintLayout.visibility = View.INVISIBLE
-            binding.logoutConstraintLayout.visibility = View.INVISIBLE
         }
         popupMenu(binding)
 
@@ -80,10 +76,10 @@ class UserInformationFragment : Fragment() {
         binding.darkModeSwitch.isChecked = SharedConfigs.getDarkMode()
 
         binding.darkModeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
-            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 SharedConfigs.setDarkMode(true)
+                LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 SharedConfigs.setDarkMode(false)
@@ -132,6 +128,11 @@ class UserInformationFragment : Fragment() {
                 ?.addToBackStack(null)
                 ?.commit()
         }
+
+        binding.informationConstraintLayout.setOnClickListener {
+            binding.languagePopupMenuLinearLayout.visibility = View.GONE
+        }
+
         return binding.root
     }
 

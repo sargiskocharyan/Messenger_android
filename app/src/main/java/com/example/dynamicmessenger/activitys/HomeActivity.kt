@@ -80,8 +80,8 @@ class HomeActivity : AppCompatActivity() {
         mSocket.on("message", socketManager.onMessageForNotification(Activity()){
             try {
                 Log.i("+++mSocket", selectedFragment.toString())
-                if (selectedFragment != UserChatFragment() && it.sender.id != SharedConfigs.signedUser?._id ?: true){
-                    NotificationMessages.setNotificationMessage(it.sender.name, it.text!!, this, manager)
+                if (selectedFragment != UserChatFragment() && it.senderId != SharedConfigs.signedUser?._id ?: true){
+                    it.senderUsername?.let { senderName -> NotificationMessages.setNotificationMessage(senderName, it.text!!, this, manager) }
                 }
             } catch (e: Exception) {
                 Log.i("+++catch", e.toString())
@@ -126,14 +126,14 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
-            LocalizationUtil.setApplicationLocale(this, it.value)
-        })
+        SharedConfigs.appLang.value?.value?.let { LocalizationUtil.setApplicationLocale(this, it) }
+//        SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
+//        })
     }
 
-//    override fun attachBaseContext(base: Context?) {
-//        super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value!!.value))
-//    }
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value!!.value))
+    }
 
     override fun onDestroy() {
         super.onDestroy()

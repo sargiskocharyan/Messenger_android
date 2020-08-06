@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import androidx.core.content.ContextCompat.getSystemService
 import com.example.dynamicmessenger.common.MyHeaders
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs.myContext
@@ -445,6 +444,40 @@ object RemoveContactApi {
     val retrofitService : JsonPlaceHolderRemoveContactApi by lazy {
         retrofit.create(
             JsonPlaceHolderRemoveContactApi::class.java
+        )
+    }
+}
+
+//Hide data
+interface JsonPlaceHolderHideDataApi {
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.hideData)
+    suspend fun hideData(@Header (MyHeaders.tokenAuthorization) header: String,
+                         @Body userId : HideDataTask) :
+            Response<Void>
+}
+
+object HideDataApi {
+    val retrofitService : JsonPlaceHolderHideDataApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderHideDataApi::class.java
+        )
+    }
+}
+
+//Username Exists
+interface JsonPlaceHolderCheckUsernameExistsApi {
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.usernameExists)
+    suspend fun checkUsernameExists(@Header (MyHeaders.tokenAuthorization) header: String,
+                                    @Body userId : UsernameExistsTask) :
+            Response<UsernameExists>
+}
+
+object CheckUsernameExistsApi {
+    val retrofitService : JsonPlaceHolderCheckUsernameExistsApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderCheckUsernameExistsApi::class.java
         )
     }
 }

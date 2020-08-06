@@ -11,12 +11,14 @@ data class SignedUser(
 //    @ColumnInfo(name = "name")
     @PrimaryKey
     val _id: String,
-    val name: String?,
-    val lastname: String?,
-    val username: String?,
-    val email: String?,
-    @Embedded
-    val university: University?,
+    var gender: String?,
+    var name: String?,
+    var lastname: String?,
+    var username: String?,
+    var email: String?,
+    var birthday: String?,
+    var phoneNumber: String?,
+    var info: String?,
     var avatarURL: String?
 )
 

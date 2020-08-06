@@ -32,8 +32,6 @@ data class User (
     val birthday: String?,
     val info: String?,
     val avatarURL: String?
-//    ,
-//    val university: University?
 ) : Parcelable
 
 @Parcelize
@@ -73,14 +71,14 @@ data class Chat(
 
 @Parcelize
 data class Message(
-    @Embedded
-    val sender: Sender,
+    val senderId: String?,
     @Embedded
     val call: Call?,
     val type: String,
     val text: String?,
     var createdAt: String,
-    val reciever: String) : Parcelable, Comparable<Message> {
+    val reciever: String,
+    val senderUsername: String?) : Parcelable, Comparable<Message> {
     @SuppressLint("SimpleDateFormat")
     override fun compareTo(other: Message): Int {
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -93,6 +91,9 @@ data class Message(
         }
         return 1
     }
+//    "senderUsername":"dacuke",
+//    "senderName":"David",
+//    "senderLastname":"Melikyan"
 
 }
 
@@ -112,7 +113,7 @@ data class Call(
 
 @Parcelize
 data class ChatRoom(
-    val sender: Sender,
+    val senderId: String?,
     val call: Call?,
     val type: String,
     val text: String?,
@@ -139,3 +140,6 @@ data class UniversityPropertyList(val list: List<UniversityProperty>) : Parcelab
 
 @Parcelize
 data class OnlineUsers(val usersOnline: List<String>) : Parcelable
+
+@Parcelize
+data class UsernameExists(val usernameExists: Boolean) : Parcelable

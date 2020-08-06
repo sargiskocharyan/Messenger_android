@@ -103,18 +103,19 @@
                     app:layout_constraintTop_toBottomOf="@+id/userProfileImageView" />
 
                 <TextView
-                    android:id="@+id/phoneNumber"
+                    android:id="@+id/phoneNumberTextView"
                     style="@style/UserInformationTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="+37498765432"
                     android:textSize="17sp"
+                    android:text="@{viewModel.phoneNumber}"
+                    tools:text="+37498765432"
                     app:layout_constraintBottom_toBottomOf="@+id/textView5"
                     app:layout_constraintStart_toStartOf="@+id/guideline3"
                     app:layout_constraintTop_toTopOf="@+id/textView5" />
 
                 <TextView
-                    android:id="@+id/name"
+                    android:id="@+id/nameTextView"
                     style="@style/UserInformationTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -125,31 +126,17 @@
                     tools:text="name" />
 
                 <TextView
-                    android:id="@+id/lastName"
+                    android:id="@+id/lastNameTextView"
                     style="@style/UserInformationTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
                     android:text="@{viewModel.lastName}"
                     android:textSize="17sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline3"
                     app:layout_constraintTop_toTopOf="@+id/textView7"
                     tools:text="lastName" />
-
-                <TextView
-                    android:id="@+id/university"
-                    style="@style/UserInformationTextStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="20dp"
-                    android:text="@string/university"
-                    android:textSize="17sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/textView7"
-                    app:layout_constraintTop_toBottomOf="@+id/textView7"
-                    app:layout_constraintVertical_bias="1.0" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline3"

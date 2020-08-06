@@ -1,6 +1,8 @@
 package com.example.dynamicmessenger.userHome.adapters
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +22,7 @@ import com.example.dynamicmessenger.network.GetUserInfoByIdApi
 import com.example.dynamicmessenger.network.authorization.models.AddUserContactTask
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.User
+import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
 import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
@@ -85,6 +88,16 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
                         .replace(R.id.fragmentContainer , ChatRoomFragment())
                         .addToBackStack(null)
                         .commit()
+                    return@setOnClickListener
+                }
+                if (SharedConfigs.lastFragment == MyFragments.CALLS) {
+                    SharedConfigs.callingOpponentId = userContact!!._id
+                    val intent = Intent(context, CallRoomActivity::class.java)
+//                    userCalls!!.time = System.currentTimeMillis()
+//                    userCalls!!.callingState = 1   TODO save call
+//                    viewModel.saveCall(userCalls!!)
+                    context.startActivity(intent)
+                    (context as Activity?)!!.overridePendingTransition(1, 1)
                     return@setOnClickListener
                 }
                 if (viewModel.getUserById(userContact!!._id) != null) {

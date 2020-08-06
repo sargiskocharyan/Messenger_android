@@ -38,13 +38,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <Spinner
-                android:id="@+id/universitySpinner"
+            <EditText
+                android:id="@+id/usernameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="32dp"
                 android:ems="10"
+                android:text="@={viewModel.userEnteredUsername}"
+                android:hint="@string/username"
                 android:inputType="textPersonName" />
 
             <EditText
@@ -71,17 +74,15 @@
                 android:hint="@string/last_name"
                 android:inputType="textPersonName" />
 
-            <EditText
-                android:id="@+id/usernameEditText"
+            <Spinner
+                android:id="@+id/registrationGenderSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="32dp"
-                android:ems="10"
-                android:text="@={viewModel.userEnteredUsername}"
-                android:hint="@string/username"
-                android:inputType="textPersonName" />
+                android:prompt="@string/select_gender"
+                android:entries="@array/genders"/>
         </LinearLayout>
 
         <Button

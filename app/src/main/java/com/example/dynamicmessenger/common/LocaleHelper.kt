@@ -2,9 +2,7 @@ package com.example.dynamicmessenger.common
 
 import android.annotation.TargetApi
 import android.os.Build
-import android.preference.PreferenceManager
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 

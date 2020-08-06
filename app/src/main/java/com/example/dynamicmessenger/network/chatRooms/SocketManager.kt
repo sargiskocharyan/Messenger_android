@@ -118,19 +118,17 @@ object SocketManager {
         return Emitter.Listener { args ->
             activity?.runOnUiThread(Runnable {
                 val data = args[0] as JSONObject
+                Log.i("+++", "message $data")
                 val gson = Gson()
                 val gsonMessage = gson.fromJson(data.toString(), Message::class.java)
-                val message = ChatRoom(gsonMessage.sender,null , gsonMessage.type, gsonMessage.text!!, gsonMessage.reciever, gsonMessage.createdAt)//TODO change
                 try {
-                    if (message.sender.id == chatID || message.reciever == chatID) {
+                    val message = ChatRoom(gsonMessage.senderId,null , gsonMessage.type, gsonMessage.text!!, gsonMessage.reciever, gsonMessage.createdAt)//TODO change
+                    if (message.senderId == chatID || message.reciever == chatID) {
                         val newData = adapter.data.toMutableList()
                         newData += message
-                        val userChatDiffUtilCallback = ChatRoomDiffUtilCallback(adapter.data, newData)
-                        val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
-                        adapter.data.add(message)
-                        authorDiffResult.dispatchUpdatesTo(adapter)
+                        adapter.submitList(newData)
                     }
-                } catch (e: JSONException) {
+                } catch (e: Exception) {
                     Log.i("+++", "onMessage $e")
                     return@Runnable
                 }
@@ -143,7 +141,7 @@ object SocketManager {
             activity?.runOnUiThread(Runnable {
                 try {
                     closure(true)
-                } catch (e: JSONException) {
+                } catch (e: Exception) {
                     Log.i("+++", "onMessageForAllChats $e")
                     return@Runnable
                 }
@@ -151,16 +149,16 @@ object SocketManager {
         }
     }
 
-    fun onMessageForNotification(activity: Activity?, closure: (ChatRoom) -> Unit): Emitter.Listener {
+    fun onMessageForNotification(activity: Activity?, closure: (Message) -> Unit): Emitter.Listener {
         return Emitter.Listener { args ->
             activity?.runOnUiThread(Runnable {
                 try {
                     val data = args[0] as JSONObject
                     val gson = Gson()
                     val gsonMessage = gson.fromJson(data.toString(), Message::class.java)
-                    val message = ChatRoom(gsonMessage.sender,null , gsonMessage.type, gsonMessage.text!!, gsonMessage.reciever, gsonMessage.createdAt)
-                    closure(message)
-                } catch (e: JSONException) {
+                    val message = ChatRoom(gsonMessage.senderId,null , gsonMessage.type, gsonMessage.text!!, gsonMessage.reciever, gsonMessage.createdAt)
+                    closure(gsonMessage)
+                } catch (e: Exception) {
                     Log.i("+++", "onMessageForNotification $e")
                     return@Runnable
                 }

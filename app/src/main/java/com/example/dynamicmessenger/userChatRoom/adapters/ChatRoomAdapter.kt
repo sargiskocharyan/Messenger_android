@@ -1,5 +1,6 @@
 package com.example.dynamicmessenger.userChatRoom.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.LayoutInflater
@@ -37,7 +38,7 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (data[position].sender.id == myID) {
+        return if (data[position].senderId == myID) {
             1
         } else {
             0
@@ -68,8 +69,13 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
         val chatRoom: ChatRoom? = null
         private val message: TextView = itemView.findViewById(R.id.receiverTextView)
         private val receiverImageView: ImageView = itemView.findViewById(R.id.receiverImageView)
+        @SuppressLint("SetTextI18n")
         internal fun bind(position: Int) {
-            message.text = data[position].text
+            if (data[position].type == "call") {//TODO change for all types
+                message.text = "${data[position].call?.type} call ${data[position].call?.duration}"
+            } else {
+                message.text = data[position].text
+            }
             if (receiverImage != null) {
                 receiverImageView.setImageBitmap(receiverImage)
             } else  {
@@ -80,8 +86,13 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
 
     inner class ChatRoomSenderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val message: TextView = itemView.findViewById(R.id.senderTextView)
+        @SuppressLint("SetTextI18n")
         internal fun bind(position: Int) {
-            message.text = data[position].text
+            if (data[position].type == "call") {//TODO change for all types
+                message.text = "${data[position].call?.type} call ${data[position].call?.duration}"
+            } else {
+                message.text = data[position].text
+            }
         }
     }
 

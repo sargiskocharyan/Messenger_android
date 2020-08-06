@@ -10,7 +10,6 @@ data class UpdateUserTask (
     val name: String? = null,
     val lastname: String? = null,
     val username: String? = null,
-    val university: String? = null,
     val phoneNumber: String? = null,
     val info: String? = null,
     val address: String? = null,
@@ -24,3 +23,7 @@ data class AddUserContactTask (val contactId: String)
 data class OnlineUsersTask (val usersArray: List<String>)
 
 data class RemoveContactTask (val userId: String)
+
+data class HideDataTask (val hide: Boolean)
+
+data class UsernameExistsTask (val username: String?)

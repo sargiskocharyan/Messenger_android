@@ -14,9 +14,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.*
+import com.example.dynamicmessenger.network.authorization.models.HideDataTask
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
-import com.example.dynamicmessenger.userDataController.database.SignedUser
 import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.DatePickerHelper
 import com.example.dynamicmessenger.utils.MyAlertMessage
@@ -27,7 +27,7 @@ class UpdateUserInformationViewModel(application: Application) : AndroidViewMode
     private var datePicker = DatePickerHelper(application, true)
 
     @Bindable
-    val userEnteredUsername = MutableLiveData<String>()
+    val userEnteredUsername = MutableLiveData<String>(SharedConfigs.signedUser?.name)
     @Bindable
     val userEnteredName = MutableLiveData<String>()
     @Bindable
@@ -42,6 +42,15 @@ class UpdateUserInformationViewModel(application: Application) : AndroidViewMode
     private val _userEnteredDate = MutableLiveData<String>()
     val userEnteredDate: LiveData<String> = _userEnteredDate
 
+    init {
+        userEnteredUsername.value = SharedConfigs.signedUser?.username
+        userEnteredName.value = SharedConfigs.signedUser?.name
+        userEnteredLastName.value = SharedConfigs.signedUser?.lastname
+        userEnteredInfo.value = SharedConfigs.signedUser?.info
+        userEnteredPhoneNumber.value = SharedConfigs.signedUser?.phoneNumber
+        userEnteredEmail.value = SharedConfigs.signedUser?.email
+    }
+
     fun updateUserNetwork(updateUserTask: UpdateUserTask, context: Context?, closure: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
@@ -52,21 +61,6 @@ class UpdateUserInformationViewModel(application: Application) : AndroidViewMode
                 } else {
                     Log.i("+++", "update user else $response")
                     MyAlertMessage.showAlertDialog(context, "Enter correct email")
-                }
-            } catch (e: Exception) {
-                MyAlertMessage.showAlertDialog(context, "Check your internet connection")
-            }
-        }
-    }
-
-    fun getAllUniversity(context: Context?, closure: (List<UniversityProperty>) -> Unit) {
-        viewModelScope.launch {
-            try {
-                val response = UniversityApi.retrofitService.universityResponseAsync(SharedConfigs.token)
-                if (response.isSuccessful) {
-                    closure(response.body()!!)
-                } else {
-                    Toast.makeText(context, "Cant get university's name", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 MyAlertMessage.showAlertDialog(context, "Check your internet connection")
@@ -93,6 +87,23 @@ class UpdateUserInformationViewModel(application: Application) : AndroidViewMode
                 val response = DeleteUserApi.retrofitService.deleteUserResponseAsync(SharedConfigs.token)
                 if (response.isSuccessful) {
                     closure(true)
+                }
+            } catch (e: Exception) {
+                Log.i("+++", "delete user exception $e")
+            }
+        }
+    }
+
+    fun hidePersonalData(hide: Boolean) {
+        viewModelScope.launch {
+            try {
+                val response = HideDataApi.retrofitService.hideData(SharedConfigs.token, HideDataTask(hide) )
+                if (response.isSuccessful) {
+                    if (hide) {
+                        Toast.makeText(getApplication(), "Hide", Toast.LENGTH_SHORT).show() //TODO change string
+                    } else {
+                        Toast.makeText(getApplication(), "Show", Toast.LENGTH_SHORT).show() //TODO change string
+                    }
                 }
             } catch (e: Exception) {
                 Log.i("+++", "delete user exception $e")

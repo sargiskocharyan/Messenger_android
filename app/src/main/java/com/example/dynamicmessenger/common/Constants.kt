@@ -27,6 +27,8 @@ class ResponseUrls {
         const val userInfoById = "user"
         const val onlineUsers = "onlineusers"
         const val removeContact = "removecontact"
+        const val hideData = "hidedata"
+        const val usernameExists = "usernameExists"
 
 //        users/me/avatar
 //        users/5ee76c90bfa0980017a39013/avatar

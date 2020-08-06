@@ -138,3 +138,12 @@ fun setAddContactImage(image: ImageView, answer: Boolean) {
         image.setImageResource(R.drawable.ic_baseline_person_add_disabled_24)
     }
 }
+
+@BindingAdapter("setImageVisibility")
+fun setImageVisibility(image: ImageView, answer: Boolean) {
+    if (answer) {
+        image.visibility = View.VISIBLE
+    } else {
+        image.visibility = View.GONE
+    }
+}

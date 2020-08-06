@@ -11,7 +11,9 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.authorization.viewModels.PersonRegistrationViewModel
 import com.example.dynamicmessenger.databinding.FragmentPersonRegistrationBinding
 import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
@@ -32,46 +34,42 @@ class PersonRegistrationFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        binding.usernameEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                if (Validations.isUsernameValid(binding.usernameEditText.text.toString())
-                    && Validations.isNameValid(binding.nameEditText.text.toString())
-                    && Validations.isLastNameValid(binding.lastNameEditText.text.toString())
-                ) {
-                    viewModel.isValidParameters.value = true
-                } else {
-                    viewModel.isValidParameters.value = true
-                }
+        viewModel.userEnteredUsername.observe(viewLifecycleOwner, Observer {
+            if (Validations.isUsernameValid(it)) {
+                viewModel.checkUsernameExists()
+                viewModel.isValidUsername.value = true
+            } else {
+                viewModel.isValidUsername.value = false
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            viewModel.changeIsValidParameters()
         })
 
-        var allUniversity: List<UniversityProperty>
-        viewModel.getAllUniversity(requireContext()) {
-            allUniversity = it
-            val adapter = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                allUniversity
-            )
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.universitySpinner.adapter = adapter
-            binding.universitySpinner.onItemSelectedListener = object : OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View,
-                    position: Int,
-                    id: Long
-                ) {
-                    val allUniver = parent.selectedItem as UniversityProperty
-                    viewModel.userEnteredUniversity.value = allUniver._id
-                }
+        viewModel.userEnteredName.observe(viewLifecycleOwner, Observer {
+            viewModel.isValidName.value = Validations.isNameValid(it) || it.isEmpty()
+            viewModel.changeIsValidParameters()
+        })
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
+        viewModel.userEnteredLastName.observe(viewLifecycleOwner, Observer {
+            viewModel.isValidLastName.value = Validations.isLastNameValid(it) || it.isEmpty()
+            viewModel.changeIsValidParameters()
+        })
+
+        val adapter = ArrayAdapter.createFromResource(requireContext(), R.array.genders, android.R.layout.simple_spinner_item)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.registrationGenderSpinner.adapter = adapter
+        binding.registrationGenderSpinner.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View,
+                position: Int,
+                id: Long
+            ) {
+                when (position) {
+                    1 -> viewModel.userEnteredGender.value = "male"
+                    2 -> viewModel.userEnteredGender.value = "female"
+                }
             }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
         return binding.root

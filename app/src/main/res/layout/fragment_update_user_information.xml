@@ -19,10 +19,11 @@
                 android:id="@+id/updateUserInformationToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:background="@color/toolBarColor"
+                android:elevation="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:background="@color/toolBarColor"
                 app:title=" "
                 app:navigationIcon="@drawable/ic_baseline_arrow_back_24">
 
@@ -104,6 +105,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/hide_personal_data"
                                 android:textSize="18sp"
+                                android:layout_marginStart="5dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -125,7 +127,8 @@
                             android:layout_marginStart="32dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginEnd="32dp"
-                            android:text="@string/select_gender" />
+                            android:prompt="@string/select_gender"
+                            android:entries="@array/genders"/>
 
                         <EditText
                             android:id="@+id/userInfoEditText"
@@ -134,20 +137,11 @@
                             android:layout_marginStart="32dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginEnd="32dp"
+                            android:hint="bio"
                             android:text="@={updateUserViewModel.userEnteredInfo}" />
 
-                        <Spinner
-                            android:id="@+id/universitySpinner"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="32dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="32dp"
-                            android:ems="10"
-                            android:inputType="textPersonName" />
-
                         <Button
-                            android:id="@+id/birthDateEditText"
+                            android:id="@+id/birthDateDatePicker"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
@@ -177,6 +171,7 @@
                             android:layout_marginStart="32dp"
                             android:layout_marginTop="10dp"
                             android:layout_marginEnd="32dp"
+                            android:ems="10"
                             android:text="@={updateUserViewModel.userEnteredEmail}"
                             android:hint="@string/email" />
 
