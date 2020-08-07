@@ -1,27 +1,21 @@
 package com.example.dynamicmessenger.authorization.viewModels
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.databinding.Bindable
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.CheckUsernameExistsApi
-import com.example.dynamicmessenger.network.UniversityApi
 import com.example.dynamicmessenger.network.UpdateUserApi
-import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.network.authorization.models.UsernameExistsTask
-import com.example.dynamicmessenger.userDataController.database.SignedUser
 import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch

@@ -15,7 +15,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.*
 import com.example.dynamicmessenger.network.authorization.models.HideDataTask
-import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.network.authorization.models.UsernameExistsTask
 import com.example.dynamicmessenger.utils.ClassConverter
@@ -47,7 +46,7 @@ class UpdateUserInformationViewModel(application: Application) : AndroidViewMode
     val isValidParameters = MutableLiveData<Boolean>()
 
     private val _userEnteredDate = MutableLiveData<String>()
-    val userEnteredDate: LiveData<String> = _userEnteredDate
+    val userEnteredDate = MutableLiveData<String>()
 
     fun changeIsValidParameters() {
         isValidParameters.value = isEmailValid.value ?: false && isUsernameValid.value ?: false && isNameValid.value ?: false && isLastNameValid.value ?: false

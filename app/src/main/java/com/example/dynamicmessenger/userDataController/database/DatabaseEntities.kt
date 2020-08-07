@@ -42,6 +42,22 @@ data class UserCalls(
     var duration: Long = time
 )
 
+//@Entity(tableName = "user_calls")
+//data class UserCalls(
+//    val type: String,
+//    val status: String?,
+//    val participants: ArrayList<String>,
+//    @PrimaryKey
+//    val _id: String,
+//    val callSuggestTime: String?,
+//    val caller: String?,
+//    var message: String?,
+//    val createdAt: String?,
+//    val updatedAt: String?,
+//    val callStartTime: String?,
+//    val callEndTime: String?
+//)
+
 @Entity(tableName = "contacts")
 data class Contacts(
     @PrimaryKey

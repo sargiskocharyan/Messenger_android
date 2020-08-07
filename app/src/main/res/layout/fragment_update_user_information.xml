@@ -72,6 +72,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:text="@={updateUserViewModel.userEnteredUsername}"
                                 android:background="@android:color/transparent"
+                                android:layout_marginStart="-10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -91,6 +92,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:text="@={updateUserViewModel.userEnteredName}"
                                 android:background="@android:color/transparent"
+                                android:layout_marginStart="-10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -110,6 +112,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:text="@={updateUserViewModel.userEnteredLastName}"
                                 android:background="@android:color/transparent"
+                                android:layout_marginStart="-10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -123,10 +126,12 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginEnd="10dp"
                                 android:text="@string/hide_personal_data"
                                 android:textSize="18sp"
-                                android:layout_marginStart="5dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toStartOf="@+id/hidePersonalDataSwitch"
+                                app:layout_constraintHorizontal_bias="1.0"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -150,6 +155,25 @@
                             android:entries="@array/genders"/>
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/genderTextField"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginEnd="32dp"
+                            android:hint="@string/select_gender"
+                            >
+                            <AutoCompleteTextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="none"
+                                android:layout_marginStart="-10dp"
+                                android:backgroundTint="@android:color/transparent"
+                                />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/userInfoEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -162,33 +186,47 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:text="@={updateUserViewModel.userEnteredInfo}"
                                 android:background="@android:color/transparent"
+                                android:layout_marginStart="-10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <Button
+                        <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/birthDateDatePicker"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
-                            android:layout_marginTop="10dp"
                             android:layout_marginEnd="32dp"
                             android:ems="10"
-                            android:text="@{updateUserViewModel.userEnteredDate}"
+                            android:hint="@string/birth_date"
+                            android:inputType="date">
 
-                            android:hint="@string/birth_date" />
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:text="@={updateUserViewModel.userEnteredDate}"
+                                android:background="@android:color/transparent"
+                                android:layout_marginStart="-10dp"
+                                android:focusable="false"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
-                        <EditText
-                            android:id="@+id/editTextPhoneNumber"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/phoneNumberEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="32dp"
-                            android:layout_marginTop="10dp"
                             android:layout_marginEnd="32dp"
-                            android:text="@={updateUserViewModel.userEnteredPhoneNumber}"
                             android:ems="10"
                             android:hint="@string/number"
-                            android:inputType="phone" />
+                            android:inputType="textPersonName">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:text="@={updateUserViewModel.userEnteredPhoneNumber}"
+                                android:background="@android:color/transparent"
+                                android:layout_marginStart="-10dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/updateEmailEditText"
@@ -204,6 +242,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:text="@={updateUserViewModel.userEnteredEmail}"
                                 android:background="@android:color/transparent"
+                                android:layout_marginStart="-10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>

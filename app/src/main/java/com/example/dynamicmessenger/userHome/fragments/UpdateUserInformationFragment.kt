@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -33,6 +35,7 @@ class UpdateUserInformationFragment : Fragment() {
     private lateinit var binding: FragmentUpdateUserInformationBinding
     private lateinit var datePicker: DatePickerHelper
 
+    @SuppressLint("ResourceType")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -70,6 +73,7 @@ class UpdateUserInformationFragment : Fragment() {
         val adapter = ArrayAdapter.createFromResource(requireContext(), R.array.genders, android.R.layout.simple_spinner_item)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.genderSpinner.adapter = adapter
+        (binding.genderTextField.editText as? AutoCompleteTextView)?.setAdapter(adapter)
         binding.genderSpinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -86,7 +90,7 @@ class UpdateUserInformationFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        binding.birthDateDatePicker.setOnClickListener {
+        binding.birthDateDatePicker.editText?.setOnClickListener {
             showDatePickerDialog()
         }
 
@@ -94,7 +98,7 @@ class UpdateUserInformationFragment : Fragment() {
             if (viewModel.userEnteredName.value?.isEmpty()!!) { viewModel.userEnteredName.value = null }
             if (viewModel.userEnteredLastName.value?.isEmpty()!!) { viewModel.userEnteredLastName.value = null }
             if (viewModel.userEnteredPhoneNumber.value?.isEmpty()!!) { viewModel.userEnteredPhoneNumber.value = null }
-            val birthDate = binding.birthDateDatePicker.text.toString()
+            val birthDate = viewModel.userEnteredDate.value
             val name = viewModel.userEnteredName.value
             val lastName = viewModel.userEnteredLastName.value
             val username = viewModel.userEnteredUsername.value
@@ -170,7 +174,7 @@ class UpdateUserInformationFragment : Fragment() {
                 val dayStr = if (dayOfMonth < 10) "0${dayOfMonth}" else "$dayOfMonth"
                 val mon = month + 1
                 val monthStr = if (mon < 10) "0${mon}" else "$mon"
-                binding.birthDateDatePicker.text = "$monthStr/$dayStr/$year"
+                viewModel.userEnteredDate.value = "$monthStr/$dayStr/$year"
             }
         })
     }

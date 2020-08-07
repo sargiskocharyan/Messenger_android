@@ -13,7 +13,6 @@ import com.example.dynamicmessenger.network.LoginApi
 import com.example.dynamicmessenger.network.MailExistApi
 import com.example.dynamicmessenger.network.RegistrationApi
 import com.example.dynamicmessenger.network.authorization.models.*
-import com.example.dynamicmessenger.userDataController.database.*
 import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch

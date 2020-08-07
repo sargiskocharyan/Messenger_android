@@ -19,6 +19,7 @@ import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
 import com.example.dynamicmessenger.userDataController.database.DiskCache
+import com.example.dynamicmessenger.utils.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -57,31 +58,11 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
     }
 
 
-    @SuppressLint("SimpleDateFormat", "SetTextI18n")
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: UserChatsViewHolder, position: Int) {
         val item = data[position]
-        val timeInHours: String
-        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        format.timeZone = TimeZone.getTimeZone("UTC")
         val chatTime = item.message?.createdAt ?: item.chatCreateDay
-        try {
-            val date: Date = format.parse(chatTime)!!
-            val currentDate: Date = Calendar.getInstance().time
-            if ((currentDate.day == date.day) && (currentDate.month == date.month) && (currentDate.year == date.year)) {
-                val newFormat = SimpleDateFormat("HH:mm")
-                timeInHours = newFormat.format(date)
-                holder.messageTime.text = timeInHours
-            } else if ((currentDate.day != date.day) || (currentDate.month != date.month) && (currentDate.year == date.year)) {
-                val newFormat = SimpleDateFormat("MMMM-dd")
-                timeInHours = newFormat.format(date)
-                holder.messageTime.text = timeInHours
-            } else {
-                holder.messageTime.setText(R.string.long_time_ago)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
+        holder.messageTime.text = Utils.dateConverter(chatTime)
         holder.name.text = item.name ?: item.username
         holder.chat = item
         holder.lastname.text = item.lastname

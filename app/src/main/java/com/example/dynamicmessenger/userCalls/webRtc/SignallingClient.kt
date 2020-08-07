@@ -142,6 +142,9 @@ class SignallingClient {
         if (array[0] == true) {
             roomName = array[1].toString()
             callback.onCallAccepted(array[1].toString())
+        } else {
+//            roomName = array[1].toString()
+//            callback.onRemoteNotAccepted(array[2].toString())
         }
     }
 
@@ -277,6 +280,7 @@ class SignallingClient {
         fun onCallAccepted(room: String?)
         fun onTryToStart()
         fun onNewPeerJoined()
+        fun onRemoteNotAccepted(answer: String)
     }
 
     companion object {

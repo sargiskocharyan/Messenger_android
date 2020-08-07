@@ -105,7 +105,7 @@ data class Sender(
 
 @Parcelize
 data class Call(
-    val Status: String?,
+    val status: String?,
     val callSuggestTime: String?,
     @ColumnInfo(name = "callType")
     val type: String?,

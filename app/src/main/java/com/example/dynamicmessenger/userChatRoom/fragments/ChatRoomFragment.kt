@@ -1,8 +1,10 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -26,6 +28,7 @@ class ChatRoomFragment : Fragment() {
     private lateinit var binding: FragmentChatRoomBinding
     private lateinit var adapter: ChatRoomAdapter
     private lateinit var socketManager: SocketManager
+    private var scrollUpWhenKeyboardOpened = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,8 +37,6 @@ class ChatRoomFragment : Fragment() {
         binding = FragmentChatRoomBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(ChatRoomViewModel::class.java)
         val myID = SharedConfigs.signedUser!!._id
-//        val receiverID = SharedPreferencesManager.getReceiverID(requireContext())
-//        val receiverAvatar = SharedPreferencesManager.getReceiverAvatarUrl(requireContext())
         val receiverID = HomeActivity.receiverID!!
         val receiverInfo = viewModel.getUserById(receiverID)
         val receiverAvatar = receiverInfo?.avatarURL
@@ -59,8 +60,19 @@ class ChatRoomFragment : Fragment() {
 
         viewModel.getOpponentInfoFromNetwork(receiverID)
 
-        val firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
         binding.chatRecyclerView.layoutManager = linearLayoutManager
+
+        binding.chatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                scrollUpWhenKeyboardOpened = if (linearLayoutManager.findLastVisibleItemPosition() != adapter.itemCount - 1) {
+                    Log.i("+++", "scroll state changed ${linearLayoutManager.findLastVisibleItemPosition()}")
+                    false
+                } else {
+                    true
+                }
+            }
+        })
 
         updateRecyclerView(receiverID)
         binding.root.setHasTransientState(true)

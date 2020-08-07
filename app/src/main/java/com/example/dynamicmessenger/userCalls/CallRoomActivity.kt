@@ -310,7 +310,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     override fun onRemoteHangUp() {
-        showToast("Remote Peer hungup")
         runOnUiThread { hangup() }
     }
 
@@ -409,7 +408,12 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
     }
 
-//    private fun updateVideoViews(remoteVisible: Boolean) {
+    override fun onRemoteNotAccepted(answer: String) {
+        Toast.makeText(this, answer, Toast.LENGTH_SHORT).show()
+        onRemoteHangUp()
+    }
+
+    //    private fun updateVideoViews(remoteVisible: Boolean) {
 //        runOnUiThread {
 //            var params = localVideoView.layoutParams
 //            if (remoteVisible) {

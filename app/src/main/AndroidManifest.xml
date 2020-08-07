@@ -25,21 +25,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".userCalls.CallRoomActivity"
+        <activity android:name=".activitys.SplashScreenActivity"
             android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".activitys.ChatRoomActivity">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".activitys.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".userCalls.CallRoomActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".activitys.MainActivity"/>
         <activity android:name=".activitys.HomeActivity" />
     </application>
 

@@ -36,7 +36,9 @@ import com.example.dynamicmessenger.utils.MyAlertMessage
 import com.example.dynamicmessenger.utils.NotificationMessages
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -76,55 +78,24 @@ class HomeActivity : AppCompatActivity() {
             Log.e("+++", "HomeActivity Socket $e")
         }
         mSocket.connect()
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        mSocket.on("message", socketManager.onMessageForNotification(Activity()){
-            try {
-                Log.i("+++mSocket", selectedFragment.toString())
-                if (selectedFragment != UserChatFragment() && it.senderId != SharedConfigs.signedUser?._id ?: true){
-                    it.senderUsername?.let { senderName -> NotificationMessages.setNotificationMessage(senderName, it.text!!, this, manager) }
-                }
-            } catch (e: Exception) {
-                Log.i("+++catch", e.toString())
-            }
-        })
 
-        mSocket.on("callAccepted") {
-            socketManager.onCallAccepted(it)
-            Log.d("SignallingClientAcc", "Home activity call accepted: args = " + Arrays.toString(it))
-        }
-        mSocket.on("offer") {
-            socketManager.onOffer(it)
-            Log.d("SignallingClientAcc", "Home activity offer ")
-        }
-        mSocket.on("answer") {
-            socketManager.onAnswer(it)
-            Log.d("SignallingClientAcc", "Home activity answer ")
-        }
-        mSocket.on("candidates") {
-            socketManager.onCandidate(it)
-            Log.d("SignallingClientAcc", "Home activity candidates ")
-        }
-        mSocket.on("callEnded") {
-            socketManager.onCallEnded()
-            Log.d("SignallingClientAcc", "Home activity call Ended ")
-        }
-        mSocket.on("call") {
-            val currentDate = System.currentTimeMillis()
-            val opponentUser = viewModel.getUserById(it[0].toString())
-            opponentUser?.let {user ->
-                val userCalls = UserCalls(user._id, user.name , user.lastname, user.username, user.avatarURL, currentDate, 2)
-                viewModel.saveCall(userCalls)
+        socketEvents()
+
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("FireBase", "getInstanceId failed", task.exception)
+                return@OnCompleteListener
             }
-            if (!SharedConfigs.isCallingInProgress) {
-                SharedConfigs.callingOpponentId = it[0].toString()
-                SharedConfigs.isCalling = true
-                val intent = Intent(this, CallRoomActivity::class.java)
-                startActivity(intent)
-            } else {
-                mSocket.emit("callAccepted", SharedConfigs.callingOpponentId, false)
-                NotificationMessages.setNotificationMessage("Incoming Call", "Incoming Call", this, manager)
-            }
-        }
+
+            // Get new Instance ID token
+            val token = task.result?.token
+
+            // Log and toast
+//            val msg = getString(R.string.msg_token_fmt, token)
+
+            Log.d("FireBase", token)
+            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+        })
 
         SharedConfigs.appLang.value?.value?.let { LocalizationUtil.setApplicationLocale(this, it) }
 //        SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
@@ -183,6 +154,64 @@ class HomeActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Toast.makeText(context, "Please check yur internet connection", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun socketEvents() {
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        mSocket.on("message", socketManager.onMessageForNotification(Activity()){
+            try {
+                if (selectedFragment != UserChatFragment() && it.senderId != SharedConfigs.signedUser?._id ?: true){
+                    it.senderUsername?.let { senderName -> NotificationMessages.setNotificationMessage(senderName, it.text!!, this, manager) }
+                }
+            } catch (e: Exception) {
+                Log.i("+++catch", e.toString())
+            }
+        })
+
+        mSocket.on("callAccepted") {
+            socketManager.onCallAccepted(it)
+            Log.d("SignallingClientAcc", "Home activity call accepted: args = " + Arrays.toString(it))
+        }
+
+        mSocket.on("offer") {
+            socketManager.onOffer(it)
+            Log.d("SignallingClientAcc", "Home activity offer ")
+        }
+
+        mSocket.on("answer") {
+            socketManager.onAnswer(it)
+            Log.d("SignallingClientAcc", "Home activity answer ")
+        }
+
+        mSocket.on("candidates") {
+            socketManager.onCandidate(it)
+            Log.d("SignallingClientAcc", "Home activity candidates ")
+        }
+
+        mSocket.on("callEnded") {
+            socketManager.onCallEnded()
+            Log.d("SignallingClientAcc", "Home activity call Ended ")
+        }
+
+        mSocket.on("call") {
+            val currentDate = System.currentTimeMillis()
+            val opponentUser = viewModel.getUserById(it[0].toString())
+            opponentUser?.let {user ->
+                val userCalls = UserCalls(user._id, user.name , user.lastname, user.username, user.avatarURL, currentDate, 2)
+                viewModel.saveCall(userCalls)
+            }
+            if (!SharedConfigs.isCallingInProgress) {
+                SharedConfigs.callingOpponentId = it[0].toString()
+                SharedConfigs.isCalling = true
+
+                val intent = Intent(this, CallRoomActivity::class.java)
+                startActivity(intent)
+            } else {
+                mSocket.emit("callAccepted", SharedConfigs.callingOpponentId, false)
+                NotificationMessages.setNotificationMessage("Incoming Call", "Incoming Call", this, manager)
             }
         }
     }
