@@ -3,12 +3,14 @@ package com.example.dynamicmessenger.userCalls.fragments
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
@@ -38,9 +40,22 @@ class CallInformationFragment : Fragment() {
         val toolbar: Toolbar = binding.callInformationToolBar
         configureTopNavBar(toolbar)
 
-        HomeActivity.callTime?.let {
-            viewModel.callInformationByTime(it)
-        }
+        viewModel.callInformation.observe(viewLifecycleOwner, Observer { userCalls ->
+            if (userCalls != null) {
+                val opponentId = HomeActivity.receiverID
+                Log.i("+++", "opponent Id $opponentId")
+                SharedConfigs.userRepository.getUserInformation(opponentId).observe(viewLifecycleOwner, Observer { user ->
+                    viewModel.opponentInformation.value = user
+                    HomeActivity.opponentUser = user
+                    SharedConfigs.userRepository.getAvatar(user?.avatarURL).observe(viewLifecycleOwner, Observer {
+                        viewModel.opponentAvatarBitmap.value = it
+                    })
+                })
+                viewModel.configureCallInformation(userCalls)
+            }
+//            Log.i("+++", "opponent Id ${userCalls.participants}")
+        })
+
 
         binding.callInformationMessageImageView.setOnClickListener {
             HomeActivity.isAddContacts = null
@@ -52,11 +67,7 @@ class CallInformationFragment : Fragment() {
         }
 
         binding.callInformationVideoCallImageView.setOnClickListener {
-            val opponentUser = HomeActivity.opponentUser!!
-            val currentDate = System.currentTimeMillis()
-            val userCalls = UserCalls(opponentUser._id, opponentUser.name , opponentUser.lastname, opponentUser.username, opponentUser.avatarURL, currentDate, 1)
-            SharedConfigs.callingOpponentId = opponentUser._id
-            viewModel.saveCall(userCalls)
+            SharedConfigs.callingOpponentId = HomeActivity.opponentUser!!._id
             val intent = Intent(activity, CallRoomActivity::class.java)
             startActivity(intent)
             (activity as Activity?)!!.overridePendingTransition(1, 1)

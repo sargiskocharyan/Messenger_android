@@ -8,6 +8,7 @@ import com.example.dynamicmessenger.common.MyHeaders
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs.myContext
 import com.example.dynamicmessenger.network.authorization.models.*
+import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -28,8 +29,8 @@ import javax.net.ssl.X509TrustManager
 import javax.security.cert.CertificateException
 
 
-private const val BASE_URL = ResponseUrls.herokuIP
-//private const val BASE_URL = ResponseUrls.ErosServerIP
+//private const val BASE_URL = ResponseUrls.herokuIP
+private const val BASE_URL = ResponseUrls.ErosServerIP
 private const val ERO_URL = ResponseUrls.ErosServerIP
 
 private var cacheSize: Long = 10 * 1024 * 1024 // 10 MB
@@ -478,6 +479,39 @@ object CheckUsernameExistsApi {
     val retrofitService : JsonPlaceHolderCheckUsernameExistsApi by lazy {
         retrofit.create(
             JsonPlaceHolderCheckUsernameExistsApi::class.java
+        )
+    }
+}
+
+//Get user calls
+interface JsonPlaceHolderGetUserCallsApi {
+    @Headers(MyHeaders.accept)
+    @GET(ResponseUrls.callHistory)
+    suspend fun getUserCalls(@Header (MyHeaders.tokenAuthorization) header: String) :
+            Response<List<UserCalls>>
+}
+
+object GetUserCallsApi {
+    val retrofitService : JsonPlaceHolderGetUserCallsApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderGetUserCallsApi::class.java
+        )
+    }
+}
+
+//Delete call
+interface JsonPlaceHolderDeleteUserCallApi {
+    @Headers(MyHeaders.accept)
+    @HTTP(method = "DELETE", path = ResponseUrls.call, hasBody = true)
+    suspend fun deleteUserCall(@Header (MyHeaders.tokenAuthorization) header: String,
+                               @Body callId : DeleteUserCallTask) :
+            Response<Void>
+}
+
+object DeleteUserCallApi {
+    val retrofitService : JsonPlaceHolderDeleteUserCallApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderDeleteUserCallApi::class.java
         )
     }
 }

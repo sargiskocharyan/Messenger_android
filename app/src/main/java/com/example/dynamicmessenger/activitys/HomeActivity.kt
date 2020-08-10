@@ -37,7 +37,9 @@ import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.notifications.NotificationMessages
 //import com.example.dynamicmessenger.utils.notifications.NotificationReceiver
 import com.github.nkzawa.socketio.client.Socket
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -80,21 +82,21 @@ class HomeActivity : AppCompatActivity() {
 
         socketEvents()
 
-//        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(OnCompleteListener { task ->
-//            if (!task.isSuccessful) {
-//                Log.w("FireBase", "getInstanceId failed", task.exception)
-//                return@OnCompleteListener
-//            }
-//
-//            // Get new Instance ID token
-//            val token = task.result?.token
-//
-//            // Log and toast
-////            val msg = getString(R.string.msg_token_fmt, token)
-//
-//            Log.d("FireBase", token)
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("FireBase", "getInstanceId failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new Instance ID token
+            val token = task.result?.token
+
+            // Log and toast
+//            val msg = getString(R.string.msg_token_fmt, token)
+
+            Log.d("FireBase", token)
 //            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
-//        })
+        })
 
         SharedConfigs.appLang.value?.value?.let { LocalizationUtil.setApplicationLocale(this, it) }
 //        SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
@@ -196,14 +198,9 @@ class HomeActivity : AppCompatActivity() {
         }
 
         mSocket.on("call") {
-            val currentDate = System.currentTimeMillis()
-            val opponentUser = viewModel.getUserById(it[0].toString())
-            opponentUser?.let {user ->
-                val userCalls = UserCalls(user._id, user.name , user.lastname, user.username, user.avatarURL, currentDate, 2)
-                viewModel.saveCall(userCalls)
-            }
             if (!SharedConfigs.isCallingInProgress) {
                 SharedConfigs.callingOpponentId = it[0].toString()
+                SharedConfigs.callRoomName = it[1].toString()
                 SharedConfigs.isCalling = true
 
                 val intent = Intent(this, CallRoomActivity::class.java)
@@ -214,6 +211,10 @@ class HomeActivity : AppCompatActivity() {
             }
         }
     }
+
+//    private fun getUserContacts() {
+//        SharedConfigs
+//    }
 
     companion object {
         var opponentUser: User? = null
@@ -231,7 +232,7 @@ class HomeActivity : AppCompatActivity() {
                 field = value
                 Log.i("+++", "is Add Contacts set $value")
             }
-        var callTime: Long? = null
+        var callId: String? = null
             set(value) {
                 field = value
                 Log.i("+++", "call Time set $value")

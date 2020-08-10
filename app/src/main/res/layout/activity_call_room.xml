@@ -45,6 +45,7 @@
             android:layout_height="150dp"
             android:layout_marginBottom="20dp"
             app:setCircleImageVisible="@{signalingClient.isCallingNotProgress}"
+            app:setCircleImageBitmap="@{viewModel.opponentAvatarBitmap}"
             app:layout_constraintBottom_toTopOf="@+id/callerNameTextView"
             app:layout_constraintEnd_toEndOf="@+id/activityCallRoomConstraintLayout"
             app:layout_constraintStart_toStartOf="@+id/activityCallRoomConstraintLayout" />

@@ -6,17 +6,13 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.ActivityCallRoomBinding
@@ -24,8 +20,6 @@ import com.example.dynamicmessenger.userCalls.viewModels.CallRoomViewModel
 import com.example.dynamicmessenger.userCalls.webRtc.CustomPeerConnectionObserver
 import com.example.dynamicmessenger.userCalls.webRtc.CustomSdpObserver
 import com.example.dynamicmessenger.userCalls.webRtc.SignallingClient
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.*
@@ -67,46 +61,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         } else {
             start()
         }
-        viewModel.getOpponentInfoFromNetwork()
-        viewModel.opponentAvatarUrl.observe(this, androidx.lifecycle.Observer {
-            viewModel.getAvatar(it)
-        })
-        viewModel.opponentAvatarBitmap.observe(this, androidx.lifecycle.Observer {
-            binding.callerCircleImageView.setImageBitmap(it)
-        })
-
-        binding.disableMicrophoneCircleImageView.setOnClickListener {
-            if (viewModel.isEnabledMicrophone.value!!) {
-                viewModel.isEnabledMicrophone.value = false
-                localAudioTrack.setEnabled(false)
-            } else {
-                viewModel.isEnabledMicrophone.value = true
-                localAudioTrack.setEnabled(true)
-            }
-        }
-
-        binding.disableAudioCircleImageView.setOnClickListener {
-            if (viewModel.isEnabledVolume.value!!) {
-                viewModel.isEnabledVolume.value = false
-            } else {
-                viewModel.isEnabledVolume.value = true
-            }
-        }
-
-        binding.acceptCallCardView.setOnClickListener {
-            if (SharedConfigs.isCalling) {
-                Log.d("SignallingClient", "accept call on click")
-                SignallingClient.getInstance()!!.emitCallAccepted(true)
-            } else {
-                SignallingClient.getInstance()!!.callOpponent()
-            }
-            SignallingClient.getInstance()!!.isCallingNotProgress.value = false
-        }
-
-        binding.hangUpCallCardView.setOnClickListener {
-            SignallingClient.getInstance()!!.leaveRoom()
-            hangup()
-        }
+        observers()
+        onClickListeners()
 
     }
 
@@ -430,7 +386,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 //    }
 
     private fun hangup() {
-        viewModel.saveCall()
         if (SignallingClient.getInstance()!!.isCallingNotProgress.value == true) {
             SignallingClient.getInstance()!!.emitCallAccepted(false)
         }
@@ -459,6 +414,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         localPeer = null
         SharedConfigs.callingOpponentId = null
         SharedConfigs.isCallingInProgress = false
+        SharedConfigs.callRoomName = null
         SignallingClient.getInstance()!!.isCallingNotProgress.value = true
         SignallingClient.destroyInstance()
 //        if (surfaceTextureHelper != null) {
@@ -504,6 +460,51 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
             }
         }
         return null
+    }
+
+    private fun onClickListeners() {
+        binding.disableMicrophoneCircleImageView.setOnClickListener {
+            if (viewModel.isEnabledMicrophone.value!!) {
+                viewModel.isEnabledMicrophone.value = false
+                localAudioTrack.setEnabled(false)
+            } else {
+                viewModel.isEnabledMicrophone.value = true
+                localAudioTrack.setEnabled(true)
+            }
+        }
+
+        binding.disableAudioCircleImageView.setOnClickListener {
+            if (viewModel.isEnabledVolume.value!!) {
+                viewModel.isEnabledVolume.value = false
+            } else {
+                viewModel.isEnabledVolume.value = true
+            }
+        }
+
+        binding.acceptCallCardView.setOnClickListener {
+            if (SharedConfigs.isCalling) {
+                Log.d("SignallingClient", "accept call on click")
+                SignallingClient.getInstance()!!.emitCallAccepted(true)
+            } else {
+                SignallingClient.getInstance()!!.callOpponent()
+            }
+            SignallingClient.getInstance()!!.isCallingNotProgress.value = false
+        }
+
+        binding.hangUpCallCardView.setOnClickListener {
+            SignallingClient.getInstance()!!.leaveRoom()
+            hangup()
+        }
+    }
+
+    private fun observers() {
+        SharedConfigs.userRepository.getUserInformation(SharedConfigs.callingOpponentId).observe(this, androidx.lifecycle.Observer { user ->
+            viewModel.opponentInformation.value = user
+            viewModel.opponentAvatarUrl.value = user?.avatarURL
+            SharedConfigs.userRepository.getAvatar(user?.avatarURL).observe(this, androidx.lifecycle.Observer {
+                viewModel.opponentAvatarBitmap.value = it
+            })
+        })
     }
 
     companion object {

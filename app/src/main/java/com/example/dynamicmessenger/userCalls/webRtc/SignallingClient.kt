@@ -18,7 +18,7 @@ import java.security.NoSuchAlgorithmException
 import java.util.*
 
 class SignallingClient {
-    private var roomName: String? = null
+    private var roomName: String? = SharedConfigs.callRoomName
     private lateinit var mSocket: Socket
     var isChannelReady = false
     var isInitiator = false

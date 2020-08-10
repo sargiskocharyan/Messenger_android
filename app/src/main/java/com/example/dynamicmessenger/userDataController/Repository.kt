@@ -16,11 +16,13 @@ import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.*
 import com.example.dynamicmessenger.network.authorization.models.Chat
+import com.example.dynamicmessenger.network.authorization.models.DeleteUserCallTask
 import com.example.dynamicmessenger.network.authorization.models.LoginTask
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.userDataController.database.SignedUserDao
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.*
@@ -145,6 +147,51 @@ class Repository(val context: Context): RepositoryInterface {
         }
         return userContacts
     }
+
+    //Calls
+    fun getUserCalls(): LiveData<List<UserCalls>?> {
+        val userCalls = MutableLiveData<List<UserCalls>?>()
+        if (userCallsRepository.getUserCalls() != null) {
+            userCalls.value = userCallsRepository.getUserCalls()
+        }
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val response = GetUserCallsApi.retrofitService.getUserCalls(SharedConfigs.token)
+                if (response.isSuccessful) {
+                    userCalls.postValue(response.body())
+                    response.body()?.let { userCallsRepository.insertList(it) }
+                } else {
+                    userCalls.postValue(null)
+                }
+            } catch (e: Exception) {
+                userCalls.postValue(null)
+            }
+            this.cancel()
+        }
+        return userCalls
+    }
+
+    fun getUserCallById(callId: String) = userCallsRepository.getCallById(callId)
+
+    fun deleteCallById(callId: String) {
+        GlobalScope.launch(Dispatchers.IO) {
+            userCallsRepository.deleteCallById(callId)
+            try {
+                val response = DeleteUserCallApi.retrofitService.deleteUserCall(SharedConfigs.token, DeleteUserCallTask(callId))
+                if (response.isSuccessful) {
+//                    userCalls.postValue(response.body())
+                } else {
+//                    userCalls.postValue(null)
+                }
+                Log.i("+++", "deleteCallById $response")
+            } catch (e: Exception) {
+                Log.i("+++", "deleteCallById $e")
+//                userCalls.postValue(null)
+            }
+            this.cancel()
+        }
+    }
+
 
 
 

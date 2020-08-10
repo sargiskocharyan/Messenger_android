@@ -19,7 +19,7 @@ import com.example.dynamicmessenger.databinding.FragmentUserCallBinding
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userDataController.database.UserCallsDao
-import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
+//import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
 import com.example.dynamicmessenger.userHome.adapters.UserCallsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserCallViewModel
 
@@ -27,7 +27,7 @@ class UserCallFragment : Fragment() {
 
     private lateinit var binding: FragmentUserCallBinding
     private lateinit var callsDao: UserCallsDao
-    private lateinit var callsRepository: UserCallsRepository
+//    private lateinit var callsRepository: UserCallsRepository
     private lateinit var adapter: UserCallsAdapter
     private lateinit var viewModel: UserCallViewModel
 
@@ -38,7 +38,7 @@ class UserCallFragment : Fragment() {
         binding = FragmentUserCallBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(UserCallViewModel::class.java)
         callsDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userCallsDao()
-        callsRepository = UserCallsRepository(callsDao)
+//        callsRepository = UserCallsRepository(callsDao)
         adapter = UserCallsAdapter(requireContext(), viewModel)
 
         binding.root.setHasTransientState(true)
@@ -46,9 +46,11 @@ class UserCallFragment : Fragment() {
         binding.lifecycleOwner = this
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.callRecyclerView.layoutManager = linearLayoutManager
-        val userCalls: LiveData<List<UserCalls>> = callsRepository.getUserCalls
-        userCalls.observe(viewLifecycleOwner, Observer {
-            adapter.setAdapterData(it)
+
+        SharedConfigs.userRepository.getUserCalls().observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                adapter.submitList(it)
+            }
         })
 
         val simpleCallback: ItemTouchHelper.SimpleCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {

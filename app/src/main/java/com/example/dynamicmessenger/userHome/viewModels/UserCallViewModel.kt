@@ -15,21 +15,21 @@ import kotlinx.coroutines.launch
 
 class UserCallViewModel(application: Application) : AndroidViewModel(application) {
     private val callsDao = SignedUserDatabase.getUserDatabase(application)!!.userCallsDao()
-    private val callsRepository = UserCallsRepository(callsDao)
+//    private val callsRepository = UserCallsRepository(callsDao)
     private val diskLruCache = DiskCache.getInstance(application)
     private val usersDao = SignedUserDatabase.getUserDatabase(application)!!.savedUserDao()
     private val usersRepository = SavedUserRepository(usersDao)
 
     fun saveCall(userCalls: UserCalls) {
-        viewModelScope.launch {
-            callsRepository.insert(userCalls)
-        }
+//        viewModelScope.launch {
+//            callsRepository.insert(userCalls)
+//        }
     }
 
-    fun deleteCallByTime(time: Long) {
-        viewModelScope.launch {
-            callsRepository.deleteCallByTime(time)
-        }
+    fun deleteCallById(id: String) {
+//        viewModelScope.launch {
+//            callsRepository.deleteCallByTime(time)
+//        }
     }
 
     fun getUserById(id: String): User? {

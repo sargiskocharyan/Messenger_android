@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Մուտքագրեք էլ. Փոստի հասցեն</string>
-    <string name="enter_your_email">Enter your email for login or register</string>
+    <string name="enter_your_email">Մուտքագրեք էլ. Փոստի հասցեն</string>
     <string name="error_message">Սխալ հաղորդագրություն</string>
     <string name="ok">Լավ</string>
     <string name="incorrect_code">Սխալ կոդ</string>

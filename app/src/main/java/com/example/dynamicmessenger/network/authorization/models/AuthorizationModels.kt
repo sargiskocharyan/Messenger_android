@@ -27,3 +27,5 @@ data class RemoveContactTask (val userId: String)
 data class HideDataTask (val hide: Boolean)
 
 data class UsernameExistsTask (val username: String?)
+
+data class DeleteUserCallTask (val callId: String)

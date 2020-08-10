@@ -38,9 +38,12 @@ class OpponentInformationFragment : Fragment() {
         val toolbar: Toolbar = binding.opponentInformationToolbar
         configureTopNavBar(toolbar)
 
-
-        SharedConfigs.userRepository.getAvatar(HomeActivity.opponentUser?.avatarURL).observe(viewLifecycleOwner ,Observer {
-            binding.opponentProfileAvatarImageView.setImageBitmap(it)
+        SharedConfigs.userRepository.getUserInformation(HomeActivity.receiverID).observe(viewLifecycleOwner, Observer {user ->
+            viewModel.getOpponentInformation(user)
+            HomeActivity.opponentUser = user
+            SharedConfigs.userRepository.getAvatar(user?.avatarURL).observe(viewLifecycleOwner, Observer {
+                binding.opponentProfileAvatarImageView.setImageBitmap(it)
+            })
         })
 
         binding.addToContactsImageView.setOnClickListener {
@@ -50,9 +53,9 @@ class OpponentInformationFragment : Fragment() {
         binding.callOpponentImageView.setOnClickListener {
             val opponentUser = HomeActivity.opponentUser!!
             val currentDate = System.currentTimeMillis()
-            val userCalls = UserCalls(opponentUser._id, opponentUser.name , opponentUser.lastname, opponentUser.username, opponentUser.avatarURL, currentDate, 1)
+//            val userCalls = UserCalls(opponentUser._id, opponentUser.name , opponentUser.lastname, opponentUser.username, opponentUser.avatarURL, currentDate, 1)
             SharedConfigs.callingOpponentId = opponentUser._id
-            viewModel.saveCall(userCalls)
+//            viewModel.saveCall(userCalls)
             val intent = Intent(activity, CallRoomActivity::class.java)
             startActivity(intent)
             (activity as Activity?)!!.overridePendingTransition(1, 1)

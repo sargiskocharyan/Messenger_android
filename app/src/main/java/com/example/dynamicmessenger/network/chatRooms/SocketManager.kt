@@ -71,8 +71,8 @@ object SocketManager {
             val opts = IO.Options()
             opts.forceNew = true
             opts.reconnection = true
-            mSocket = IO.socket(ResponseUrls.herokuIPForSocket + "?token=" + SharedConfigs.token, opts)
-//            mSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + SharedConfigs.token, opts)
+//            mSocket = IO.socket(ResponseUrls.herokuIPForSocket + "?token=" + SharedConfigs.token, opts)
+            mSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + SharedConfigs.token, opts)
             Log.i("+++", "socket@ taza sarqvec")
         }
         return mSocket

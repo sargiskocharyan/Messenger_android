@@ -51,6 +51,7 @@ class ChatRoomFragment : Fragment() {
         setHasOptionsMenu(true)
         val toolbar: Toolbar = binding.chatRoomToolbar
         configureTopNavBar(toolbar)
+
         SharedConfigs.userRepository.getUserInformation(receiverID).observe(viewLifecycleOwner, Observer {user ->
             if (user != null) {
                 HomeActivity.opponentUser = user
@@ -60,7 +61,6 @@ class ChatRoomFragment : Fragment() {
                 })
             }
         })
-
 
 //        viewModel.getOpponentInfoFromNetwork(receiverID)
 

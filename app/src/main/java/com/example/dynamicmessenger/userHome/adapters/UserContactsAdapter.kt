@@ -75,11 +75,11 @@ class UserContactsAdapter(val context: Context): RecyclerView.Adapter<UserContac
         val contactsUserImageView: ImageView = itemView.findViewById(R.id.contactsUserImageView)
         init {
             itemView.setOnClickListener {
+                HomeActivity.receiverID = userContact!!._id
                 if (SharedConfigs.lastFragment == MyFragments.CHATS) {
                     SharedConfigs.userRepository.getUserInformation(userContact!!._id).observeForever {
                         HomeActivity.opponentUser = it
                     }
-                    HomeActivity.receiverID = userContact!!._id
                     (context as AppCompatActivity?)!!.supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.fragmentContainer , ChatRoomFragment())
@@ -99,15 +99,11 @@ class UserContactsAdapter(val context: Context): RecyclerView.Adapter<UserContac
                     return@setOnClickListener
                 }
 
-                SharedConfigs.userRepository.getUserInformation(userContact!!._id).observeForever {
-                    nextPage(it)//TODO change for get in opponent information page
-                }
+                nextPage()
             }
         }
 
-        private fun nextPage(opponentUser: User?) {
-            HomeActivity.opponentUser = opponentUser
-            HomeActivity.receiverID = userContact!!._id
+        private fun nextPage() {
             (context as AppCompatActivity?)!!.supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.fragmentContainer , OpponentInformationFragment())

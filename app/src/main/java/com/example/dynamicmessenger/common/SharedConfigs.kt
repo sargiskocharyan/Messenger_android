@@ -19,6 +19,7 @@ object SharedConfigs {
     private lateinit var tokenDao: UserTokenDao
     private lateinit var tokenRep: UserTokenRepository
     var callingOpponentId: String? = null
+    var callRoomName: String? = null
     var isCalling: Boolean = false //TODO
     var isCallingInProgress: Boolean = false
     var lastFragment: MyFragments? = null

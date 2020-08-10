@@ -29,22 +29,43 @@ interface UserTokenDao {
     fun deleteAll()
 }
 
+//@Dao
+//interface UserCallsDao {
+//    @Query("SELECT * FROM user_calls ORDER BY time DESC")
+//    fun getUserCalls(): LiveData<List<UserCalls>>
+//
+//    @Query("SELECT * FROM user_calls ORDER BY time DESC LIMIT 1")
+//    fun getLastCall(): UserCalls?
+//
+//    @Query("SELECT * FROM user_calls WHERE time = :time")
+//    fun getCallByTime(time: Long): UserCalls?
+//
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    suspend fun insert(userCalls: UserCalls)
+//
+//    @Query("DELETE FROM user_calls WHERE time = :time")
+//    suspend fun deleteCallByTime(time: Long)
+//
+//    @Query("DELETE FROM user_calls")
+//    suspend fun deleteAll()
+//}
+
 @Dao
 interface UserCallsDao {
-    @Query("SELECT * FROM user_calls ORDER BY time DESC")
-    fun getUserCalls(): LiveData<List<UserCalls>>
+    @Query("SELECT * FROM user_calls")
+    fun getUserCalls(): List<UserCalls>?
 
-    @Query("SELECT * FROM user_calls ORDER BY time DESC LIMIT 1")
-    fun getLastCall(): UserCalls?
-
-    @Query("SELECT * FROM user_calls WHERE time = :time")
-    fun getCallByTime(time: Long): UserCalls?
+    @Query("SELECT * FROM user_calls WHERE _id = :id")
+    fun getCallById(id: String): UserCalls?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(userCalls: UserCalls)
 
-    @Query("DELETE FROM user_calls WHERE time = :time")
-    suspend fun deleteCallByTime(time: Long)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertList(userCalls: List<UserCalls>)
+
+    @Query("DELETE FROM user_calls WHERE _id = :id")
+    suspend fun deleteCallById(id: String)
 
     @Query("DELETE FROM user_calls")
     suspend fun deleteAll()

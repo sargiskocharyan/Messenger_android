@@ -1,10 +1,12 @@
 package com.example.dynamicmessenger.userDataController.database
 
+import android.os.Parcelable
 import android.util.Log
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.dynamicmessenger.network.authorization.models.University
+import kotlinx.android.parcel.Parcelize
 
 @Entity(tableName = "signed_user")
 data class SignedUser(
@@ -29,34 +31,34 @@ data class UserToken(
     val tokenExpire: String
 )
 
-@Entity(tableName = "user_calls")
-data class UserCalls(
-    val _id: String,
-    val name: String?,
-    val lastname: String?,
-    val username: String?,
-    var avatarURL: String?,
-    @PrimaryKey
-    var time: Long = System.currentTimeMillis(),
-    var callingState: Int,   //1-outgoing video call, 2-incoming video call
-    var duration: Long = time
-)
-
 //@Entity(tableName = "user_calls")
 //data class UserCalls(
-//    val type: String,
-//    val status: String?,
-//    val participants: ArrayList<String>,
-//    @PrimaryKey
 //    val _id: String,
-//    val callSuggestTime: String?,
-//    val caller: String?,
-//    var message: String?,
-//    val createdAt: String?,
-//    val updatedAt: String?,
-//    val callStartTime: String?,
-//    val callEndTime: String?
+//    val name: String?,
+//    val lastname: String?,
+//    val username: String?,
+//    var avatarURL: String?,
+//    @PrimaryKey
+//    var time: Long = System.currentTimeMillis(),
+//    var callingState: Int,   //1-outgoing video call, 2-incoming video call
+//    var duration: Long = time
 //)
+@Parcelize
+@Entity(tableName = "user_calls")
+data class UserCalls(
+    val type: String,
+    val status: String?,
+    val participants: List<String>,
+    @PrimaryKey
+    val _id: String,
+    val callSuggestTime: String?,
+    val caller: String?,
+    var message: String?,
+    val createdAt: String?,
+    val updatedAt: String?,
+    val callStartTime: String?,
+    val callEndTime: String?
+) : Parcelable
 
 @Entity(tableName = "contacts")
 data class Contacts(

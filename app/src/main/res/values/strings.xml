@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Dynamic Messenger</string>
+    <string name="app_name" translatable="false">Method</string>
     <string name="enter_your_email">Enter your email for login or register</string>
     <string name="error_message">Error message</string>
     <string name="ok">OK</string>

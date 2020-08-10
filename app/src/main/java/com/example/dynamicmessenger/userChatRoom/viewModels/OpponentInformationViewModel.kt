@@ -24,15 +24,18 @@ class OpponentInformationViewModel(application: Application) : AndroidViewModel(
 
     private val context = application
     private val callsDao = SignedUserDatabase.getUserDatabase(application)!!.userCallsDao()
-    private val callsRepository = UserCallsRepository(callsDao)
+//    private val callsRepository = UserCallsRepository(callsDao)
     private val userContactsDao = SignedUserDatabase.getUserDatabase(application)!!.userContactsDao()
     private val contactsRepository = UserContactsRepository(userContactsDao)
     private val contactsList: List<String> = getSavedContacts()
     val isUserInContacts = MutableLiveData<Boolean>()
     val opponentUser = MutableLiveData<User>()
 
-    init {
-        isUserInContacts.value = contactsList.contains(opponentUser.value?._id)
+    fun getOpponentInformation(user: User?) {
+        if (user != null) {
+            opponentUser.value = user
+            isUserInContacts.value = contactsList.contains(opponentUser.value?._id)
+        }
     }
 
     private fun getSavedContacts(): MutableList<String> {
@@ -43,9 +46,9 @@ class OpponentInformationViewModel(application: Application) : AndroidViewModel(
     }
 
     fun saveCall(userCalls: UserCalls) {
-        viewModelScope.launch {
-            callsRepository.insert(userCalls)
-        }
+//        viewModelScope.launch {
+//            callsRepository.insert(userCalls)
+//        }
     }
 
     fun addUserToContacts() {
