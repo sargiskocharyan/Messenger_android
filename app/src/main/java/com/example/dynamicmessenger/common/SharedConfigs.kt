@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.dynamicmessenger.userDataController.Repository
 import com.example.dynamicmessenger.userDataController.database.*
 import java.util.*
 
@@ -22,6 +23,7 @@ object SharedConfigs {
     var isCallingInProgress: Boolean = false
     var lastFragment: MyFragments? = null
     var onlineUsers = MutableLiveData<List<String>>()
+    lateinit var userRepository: Repository
     fun init(context: Context) {
         this.myContext = context
         userDao = SignedUserDatabase.getUserDatabase(context)!!.signedUserDao()
@@ -31,6 +33,7 @@ object SharedConfigs {
         signedUser = userRep.signedUser
         sharedPrefs = context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
         appLang.value = setLang()
+        userRepository = Repository.getInstance(context)!!
     }
 
     var signedUser: SignedUser? = null

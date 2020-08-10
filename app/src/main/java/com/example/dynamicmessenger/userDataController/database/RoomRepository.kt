@@ -83,7 +83,7 @@ class SavedUserRepository(private val savedUserDao: SavedUserDao) {
 }
 
 class UserChatsRepository(private val userChatsDao: UserChatsDao) {
-    val getUserAllChats: List<Chat> = userChatsDao.getAllChats()
+    val getUserAllChats: List<Chat>? = userChatsDao.getAllChats()
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread

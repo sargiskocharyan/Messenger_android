@@ -45,41 +45,41 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun getAvatar(receiverURL: String?, closure: (Bitmap) -> Unit) {
-        viewModelScope.launch {
-            if (receiverURL != null) {
-                try {
-                    if (diskLruCache.get(receiverURL) != null) {
-                        closure(diskLruCache.get(receiverURL)!!)
-                    } else {
-                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(receiverURL)
-                        if (response.isSuccessful) {
-                            val inputStream = response.body()!!.byteStream()
-                            val bitmap = BitmapFactory.decodeStream(inputStream)
-                            closure(bitmap)
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.i("+++exception", e.toString())
-                }
-            }
-        }
-    }
+    //    fun getAvatar(receiverURL: String?, closure: (Bitmap) -> Unit) {
+//        viewModelScope.launch {
+//            if (receiverURL != null) {
+//                try {
+//                    if (diskLruCache.get(receiverURL) != null) {
+//                        closure(diskLruCache.get(receiverURL)!!)
+//                    } else {
+//                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(receiverURL)
+//                        if (response.isSuccessful) {
+//                            val inputStream = response.body()!!.byteStream()
+//                            val bitmap = BitmapFactory.decodeStream(inputStream)
+//                            closure(bitmap)
+//                        }
+//                    }
+//                } catch (e: Exception) {
+//                    Log.i("+++exception", e.toString())
+//                }
+//            }
+//        }
+//    }
 
-    fun getOpponentInfoFromNetwork(receiverId: String?) {
-        viewModelScope.launch {
-            if (receiverId != null) {
-                try {
-                    val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, receiverId)
-                    if (response.isSuccessful) {
-                        HomeActivity.opponentUser = response.body()
-                    } else {
-                        Log.i("+++else", "getOpponentInfoFromNetwork $response")
-                    }
-                } catch (e: Exception) {
-                    Log.i("+++exception", "getOpponentInfoFromNetwork $e")
-                }
-            }
-        }
-    }
+//    fun getOpponentInfoFromNetwork(receiverId: String?) {
+//        viewModelScope.launch {
+//            if (receiverId != null) {
+//                try {
+//                    val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, receiverId)
+//                    if (response.isSuccessful) {
+//                        HomeActivity.opponentUser = response.body()
+//                    } else {
+//                        Log.i("+++else", "getOpponentInfoFromNetwork $response")
+//                    }
+//                } catch (e: Exception) {
+//                    Log.i("+++exception", "getOpponentInfoFromNetwork $e")
+//                }
+//            }
+//        }
+//    }
 }

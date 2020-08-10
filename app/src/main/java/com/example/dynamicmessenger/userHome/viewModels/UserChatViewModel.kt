@@ -18,7 +18,7 @@ class UserChatViewModel(application: Application) : AndroidViewModel(application
     private val chatsDao = SignedUserDatabase.getUserDatabase(application)!!.userChatsDao()
     private val chatsRepository = UserChatsRepository(chatsDao)
 
-    fun getUserChats(): List<Chat> {
+    fun getUserChats(): List<Chat>? {
         return chatsRepository.getUserAllChats
     }
 
@@ -39,4 +39,10 @@ class UserChatViewModel(application: Application) : AndroidViewModel(application
             swipeRefreshLayout.isRefreshing = false
         }
     }
+
+    fun getUserChatsFromRepo(swipeRefreshLayout: SwipeRefreshLayout) {
+//        SharedConfigs.userRepository.getUserChats(swipeRefreshLayout).
+    }
+
+
 }

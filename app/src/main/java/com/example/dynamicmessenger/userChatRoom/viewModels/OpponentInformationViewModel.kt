@@ -22,7 +22,6 @@ import kotlinx.coroutines.launch
 
 class OpponentInformationViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val diskLruCache = DiskCache.getInstance(application)
     private val context = application
     private val callsDao = SignedUserDatabase.getUserDatabase(application)!!.userCallsDao()
     private val callsRepository = UserCallsRepository(callsDao)
@@ -30,11 +29,9 @@ class OpponentInformationViewModel(application: Application) : AndroidViewModel(
     private val contactsRepository = UserContactsRepository(userContactsDao)
     private val contactsList: List<String> = getSavedContacts()
     val isUserInContacts = MutableLiveData<Boolean>()
-    private val _opponentUser = MutableLiveData<User>()
-    val opponentUser: LiveData<User> = _opponentUser
+    val opponentUser = MutableLiveData<User>()
 
     init {
-        _opponentUser.value = HomeActivity.opponentUser
         isUserInContacts.value = contactsList.contains(opponentUser.value?._id)
     }
 
@@ -48,30 +45,6 @@ class OpponentInformationViewModel(application: Application) : AndroidViewModel(
     fun saveCall(userCalls: UserCalls) {
         viewModelScope.launch {
             callsRepository.insert(userCalls)
-        }
-    }
-
-    fun getAvatar(closure: (Bitmap) -> Unit) {
-        viewModelScope.launch {
-            if (opponentUser.value?.avatarURL != null) {
-                try {
-                    if (diskLruCache.get(opponentUser.value!!.avatarURL!!) != null) {
-                        closure(diskLruCache.get(opponentUser.value!!.avatarURL!!)!!)
-                    } else {
-                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(
-                            opponentUser.value!!.avatarURL!!
-                        )
-                        if (response.isSuccessful) {
-                            val inputStream = response.body()!!.byteStream()
-                            val bitmap = BitmapFactory.decodeStream(inputStream)
-                            diskLruCache.put(opponentUser.value!!.avatarURL!!, bitmap)
-                            closure(bitmap)
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.i("+++exception", "userInformationViewModel getAvatar $e")
-                }
-            }
         }
     }
 

@@ -25,7 +25,7 @@ import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
 import kotlinx.coroutines.launch
 import com.example.dynamicmessenger.common.MyFragments as MyFragments
 
-class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewModel): RecyclerView.Adapter<UserContactsAdapter.UserContactsViewHolder>() {
+class UserContactsAdapter(val context: Context): RecyclerView.Adapter<UserContactsAdapter.UserContactsViewHolder>() {
     var data = mutableListOf<User>()
 
     fun setAdapterDataNotify(newList: List<User>) {
@@ -53,7 +53,7 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         holder.name.text = item.name
         holder.lastname.text = item.lastname
         if (item.avatarURL != null) {
-            viewModel.getAvatar(item.avatarURL) {
+            SharedConfigs.userRepository.getAvatar(item.avatarURL).observeForever {
                 holder.contactsUserImageView.setImageBitmap(it)
             }
         } else  {
@@ -76,7 +76,9 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         init {
             itemView.setOnClickListener {
                 if (SharedConfigs.lastFragment == MyFragments.CHATS) {
-                    HomeActivity.opponentUser = viewModel.getUserById(userContact!!._id)
+                    SharedConfigs.userRepository.getUserInformation(userContact!!._id).observeForever {
+                        HomeActivity.opponentUser = it
+                    }
                     HomeActivity.receiverID = userContact!!._id
                     (context as AppCompatActivity?)!!.supportFragmentManager
                         .beginTransaction()
@@ -85,6 +87,7 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
                         .commit()
                     return@setOnClickListener
                 }
+
                 if (SharedConfigs.lastFragment == MyFragments.CALLS) {
                     SharedConfigs.callingOpponentId = userContact!!._id
                     val intent = Intent(context, CallRoomActivity::class.java)
@@ -95,24 +98,9 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
                     (context as Activity?)!!.overridePendingTransition(1, 1)
                     return@setOnClickListener
                 }
-                if (viewModel.getUserById(userContact!!._id) != null) {
-                    Log.i("+++", "userContacts if")
-                    nextPage(viewModel.getUserById(userContact!!._id))
-                } else {
-                    viewModel.viewModelScope.launch {
-                        try {
-                            val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, userContact!!._id)
-                            if (response.isSuccessful) {
-                                response.body()?.let { user -> viewModel.saveUser(user) }
-                                Log.i("+++", "userContacts else ${response.body()}")
-                                nextPage(response.body())
-                            } else {
-                                Log.i("+++else", "getOpponentInfoFromNetwork $response")
-                            }
-                        } catch (e: Exception) {
-                            Log.i("+++exception", "getOpponentInfoFromNetwork $e")
-                        }
-                    }
+
+                SharedConfigs.userRepository.getUserInformation(userContact!!._id).observeForever {
+                    nextPage(it)//TODO change for get in opponent information page
                 }
             }
         }

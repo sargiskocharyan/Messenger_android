@@ -11,8 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.MyFragments
@@ -36,7 +38,6 @@ class UserChatFragment : Fragment() {
     private lateinit var binding: FragmentUserChatBinding
     private lateinit var socketManager: SocketManager
     private lateinit var mSocket: Socket
-    private var activityJob = Job()
 
     @SuppressLint("ResourceType")
     override fun onCreateView(
@@ -54,18 +55,17 @@ class UserChatFragment : Fragment() {
         //bottom navigation
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.VISIBLE
-
-        val adapter = UserChatsAdapter(requireContext(), activityJob)
-        updateRecyclerViewFromDatabase(adapter)
-
+        val adapter = UserChatsAdapter(requireContext())
         binding.root.setHasTransientState(true)
-        binding.userChatSwipeRefreshLayout.setOnRefreshListener {
-            updateRecyclerView(adapter)
-        }
+
         binding.chatsRecyclerView.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatsRecyclerView.layoutManager = linearLayoutManager
-        adapter.setAdapterDataNotify(viewModel.getUserChats().sortedWith(compareBy { chat -> chat.message }).reversed())
+
+        refreshRecyclerView(adapter)
+        binding.userChatSwipeRefreshLayout.setOnRefreshListener {
+            refreshRecyclerView(adapter)
+        }
 
         HomeActivity.opponentUser = null
         HomeActivity.isAddContacts = null
@@ -97,34 +97,28 @@ class UserChatFragment : Fragment() {
         super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        activityJob.cancel()
+    private fun getUserChats(adapter: UserChatsAdapter, swipeRefreshLayout: SwipeRefreshLayout? = null) {
+        SharedConfigs.userRepository.getUserChats(swipeRefreshLayout).observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                val list = it.sortedWith(compareBy { chat -> chat.message }).reversed()
+                adapter.submitList(list)
+                scrollToTop(binding)
+            } else {
+                Toast.makeText(requireContext(), "try again", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun updateRecyclerView(adapter: UserChatsAdapter) {
-        binding.userChatSwipeRefreshLayout.isRefreshing = true
-        viewModel.getUserChatsFromNetwork(requireContext(), binding.userChatSwipeRefreshLayout) {
-            val list = it.sortedWith(compareBy { chat -> chat.message }).reversed()
-            adapter.submitList(list)
-            binding.userChatSwipeRefreshLayout.isRefreshing = false
-            scrollToTop(binding)
-        }
+        getUserChats(adapter)
     }
 
-    private fun updateRecyclerViewFromDatabase(adapter: UserChatsAdapter) {
-        binding.userChatSwipeRefreshLayout.isRefreshing = true
-        viewModel.getUserChatsFromNetwork(requireContext(), binding.userChatSwipeRefreshLayout) {
-            val list = it.sortedWith(compareBy { chat -> chat.message }).reversed()
-            adapter.submitList(list)
-            binding.userChatSwipeRefreshLayout.isRefreshing = false
-            scrollToTop(binding)
-        }
+    private fun refreshRecyclerView(adapter: UserChatsAdapter) {
+        getUserChats(adapter, binding.userChatSwipeRefreshLayout)
     }
 
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.elevation = 10.0F
         toolbar.setOnMenuItemClickListener {
             val selectedFragment = UserContactsFragment()
             SharedConfigs.lastFragment = MyFragments.CHATS

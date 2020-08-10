@@ -7,10 +7,6 @@ class App: Application() {
     override fun onCreate() {
         super.onCreate()
         SharedConfigs.init(this)
-//        SharedConfigs.appLang.observe(this, Observer {
-//                super.attachBaseContext(LocalizationUtil.updateResources(this, it.value))
-//
-//        })
     }
 
     //    override fun attachBaseContext(base: Context?) {

@@ -37,11 +37,7 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
     val phoneNumber: LiveData<String> get() = _phoneNumber
 
     val appLanguage = MutableLiveData<AppLangKeys>(AppLangKeys.EN)
-
-    private val _avatarBitmap = MutableLiveData<Bitmap>()
-    val avatarBitmap: LiveData<Bitmap> get() = _avatarBitmap
-
-    private val diskLruCache = DiskCache.getInstance(application)
+    val avatarBitmap = MutableLiveData<Bitmap>()
 
     init {
         setUserProperty()
@@ -85,29 +81,6 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
             } catch (e: Exception) {
                 MyAlertMessage.showAlertDialog(context, "Please check yur internet connection")
                 closure(true)
-            }
-        }
-    }
-
-
-    fun getAvatar() {
-        viewModelScope.launch {
-            if (SharedConfigs.signedUser?.avatarURL != null) {
-                try {
-                    if (diskLruCache.get(SharedConfigs.signedUser?.avatarURL!!) != null) {
-                        _avatarBitmap.value = (diskLruCache.get(SharedConfigs.signedUser?.avatarURL!!)!!)
-                    } else {
-                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(SharedConfigs.signedUser!!.avatarURL!!)
-                        if (response.isSuccessful) {
-                            val inputStream = response.body()!!.byteStream()
-                            val bitmap = BitmapFactory.decodeStream(inputStream)
-                            diskLruCache.put(SharedConfigs.signedUser?.avatarURL!!, bitmap)
-                            _avatarBitmap.value = bitmap
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.i("+++exception", "userInformationViewModel getAvatar $e")
-                }
             }
         }
     }

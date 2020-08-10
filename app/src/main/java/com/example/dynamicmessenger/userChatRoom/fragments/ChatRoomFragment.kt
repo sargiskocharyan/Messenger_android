@@ -8,6 +8,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -38,8 +39,6 @@ class ChatRoomFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(ChatRoomViewModel::class.java)
         val myID = SharedConfigs.signedUser!!._id
         val receiverID = HomeActivity.receiverID!!
-        val receiverInfo = viewModel.getUserById(receiverID)
-        val receiverAvatar = receiverInfo?.avatarURL
         adapter = ChatRoomAdapter(requireContext(), myID)
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatRecyclerView.adapter = adapter
@@ -52,13 +51,18 @@ class ChatRoomFragment : Fragment() {
         setHasOptionsMenu(true)
         val toolbar: Toolbar = binding.chatRoomToolbar
         configureTopNavBar(toolbar)
-        binding.userChatToolbarTitle.text = receiverInfo?.username ?: ""
+        SharedConfigs.userRepository.getUserInformation(receiverID).observe(viewLifecycleOwner, Observer {user ->
+            if (user != null) {
+                HomeActivity.opponentUser = user
+                binding.userChatToolbarTitle.text = user.username ?: ""
+                SharedConfigs.userRepository.getAvatar(user.avatarURL).observe(viewLifecycleOwner, Observer {bitmap ->
+                    adapter.receiverImage = bitmap
+                })
+            }
+        })
 
-        viewModel.getAvatar(receiverAvatar) {
-            adapter.receiverImage = it
-        }
 
-        viewModel.getOpponentInfoFromNetwork(receiverID)
+//        viewModel.getOpponentInfoFromNetwork(receiverID)
 
         binding.chatRecyclerView.layoutManager = linearLayoutManager
 
@@ -127,7 +131,6 @@ class ChatRoomFragment : Fragment() {
 
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.elevation = 10.0F
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }

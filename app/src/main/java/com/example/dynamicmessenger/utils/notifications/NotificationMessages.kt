@@ -1,10 +1,11 @@
-package com.example.dynamicmessenger.utils
+package com.example.dynamicmessenger.utils.notifications
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
+import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.dynamicmessenger.R
@@ -21,6 +22,9 @@ class NotificationMessages {
                 .setSmallIcon(R.drawable.ic_letter_d)
                 .setContentTitle(messageTitle)
                 .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setAutoCancel(true)
     //            .setContentIntent(pendingIntent)
                 .build()
             manager.notify(6578, builder)

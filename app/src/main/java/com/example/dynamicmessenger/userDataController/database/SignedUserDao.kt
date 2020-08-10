@@ -61,6 +61,9 @@ interface SavedUserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(userCalls: User)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertList(userCalls: List<User>)
+
     @Query("DELETE FROM user WHERE _id = :id")
     suspend fun deleteUserById(id: String)
 
@@ -71,7 +74,7 @@ interface SavedUserDao {
 @Dao
 interface UserChatsDao {
     @Query("SELECT * FROM chat")
-    fun getAllChats(): List<Chat>
+    fun getAllChats(): List<Chat>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(chats: List<Chat>)

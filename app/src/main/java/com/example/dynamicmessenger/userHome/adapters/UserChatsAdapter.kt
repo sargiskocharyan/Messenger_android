@@ -28,10 +28,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
+class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
     var data = mutableListOf<Chat>()
-    private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
-    private val diskLruCache = DiskCache.getInstance(context)
 
     fun setAdapterDataNotify(newList: List<Chat>) {
         data.clear()
@@ -72,7 +70,13 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
             holder.lastMessage.text = item.message?.text
         }
         if (item.recipientAvatarURL != null) {
-            getAvatar(holder.chatUserImageView, item.recipientAvatarURL)
+            SharedConfigs.userRepository.getAvatar(item.recipientAvatarURL).observeForever {
+                if (it != null) {
+                    holder.chatUserImageView.setImageBitmap(it)
+                } else {
+                    holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
+                }
+            }
         } else  {
             holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
         }
@@ -82,28 +86,6 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
                     holder.chatUserOnlineStatus.visibility = View.VISIBLE
                 } else {
                     holder.chatUserOnlineStatus.visibility = View.INVISIBLE
-                }
-            }
-        }
-    }
-
-    private fun getAvatar(imageView: ImageView, recipientAvatarURL: String?) {
-        coroutineScope.launch {
-            if (recipientAvatarURL != null) {
-                try {
-                    if (diskLruCache.get(recipientAvatarURL) != null) {
-                        imageView.setImageBitmap(diskLruCache.get(recipientAvatarURL)!!)
-                    } else {
-                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(recipientAvatarURL)
-                        if (response.isSuccessful) {
-                            val inputStream = response.body()!!.byteStream()
-                            val bitmap = BitmapFactory.decodeStream(inputStream)
-                            diskLruCache.put(recipientAvatarURL, bitmap)
-                            imageView.setImageBitmap(bitmap)
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.i("+++exception", e.toString())
                 }
             }
         }
@@ -120,12 +102,12 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
         val chatUserOnlineStatus: ImageView = itemView.findViewById(R.id.chatUserOnlineStatus)
         init {
             itemView.setOnClickListener {
+                HomeActivity.receiverID = chat!!.id
                 (context as AppCompatActivity?)!!.supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.fragmentContainer , ChatRoomFragment())
                     .addToBackStack(null)
                     .commit()
-                HomeActivity.receiverID = chat!!.id
             }
         }
     }

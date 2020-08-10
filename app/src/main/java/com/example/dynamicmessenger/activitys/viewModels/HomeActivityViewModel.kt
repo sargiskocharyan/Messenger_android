@@ -44,7 +44,7 @@ class HomeActivityViewModel(application: Application) : AndroidViewModel(applica
                 try {
                     val list = mutableListOf<String>()
                     val chat = chatsRepository.getUserAllChats
-                    chat.forEach { list.add(it.id) }
+                    chat?.forEach { list.add(it.id) }
                     val task = OnlineUsersTask(list)
                     val response = GetOnlineUsersApi.retrofitService.getOnlineUsers(SharedConfigs.token, task)
                     if (response.isSuccessful) {

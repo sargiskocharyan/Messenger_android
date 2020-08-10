@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
@@ -37,9 +38,10 @@ class OpponentInformationFragment : Fragment() {
         val toolbar: Toolbar = binding.opponentInformationToolbar
         configureTopNavBar(toolbar)
 
-        viewModel.getAvatar {
+
+        SharedConfigs.userRepository.getAvatar(HomeActivity.opponentUser?.avatarURL).observe(viewLifecycleOwner ,Observer {
             binding.opponentProfileAvatarImageView.setImageBitmap(it)
-        }
+        })
 
         binding.addToContactsImageView.setOnClickListener {
             viewModel.addUserToContacts()

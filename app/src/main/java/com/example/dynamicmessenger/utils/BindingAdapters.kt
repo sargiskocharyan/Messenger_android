@@ -101,8 +101,9 @@ fun setCardViewVisible(cardView: CardView, answer: Boolean) {
 fun setCircleImageBitmap(circleImage: CircleImageView, bitmap: Bitmap?) {
     if (bitmap == null) {
         circleImage.setImageResource(R.drawable.ic_user_image)
+    } else {
+        circleImage.setImageBitmap(bitmap)
     }
-    circleImage.setImageBitmap(bitmap)
 }
 
 @BindingAdapter("setImageViewBitmap")

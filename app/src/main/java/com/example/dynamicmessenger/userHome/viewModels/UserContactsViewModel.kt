@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class UserContactsViewModel(application: Application) : AndroidViewModel(application) {
-    private val diskLruCache = DiskCache.getInstance(application)
     private val usersDao = SignedUserDatabase.getUserDatabase(application)!!.savedUserDao()
     private val usersRepository = SavedUserRepository(usersDao)
     private val contactsDao = SignedUserDatabase.getUserDatabase(application)!!.userContactsDao()
@@ -41,18 +40,18 @@ class UserContactsViewModel(application: Application) : AndroidViewModel(applica
         return usersRepository.getUserById(id)
     }
 
-    fun getSavedContacts(): LiveData<List<User>> {
-        val contacts = MutableLiveData<List<User>>()
-        val contactsList = mutableListOf<User>()
-        val savedContacts = contactsRepository.getUserAllContacts
-        savedContacts.forEach {
-            getUserById(it._id)?.let { it1 ->
-                contactsList.add(it1)
-            }
-        }
-        contacts.value = contactsList
-        return contacts
-    }
+//    fun getSavedContacts(): LiveData<List<User>> {
+//        val contacts = MutableLiveData<List<User>>()
+//        val contactsList = mutableListOf<User>()
+//        val savedContacts = contactsRepository.getUserAllContacts
+//        savedContacts.forEach {
+//            getUserById(it._id)?.let { it1 ->
+//                contactsList.add(it1)
+//            }
+//        }
+//        contacts.value = contactsList
+//        return contacts
+//    }
 
     fun saveContacts(contactsList: List<User>) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -65,20 +64,20 @@ class UserContactsViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    fun getUserContactsFromNetwork(context: Context?, closure: (List<User>) -> Unit) {
-        viewModelScope.launch {
-            try {
-                val response = ContactsApi.retrofitService.contactsResponseAsync(SharedConfigs.token)
-                if (response.isSuccessful) {
-                    closure(response.body()!!)
-                } else {
-                    Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
+//    fun getUserContactsFromNetwork(context: Context?, closure: (List<User>) -> Unit) {
+//        viewModelScope.launch {
+//            try {
+//                val response = ContactsApi.retrofitService.contactsResponseAsync(SharedConfigs.token)
+//                if (response.isSuccessful) {
+//                    closure(response.body()!!)
+//                } else {
+//                    Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
+//                }
+//            } catch (e: Exception) {
+//                Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
 
     fun getSearchedContacts(name: String, closure: (List<User>) -> Unit) {
         val task = SearchTask(name)
@@ -93,26 +92,6 @@ class UserContactsViewModel(application: Application) : AndroidViewModel(applica
                 }
             } catch (e: Exception) {
                 //                            Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    fun getAvatar(avatarURL: String, closure: (Bitmap) -> Unit) {
-        viewModelScope.launch {
-            try {
-                if (diskLruCache.get(avatarURL) != null) {
-                    closure(diskLruCache.get(avatarURL)!!)
-                } else {
-                    val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(avatarURL)
-                    if (response.isSuccessful) {
-                        val inputStream = response.body()!!.byteStream()
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        diskLruCache.put(avatarURL, bitmap)
-                        closure(bitmap)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.i("+++exception", "userInformationViewModel getAvatar $e")
             }
         }
     }
