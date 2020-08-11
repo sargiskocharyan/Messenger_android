@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUserContactsBinding
 import com.example.dynamicmessenger.dialogs.ContactsSearchDialog
@@ -41,6 +42,7 @@ class UserContactsFragment : Fragment() {
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.contactsRecyclerView.layoutManager = linearLayoutManager
 
+        SharedConfigs.currentFragment.value = MyFragments.CONTACTS
         HomeActivity.isAddContacts = false
 //        viewModel.getSavedContacts().observe(viewLifecycleOwner, Observer {
 //            updateRecycleView(adapter, it)

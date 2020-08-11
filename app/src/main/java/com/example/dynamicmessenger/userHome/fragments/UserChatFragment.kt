@@ -52,9 +52,7 @@ class UserChatFragment : Fragment() {
         val toolbar: Toolbar = binding.userChatToolbar
         configureTopNavBar(toolbar)
 
-        //bottom navigation
-        val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
-        bottomNavBar.visibility = View.VISIBLE
+        SharedConfigs.currentFragment.value = MyFragments.CHATS
         val adapter = UserChatsAdapter(requireContext())
         binding.root.setHasTransientState(true)
 

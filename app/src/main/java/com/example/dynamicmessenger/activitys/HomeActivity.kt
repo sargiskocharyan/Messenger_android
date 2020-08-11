@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -19,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
 //import com.example.dynamicmessenger.activitys.App.Companion.CHANNEL_ID
 import com.example.dynamicmessenger.activitys.viewModels.HomeActivityViewModel
+import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.MyTime
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.UserTokenVerifyApi
@@ -102,6 +104,17 @@ class HomeActivity : AppCompatActivity() {
         badge.number = 10
 
         SharedConfigs.appLang.value?.value?.let { LocalizationUtil.setApplicationLocale(this, it) }
+        SharedConfigs.currentFragment.observe(this, androidx.lifecycle.Observer {
+            when (it) {
+                MyFragments.CALLS,
+                MyFragments.CHATS,
+                MyFragments.CONTACTS,
+                MyFragments.INFORMATION -> {
+                    bottomNavBar.visibility = View.VISIBLE
+                }
+                else -> bottomNavBar.visibility = View.GONE
+            }
+        })
 //        SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
 //        })
     }
@@ -164,7 +177,7 @@ class HomeActivity : AppCompatActivity() {
 
     private fun socketEvents() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val managers  = NotificationManagerCompat.from(this)
+        val managers = NotificationManagerCompat.from(this)
 
         mSocket.on("message", socketManager.onMessageForNotification(Activity()){
             try {

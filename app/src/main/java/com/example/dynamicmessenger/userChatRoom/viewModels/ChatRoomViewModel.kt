@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
@@ -21,12 +22,7 @@ import com.example.dynamicmessenger.userDataController.database.SignedUserDataba
 import kotlinx.coroutines.launch
 
 class ChatRoomViewModel(application: Application) : AndroidViewModel(application) {
-    private val usersDao = SignedUserDatabase.getUserDatabase(application)!!.savedUserDao()
-    private val usersRepository = SavedUserRepository(usersDao)
-
-    fun getUserById(id: String): User? {
-        return usersRepository.getUserById(id) //TODO change for download from internet if user not saved in DB
-    }
+    val isKeyboardVisible = MutableLiveData<Boolean>()
 
     fun getMessagesFromNetwork(context: Context?, receiverID: String, closure: (List<ChatRoom>) -> Unit) {
         viewModelScope.launch {

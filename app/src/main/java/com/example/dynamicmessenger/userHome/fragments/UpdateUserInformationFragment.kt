@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.MainActivity
+import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUpdateUserInformationBinding
 import com.example.dynamicmessenger.dialogs.DeactivateUserDialog
@@ -47,7 +48,8 @@ class UpdateUserInformationFragment : Fragment() {
 
         //Bottom bar
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
-        bottomNavBar.visibility = View.GONE
+//        bottomNavBar.visibility = View.GONE
+        SharedConfigs.currentFragment.value = MyFragments.UPDATE_INFORMATION
         datePicker = DatePickerHelper(requireContext(), true)
 
         //Toolbar

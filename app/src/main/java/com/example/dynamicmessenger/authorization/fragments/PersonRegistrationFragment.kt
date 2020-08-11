@@ -1,12 +1,15 @@
 package com.example.dynamicmessenger.authorization.fragments
 
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
@@ -53,6 +56,14 @@ class PersonRegistrationFragment : Fragment() {
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        binding.root.setOnClickListener {
+            val view = requireActivity().currentFocus
+            view?.let { v ->
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.hideSoftInputFromWindow(v.windowToken, 0)
+            }
         }
 
         return binding.root

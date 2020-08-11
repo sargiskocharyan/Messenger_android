@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentOpponentInformationBinding
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
@@ -32,6 +33,8 @@ class OpponentInformationFragment : Fragment() {
         binding = FragmentOpponentInformationBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+
+        SharedConfigs.currentFragment.value = MyFragments.OPPONENT_INFORMATION
 
         //Toolbar
         setHasOptionsMenu(true)

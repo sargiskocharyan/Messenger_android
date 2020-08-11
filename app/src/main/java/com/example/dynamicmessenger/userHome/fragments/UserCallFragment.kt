@@ -38,8 +38,9 @@ class UserCallFragment : Fragment() {
         binding = FragmentUserCallBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(UserCallViewModel::class.java)
         callsDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userCallsDao()
-//        callsRepository = UserCallsRepository(callsDao)
         adapter = UserCallsAdapter(requireContext(), viewModel)
+
+        SharedConfigs.currentFragment.value = MyFragments.CALLS
 
         binding.root.setHasTransientState(true)
         binding.callRecyclerView.adapter = adapter

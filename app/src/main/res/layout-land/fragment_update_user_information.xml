@@ -90,7 +90,8 @@
                             android:text="@={updateUserViewModel.userEnteredName}"
                             android:background="@android:color/transparent"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -109,7 +110,8 @@
                             android:text="@={updateUserViewModel.userEnteredLastName}"
                             android:background="@android:color/transparent"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -226,7 +228,8 @@
                             android:text="@={updateUserViewModel.userEnteredPhoneNumber}"
                             android:background="@android:color/transparent"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="phone"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -244,7 +247,8 @@
                             android:text="@={updateUserViewModel.userEnteredEmail}"
                             android:background="@android:color/transparent"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="textEmailAddress"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>

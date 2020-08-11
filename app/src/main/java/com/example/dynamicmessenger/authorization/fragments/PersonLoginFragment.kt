@@ -1,11 +1,13 @@
 package com.example.dynamicmessenger.authorization.fragments
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -19,6 +21,7 @@ class PersonLoginFragment : Fragment() {
 
     private lateinit var viewModel: PersonLoginViewModel
     private lateinit var binding: FragmentPersonLoginBinding
+    private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,16 +32,28 @@ class PersonLoginFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(PersonLoginViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        val activityViewModel: MainActivityViewModel by activityViewModels()
 
-        val isEmailExists = activityViewModel.userMailExists ?: false
-        val personEmail = activityViewModel.userMail ?: ""
-        val personCode = activityViewModel.userCode
-        viewModel.personEmail.value = personEmail
+        configureViewModel()
+        observers()
 
-        viewModel.isEmailExist.value = isEmailExists
-        viewModel.userEnteredCode.value = personCode
+        binding.root.setOnClickListener {
+            val view = requireActivity().currentFocus
+            view?.let { v ->
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.hideSoftInputFromWindow(v.windowToken, 0)
+            }
+        }
 
+        return binding.root
+    }
+
+    private fun configureViewModel() {
+        viewModel.personEmail.value = activityViewModel.userMail ?: ""
+        viewModel.isEmailExist.value = activityViewModel.userMailExists ?: false
+        viewModel.userEnteredCode.value = activityViewModel.userCode
+    }
+
+    private fun observers() {
         viewModel.userEnteredCode.observe(viewLifecycleOwner, Observer {
             viewModel.hintVisibility.value = it.isNotEmpty()
             viewModel.isCodeValid.value = it.length == 4
@@ -62,7 +77,5 @@ class PersonLoginFragment : Fragment() {
         viewModel.isEmailExists.observe(viewLifecycleOwner, Observer  {
             activityViewModel.userMailExists = it
         })
-
-        return binding.root
     }
 }

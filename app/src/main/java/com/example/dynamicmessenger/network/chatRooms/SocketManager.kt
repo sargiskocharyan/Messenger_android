@@ -71,8 +71,8 @@ object SocketManager {
             val opts = IO.Options()
             opts.forceNew = true
             opts.reconnection = true
-//            mSocket = IO.socket(ResponseUrls.herokuIPForSocket + "?token=" + SharedConfigs.token, opts)
-            mSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + SharedConfigs.token, opts)
+            mSocket = IO.socket(ResponseUrls.herokuIPForSocket + "?token=" + SharedConfigs.token, opts)
+//            mSocket = IO.socket(ResponseUrls.ErosServerIPForSocket + "?token=" + SharedConfigs.token, opts)
             Log.i("+++", "socket@ taza sarqvec")
         }
         return mSocket
@@ -114,7 +114,7 @@ object SocketManager {
         editText.text.clear()
     }
 
-    fun onMessage(adapter: ChatRoomAdapter, chatID: String, activity: Activity?): Emitter.Listener {
+    fun onMessage(adapter: ChatRoomAdapter, chatID: String, activity: Activity?, closure: (Boolean) -> Unit): Emitter.Listener {
         return Emitter.Listener { args ->
             activity?.runOnUiThread(Runnable {
                 val data = args[0] as JSONObject
@@ -127,6 +127,7 @@ object SocketManager {
                         val newData = adapter.data.toMutableList()
                         newData += message
                         adapter.submitList(newData)
+                        closure(true)
                     }
                 } catch (e: Exception) {
                     Log.i("+++", "onMessage $e")

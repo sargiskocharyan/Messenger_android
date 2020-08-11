@@ -1,10 +1,9 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
-import android.app.Activity
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -14,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
@@ -42,44 +42,17 @@ class ChatRoomFragment : Fragment() {
         adapter = ChatRoomAdapter(requireContext(), myID)
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.chatRecyclerView.adapter = adapter
+        binding.chatRecyclerView.layoutManager = linearLayoutManager
+        binding.root.setHasTransientState(true)
 
-        val bottomNavBar: BottomNavigationView =
-            requireActivity().findViewById(R.id.bottomNavigationView)
-        bottomNavBar.visibility = View.GONE
-
+        SharedConfigs.currentFragment.value = MyFragments.CHAT_ROOM
         //Toolbar
         setHasOptionsMenu(true)
         val toolbar: Toolbar = binding.chatRoomToolbar
         configureTopNavBar(toolbar)
 
-        SharedConfigs.userRepository.getUserInformation(receiverID).observe(viewLifecycleOwner, Observer {user ->
-            if (user != null) {
-                HomeActivity.opponentUser = user
-                binding.userChatToolbarTitle.text = user.username ?: ""
-                SharedConfigs.userRepository.getAvatar(user.avatarURL).observe(viewLifecycleOwner, Observer {bitmap ->
-                    adapter.receiverImage = bitmap
-                })
-            }
-        })
-
-//        viewModel.getOpponentInfoFromNetwork(receiverID)
-
-        binding.chatRecyclerView.layoutManager = linearLayoutManager
-
-        binding.chatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                scrollUpWhenKeyboardOpened = if (linearLayoutManager.findLastVisibleItemPosition() != adapter.itemCount - 1) {
-                    Log.i("+++", "scroll state changed ${linearLayoutManager.findLastVisibleItemPosition()}")
-                    false
-                } else {
-                    true
-                }
-            }
-        })
-
+        observers(receiverID, linearLayoutManager)
         updateRecyclerView(receiverID)
-        binding.root.setHasTransientState(true)
 
         //socket
         socketManager = SocketManager
@@ -90,18 +63,15 @@ class ChatRoomFragment : Fragment() {
             Log.i("+++", "ChatRoomFragment Socket $e")
         }
 //        mSocket.connect()
-        mSocket.on("message", socketManager.onMessage(adapter, receiverID, activity))
-        binding.sendMessageButton.setOnClickListener {
-            socketManager.sendMessage(receiverID, binding.sendMessageEditText)
-        }
-
-        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            override fun onChanged() {
-                super.onChanged()
+        mSocket.on("message", socketManager.onMessage(adapter, receiverID, activity) {
+            if (it && scrollUpWhenKeyboardOpened) {
                 scrollToBottom(binding, adapter)
             }
         })
 
+        binding.sendMessageButton.setOnClickListener {
+            socketManager.sendMessage(receiverID, binding.sendMessageEditText)
+        }
 
         return binding.root
     }
@@ -117,6 +87,49 @@ class ChatRoomFragment : Fragment() {
 //        super.onDestroyView()
 //        HomeActivity.isAddContacts = false
 //    }
+
+    private fun observers(receiverID: String, linearLayoutManager: LinearLayoutManager) {
+        SharedConfigs.userRepository.getUserInformation(receiverID).observe(viewLifecycleOwner, Observer {user ->
+            if (user != null) {
+                HomeActivity.opponentUser = user
+                binding.userChatToolbarTitle.text = user.username ?: ""
+                SharedConfigs.userRepository.getAvatar(user.avatarURL).observe(viewLifecycleOwner, Observer {bitmap ->
+                    adapter.receiverImage = bitmap
+                })
+            }
+        })
+
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onChanged() {
+                super.onChanged()
+                scrollToBottom(binding, adapter)
+            }
+        })
+
+        binding.chatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                scrollUpWhenKeyboardOpened = linearLayoutManager.findLastVisibleItemPosition() > adapter.itemCount - 3
+            }
+        })
+
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener {
+            val r = Rect()
+            binding.root.getWindowVisibleDisplayFrame(r)
+            val screenHeight = binding.root.rootView.height
+            val keypadHeight: Int = screenHeight - r.bottom
+            val isVisible = keypadHeight > screenHeight * 0.15
+            if (viewModel.isKeyboardVisible.value != isVisible) {
+                viewModel.isKeyboardVisible.value = isVisible
+            }
+        }
+
+        viewModel.isKeyboardVisible.observe(viewLifecycleOwner, Observer {
+            if (it && scrollUpWhenKeyboardOpened) {
+                scrollToBottom(binding, adapter)
+            }
+        })
+    }
 
     private fun updateRecyclerView(receiverID: String) {
         viewModel.getMessagesFromNetwork(requireContext(), receiverID) {

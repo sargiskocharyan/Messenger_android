@@ -23,6 +23,7 @@ object SharedConfigs {
     var isCalling: Boolean = false //TODO
     var isCallingInProgress: Boolean = false
     var lastFragment: MyFragments? = null
+    val currentFragment = MutableLiveData<MyFragments>()
     var onlineUsers = MutableLiveData<List<String>>()
     lateinit var userRepository: Repository
     fun init(context: Context) {

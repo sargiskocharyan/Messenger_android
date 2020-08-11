@@ -151,6 +151,9 @@ class UserInformationFragment : Fragment() {
         binding.userInformationConstraintLayout.setOnClickListener {
             binding.languagePopupMenuLinearLayout.visibility = View.GONE
         }
+        binding.userInformationScrollView.setOnClickListener {
+            binding.languagePopupMenuLinearLayout.visibility = View.GONE
+        }
     }
 
 
