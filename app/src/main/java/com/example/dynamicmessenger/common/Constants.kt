@@ -42,6 +42,13 @@ object MyTime {
     const val threeMinutes = 180000L
 }
 
+object ChanelConstants {
+    const val CHANNEL_ID = "channel_id"
+    const val MESSAGE_CHANNEL_ID = "message_channel_id"
+    const val CALL_CHANNEL_ID = "call_channel_id"
+//    const val
+}
+
 class SharedPrefConstants {
     companion object {
         const val sharedPrefCreate = "messengerAuth"

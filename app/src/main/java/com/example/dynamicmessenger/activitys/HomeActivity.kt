@@ -68,8 +68,6 @@ class HomeActivity : AppCompatActivity() {
         tokenDao = SignedUserDatabase.getUserDatabase(this)!!.userTokenDao()
         tokenRep = UserTokenRepository(tokenDao)
 
-        viewModel.repeat()
-
         //socket
         socketManager = SocketManager
         try {
@@ -97,6 +95,11 @@ class HomeActivity : AppCompatActivity() {
             Log.d("FireBase", token)
 //            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
         })
+
+        //TODO change badge for all icons
+        val badge = bottomNavBar.getOrCreateBadge(R.id.chat)
+        badge.isVisible = true
+        badge.number = 10
 
         SharedConfigs.appLang.value?.value?.let { LocalizationUtil.setApplicationLocale(this, it) }
 //        SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
@@ -161,11 +164,13 @@ class HomeActivity : AppCompatActivity() {
 
     private fun socketEvents() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val managers  = NotificationManagerCompat.from(this)
 
         mSocket.on("message", socketManager.onMessageForNotification(Activity()){
             try {
                 if (selectedFragment != UserChatFragment() && it.senderId != SharedConfigs.signedUser?._id ?: true){
                     it.senderUsername?.let { senderName -> NotificationMessages.setNotificationMessage(senderName, it.text!!, this, manager) }
+//                    it.senderUsername?.let { senderName -> NotificationMessages.setCallNotification(this, managers) }
                 }
             } catch (e: Exception) {
                 Log.i("+++catch", e.toString())

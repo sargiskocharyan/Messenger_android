@@ -7,7 +7,7 @@ import com.example.dynamicmessenger.network.authorization.models.User
 
 @Dao
 interface SignedUserDao {
-    @Query("SELECT * from signed_user")
+    @Query("SELECT * FROM signed_user")
     fun getSignedUser(): SignedUser
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -5,7 +5,7 @@
     android:layout_height="128dp"
     android:background="#282e31">
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/notificationCallAvatarCircleImageView"
         android:layout_width="42dp"
         android:layout_height="42dp"

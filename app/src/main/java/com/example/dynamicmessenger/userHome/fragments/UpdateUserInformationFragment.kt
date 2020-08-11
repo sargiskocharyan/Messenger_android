@@ -44,18 +44,6 @@ class UpdateUserInformationFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(UpdateUserInformationViewModel::class.java)
         binding.lifecycleOwner = this
         binding.updateUserViewModel = viewModel
-//        viewModel.userEnteredUsername.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-//            @SuppressLint("ResourceAsColor")
-//                if (Validations.isUsernameValid(binding.usernameEditText.text.toString())
-//                    && Validations.isNameValid(binding.nameEditText.text.toString())
-//                    && Validations.isLastNameValid(binding.lastNameEditText.text.toString())) {
-//                    binding.continueButton.isEnabled = true
-//                    binding.continueButton.setBackgroundResource(R.drawable.enable_button_design)
-//                } else {
-//                    binding.continueButton.isEnabled = false
-//                    binding.continueButton.setBackgroundResource(R.drawable.disable_button_design)
-//                }
-//        })
 
         //Bottom bar
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
@@ -193,7 +181,13 @@ class UpdateUserInformationFragment : Fragment() {
         })
 
         viewModel.userEnteredUsername.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            viewModel.isUsernameValid.value = Validations.isNameValid(it)
+            viewModel.changeIsValidParameters()
+            if (it.toLowerCase() == SharedConfigs.signedUser?.username?.toLowerCase()) {
+                viewModel.isUsernameValid.value = true
+                viewModel.isUsernameValid.value = true
+                return@Observer
+            }
+            viewModel.isUsernameValid.value = Validations.isUsernameValid(it)
             if (Validations.isUsernameValid(it)) {
                 if (it.toLowerCase() == SharedConfigs.signedUser?.username?.toLowerCase()) {
                     viewModel.isUsernameValid.value = true
@@ -209,7 +203,6 @@ class UpdateUserInformationFragment : Fragment() {
             } else {
                 viewModel.isUsernameValid.value = false
             }
-            viewModel.changeIsValidParameters()
         })
 
         viewModel.userEnteredName.observe(viewLifecycleOwner, androidx.lifecycle.Observer {

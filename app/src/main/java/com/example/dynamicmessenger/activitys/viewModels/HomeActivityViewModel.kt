@@ -25,9 +25,10 @@ class HomeActivityViewModel(application: Application) : AndroidViewModel(applica
 
     init {
         SharedConfigs.userRepository.getUserContacts()
+        repeat()
     }
 
-    fun repeat() { //TODO change name
+    private fun repeat() { //TODO change name
         handler.postDelayed(Runnable {
             handler.postDelayed(runnable, MyTime.threeMinutes)
             getOnlineUsers()

@@ -27,17 +27,17 @@ class UpdateUserInformationViewModel(application: Application) : AndroidViewMode
     private var datePicker = DatePickerHelper(application, true)
 
     @Bindable
-    val userEnteredUsername = MutableLiveData<String>(SharedConfigs.signedUser?.username)
+    val userEnteredUsername = MutableLiveData<String>(SharedConfigs.signedUser?.username ?: "")
     @Bindable
-    val userEnteredName = MutableLiveData<String>(SharedConfigs.signedUser?.name)
+    val userEnteredName = MutableLiveData<String>(SharedConfigs.signedUser?.name ?: "")
     @Bindable
-    val userEnteredLastName = MutableLiveData<String>(SharedConfigs.signedUser?.lastname)
+    val userEnteredLastName = MutableLiveData<String>(SharedConfigs.signedUser?.lastname ?: "")
     @Bindable
-    val userEnteredInfo = MutableLiveData<String>(SharedConfigs.signedUser?.info)
+    val userEnteredInfo = MutableLiveData<String>(SharedConfigs.signedUser?.info ?: "")
     @Bindable
-    val userEnteredPhoneNumber = MutableLiveData<String>(SharedConfigs.signedUser?.phoneNumber)
+    val userEnteredPhoneNumber = MutableLiveData<String>(SharedConfigs.signedUser?.phoneNumber ?: "")
     @Bindable
-    val userEnteredEmail = MutableLiveData<String>(SharedConfigs.signedUser?.email)
+    val userEnteredEmail = MutableLiveData<String>(SharedConfigs.signedUser?.email ?: "")
 
     val isEmailValid = MutableLiveData<Boolean>()
     val isUsernameValid = MutableLiveData<Boolean>()
