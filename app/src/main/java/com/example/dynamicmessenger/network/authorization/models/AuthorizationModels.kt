@@ -29,3 +29,5 @@ data class HideDataTask (val hide: Boolean)
 data class UsernameExistsTask (val username: String?)
 
 data class DeleteUserCallTask (val callId: String)
+
+data class RegisterDeviceTask (val deviceUUID: String, val token: String, val voIPToken: String? = null, val platform: String = "android")

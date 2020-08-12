@@ -1,6 +1,5 @@
 package com.example.dynamicmessenger.userCalls.viewModels
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.graphics.Bitmap
 import androidx.lifecycle.AndroidViewModel
@@ -8,12 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.models.User
-import com.example.dynamicmessenger.userDataController.database.DiskCache
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.utils.Utils
-import java.text.SimpleDateFormat
-import java.util.*
 
 class CallInformationViewModel(application: Application) : AndroidViewModel(application) {
     val callInformation = MutableLiveData<UserCalls>()
@@ -28,10 +23,11 @@ class CallInformationViewModel(application: Application) : AndroidViewModel(appl
         callInformation.value = HomeActivity.callId?.let { SharedConfigs.userRepository.getUserCallById(it) }
     }
 
-    private fun getCallingState(state: Int) {
+    private fun getCallingState(state: String) {
         when (state) {
-            1 -> callState.value = "Outgoing" //TODO change string
-            2 -> callState.value = "Incoming"
+            "missed" -> callState.value = "missed" //TODO change string
+            "ongoing" -> callState.value = "ongoing"
+            "accepted" -> callState.value = "accepted"
         }
     }
 
@@ -44,6 +40,7 @@ class CallInformationViewModel(application: Application) : AndroidViewModel(appl
         }
         callTimeHour.value = userCalls.callSuggestTime?.let { Utils.convertDateToHour(it) }
         callTimeDay.value = Utils.convertStringToDate(userCalls.callSuggestTime)?.time?.let { Utils.convertLongToTimeForCall(it) }
+        callState.value = userCalls.status
 
     }
 }

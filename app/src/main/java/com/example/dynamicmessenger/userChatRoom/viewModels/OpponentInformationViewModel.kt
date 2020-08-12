@@ -51,32 +51,39 @@ class OpponentInformationViewModel(application: Application) : AndroidViewModel(
 //        }
     }
 
+    fun removeUserFromContacts() {
+        viewModelScope.launch {
+            try {
+                val task = RemoveContactTask(HomeActivity.receiverID!!)
+                val response =
+                    RemoveContactApi.retrofitService.removeContact(SharedConfigs.token, task)
+                if (response.isSuccessful) {
+                    HomeActivity.isAddContacts = false
+                    Toast.makeText(context, "User removed  contacts", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
+                }
+                isUserInContacts.postValue(false)
+            } catch (e: Exception) {
+                Log.i("+++", "add contact exception $e")
+                Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     fun addUserToContacts() {
         viewModelScope.launch {
             try {
-                if (isUserInContacts.value!!) {
-                    val task = RemoveContactTask(HomeActivity.receiverID!!)
-                    val response =
-                        RemoveContactApi.retrofitService.removeContact(SharedConfigs.token, task)
-                    if (response.isSuccessful) {
-                        HomeActivity.isAddContacts = false
-                        Toast.makeText(context, "User removed  contacts", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
-                    }
-                    isUserInContacts.postValue(false)
+                val task = AddUserContactTask(HomeActivity.receiverID!!)
+                val response =
+                    AddContactApi.retrofitService.addContactResponseAsync(SharedConfigs.token, task)
+                if (response.isSuccessful) {
+                    HomeActivity.isAddContacts = false
+                    Toast.makeText(context, "User added in your contacts", Toast.LENGTH_SHORT).show()
                 } else {
-                    val task = AddUserContactTask(HomeActivity.receiverID!!)
-                    val response =
-                        AddContactApi.retrofitService.addContactResponseAsync(SharedConfigs.token, task)
-                    if (response.isSuccessful) {
-                        HomeActivity.isAddContacts = false
-                        Toast.makeText(context, "User added in your contacts", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
-                    }
-                    isUserInContacts.postValue(true)
+                    Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
                 }
+                isUserInContacts.postValue(true)
             } catch (e: Exception) {
                 Log.i("+++", "add contact exception $e")
                 Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()

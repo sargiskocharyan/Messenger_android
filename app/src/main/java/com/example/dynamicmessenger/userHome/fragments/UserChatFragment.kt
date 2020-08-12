@@ -78,10 +78,12 @@ class UserChatFragment : Fragment() {
 
 //        mSocket.connect()
         mSocket.on("message", socketManager.onMessageForAllChats(Activity()) {
-            try {
-                if (it) updateRecyclerView(adapter)
-            } catch (e: Exception) {
-                Log.i("+++", "UserChatFragment socket event message $e")
+            if (SharedConfigs.currentFragment.value == MyFragments.CHATS) {
+                try {
+                    if (it) updateRecyclerView(adapter)
+                } catch (e: Exception) {
+                    Log.i("+++", "UserChatFragment socket event message $e")
+                }
             }
         })
 

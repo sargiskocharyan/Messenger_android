@@ -128,11 +128,7 @@ class SignallingClient {
 //                }
 //            }
             */
-        } catch (e: URISyntaxException) {
-            e.printStackTrace()
-        } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
-        } catch (e: KeyManagementException) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }

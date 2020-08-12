@@ -35,6 +35,7 @@
         </activity>
         <activity
             android:name=".userCalls.CallRoomActivity"
+            android:showOnLockScreen="true"
             android:screenOrientation="portrait">
         </activity>
         <activity android:name=".activitys.MainActivity"/>

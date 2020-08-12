@@ -3,6 +3,7 @@ package com.example.dynamicmessenger.userCalls
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -26,6 +27,7 @@ import org.webrtc.*
 import java.util.*
 import kotlin.math.roundToInt
 
+
 class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterface {
     private lateinit var peerConnectionFactory: PeerConnectionFactory
     private lateinit var audioConstraints: MediaConstraints
@@ -45,6 +47,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     private val ALL_PERMISSIONS_CODE = 1
     private lateinit var binding: ActivityCallRoomBinding
     private lateinit var viewModel: CallRoomViewModel
+    private lateinit var timer: CountDownTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +66,23 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
         observers()
         onClickListeners()
+
+        timer = object : CountDownTimer(30000, 2000) {
+            override fun onTick(millisUntilFinished: Long) {
+                if (SignallingClient.getInstance()?.callStarted!!) {
+                    timer.cancel()
+                }
+            }
+
+            override fun onFinish() {
+                if (!SignallingClient.getInstance()?.callStarted!!) {
+                    onRemoteHangUp()
+                }
+            }
+        }
+
+        timer.start()
+
 
     }
 
@@ -412,6 +432,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
             localPeer!!.close()
         }
         localPeer = null
+        timer.cancel()
         SharedConfigs.callingOpponentId = null
         SharedConfigs.isCallingInProgress = false
         SharedConfigs.callRoomName = null

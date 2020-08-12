@@ -99,7 +99,7 @@ class Repository(val context: Context): RepositoryInterface {
     fun getUserInformation(userId: String?): LiveData<User?> {
         val user = MutableLiveData<User?>()
         if (userId != null) {
-            user.value = savedUserRepository.getUserById(userId)
+            user.postValue(savedUserRepository.getUserById(userId))
             GlobalScope.launch(Dispatchers.IO) {
                 try {
                     val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, userId)

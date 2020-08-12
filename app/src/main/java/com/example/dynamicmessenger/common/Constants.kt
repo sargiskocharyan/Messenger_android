@@ -31,6 +31,7 @@ class ResponseUrls {
         const val usernameExists = "usernameExists"
         const val callHistory = "callhistory"
         const val call = "call"
+        const val registerDevice = "registerdevice"
 
 //        users/me/avatar
 //        users/5ee76c90bfa0980017a39013/avatar

@@ -21,7 +21,8 @@ data class SignedUser(
     var birthday: String?,
     var phoneNumber: String?,
     var info: String?,
-    var avatarURL: String?
+    var avatarURL: String?,
+    var deviceRegistered: Boolean? = false
 )
 
 @Entity(tableName = "user_token")

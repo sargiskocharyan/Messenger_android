@@ -71,12 +71,13 @@
                         android:layout_marginTop="24dp"
                         android:background="@drawable/background_for_buttons"
                         android:padding="10dp"
+                        android:onClick="@{() -> viewModel.addUserToContacts()}"
                         app:layout_constraintEnd_toStartOf="@+id/sendMessageImageView"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/opponentProfileAvatarImageView"
-                        app:setAddContactImage="@{viewModel.isUserInContacts}"
-                        tools:src="@drawable/ic_baseline_person_add_24" />
+                        app:setImageVisibility="@{!viewModel.isUserInContacts}"
+                        android:src="@drawable/ic_baseline_person_add_24" />
 
                     <ImageView
                         android:id="@+id/sendMessageImageView"
@@ -406,6 +407,15 @@
                         android:orientation="vertical"
                         app:layout_constraintGuide_percent="0.4" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/removeContact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@color/holoRedDark"
+                    android:onClick="@{() -> viewModel.removeUserFromContacts()}"
+                    app:setTextViewVisible="@{viewModel.isUserInContacts}"
+                    android:text="Remove contact"/>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </RelativeLayout>
