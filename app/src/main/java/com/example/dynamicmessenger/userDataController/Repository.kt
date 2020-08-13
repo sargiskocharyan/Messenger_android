@@ -95,6 +95,15 @@ class Repository(val context: Context): RepositoryInterface {
         return userAvatarBitmap
     }
 
+    fun getAvatarFromDB(avatarURL: String?): Bitmap? {
+        if (avatarURL != null) {
+            if (diskLruCache.get(avatarURL) != null) {
+                return diskLruCache.get(avatarURL)
+            }
+        }
+        return null
+    }
+
     //Users
     fun getUserInformation(userId: String?): LiveData<User?> {
         val user = MutableLiveData<User?>()
@@ -118,17 +127,21 @@ class Repository(val context: Context): RepositoryInterface {
         return user
     }
 
+    fun getUserInformationFromDB(userId: String?): User? {
+        if (userId != null) {
+            return (savedUserRepository.getUserById(userId))
+        }
+        return null
+    }
+
+
     //Contacts
     fun getUserContacts(): LiveData<List<User>?> {
         val userContacts = MutableLiveData<List<User>?>()
         val contactsList = mutableListOf<User>()
         val savedContacts = userContactsRepository.getAllContacts()
         savedContacts.forEach {
-            getUserInformation(it._id).observeForever { user ->
-                if (user != null) {
-                    contactsList.add(user)
-                }
-            }
+            getUserInformationFromDB(it._id)?.let { it1 -> contactsList.add(it1) }
         }
         userContacts.value = contactsList
         GlobalScope.launch(Dispatchers.IO) {

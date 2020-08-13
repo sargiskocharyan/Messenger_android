@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
@@ -14,7 +15,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.ChanelConstants
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
+import java.net.URL
 
 
 class NotificationMessages {
@@ -46,7 +49,27 @@ class NotificationMessages {
             val pendingIntent = PendingIntent.getActivity(context, 1 , intent, PendingIntent.FLAG_UPDATE_CURRENT)
             val collapsedView = RemoteViews(context.packageName, R.layout.notification_call)
             collapsedView.setOnClickPendingIntent(R.id.notificationCallAcceptButton, pendingIntent)
-//            collapsedView.setTextViewText(R.id.notificationCallName, "Anun")
+            SharedConfigs.userRepository.getAvatarFromDB(SharedConfigs.signedUser?.avatarURL)?.let {
+                collapsedView.setImageViewBitmap(R.id.notificationCallImage, it)
+            }
+//            try {
+//                val url = URL(SharedConfigs.signedUser?.avatarURL)
+//                val image = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+////                val image = SharedConfigs.userRepository.getAvatar(SharedConfigs.signedUser?.avatarURL).value
+//                collapsedView.setImageViewBitmap(R.id.notificationCallImage, image)
+//            } catch (e: Exception) {
+//                println(e)
+//            }
+//            SharedConfigs.userRepository.getUserInformation(SharedConfigs.callingOpponentId).observeForever {user ->
+//                if (user != null) {
+//                    collapsedView.setTextViewText(R.id.notificationCallName, user.username)
+//                    SharedConfigs.userRepository.getAvatar(user.avatarURL).observeForever {
+//                        if (it != null) {
+//                            collapsedView.setImageViewBitmap(R.id.notificationCallImage, it)
+//                        }
+//                    }
+//                }
+//            }
 
             val builder = NotificationCompat.Builder(context, ChanelConstants.CALL_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_call)
@@ -59,7 +82,6 @@ class NotificationMessages {
 //                .setCustomBigContentView(collapsedView)
                 .setContent(collapsedView)
                 .build()
-            Log.i("+++", "qwertyuioasdfghjkl")
             manager.notify(1155, builder)
 
 

@@ -13,35 +13,47 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.util.*
-
+/**
+ *
+ * static func registerDeviceToken(pushDeviceToken: String, voipDeviceToken)
+ * static func unRegister()
+ * static func checkForRegisteredDeviceToken()
+ * static func didReceivePushDeviceToken(token: Data)
+ * static func didReceiveVoipDeviceToken(token: Data)
+ * static func requestPermissions()
+ */
 object RemoteNotificationManager {
 
-    fun getFirebaseToken(deviceUUID: String) {
+    fun registerDeviceToken(deviceUUID: String, firebaseToken: String? = getFirebaseToken() ) {
         val signedUser = SharedConfigs.signedUser
         if (!signedUser?.deviceRegistered!!) {
-            FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    task.result?.token?.let {
-                        Log.i("+++", "register device token ${it}")
-                        GlobalScope.launch(Dispatchers.IO) {
-                            try {
-                                val response = RegisterDeviceApi.retrofitService.registerDevice(SharedConfigs.token, RegisterDeviceTask(deviceUUID, it))
-                                if (response.isSuccessful) {
-                                    signedUser.deviceRegistered = true
-                                    SharedConfigs.signedUser = signedUser
-                                }
-                                Log.i("+++", "register device response ${response}")
-                            } catch (e: Exception) {
-                                Log.i("+++", "register device exception ${e}")
-                            }
-                            this.cancel()
+            firebaseToken?.let {
+                GlobalScope.launch(Dispatchers.IO) {
+                    try {
+                        val response = RegisterDeviceApi.retrofitService.registerDevice(SharedConfigs.token, RegisterDeviceTask(deviceUUID, it))
+                        if (response.isSuccessful) {
+                            signedUser.deviceRegistered = true
+                            SharedConfigs.signedUser = signedUser
                         }
+                        Log.i("+++", "register device response ${response}")
+                    } catch (e: Exception) {
+                        Log.i("+++", "register device exception ${e}")
                     }
+                    this.cancel()
                 }
             }
-        } else {
-            Log.i("+++", "device already registered")
         }
+
+    }
+
+    private fun getFirebaseToken(): String? {
+        var firebaseToken: String? = null
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                firebaseToken = task.result?.token
+            }
+        }
+        return firebaseToken
     }
 
 }

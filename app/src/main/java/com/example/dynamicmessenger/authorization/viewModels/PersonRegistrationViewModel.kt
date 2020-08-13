@@ -49,7 +49,7 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
             try {
                 if (userEnteredName.value?.isEmpty()!!) {userEnteredName.value = null}
                 if (userEnteredLastName.value?.isEmpty()!!) {userEnteredLastName.value = null}
-                val usernameEditText = UpdateUserTask(userEnteredName.value, userEnteredLastName.value, userEnteredUsername.value, userEnteredGender.value)
+                val usernameEditText = UpdateUserTask(userEnteredName.value, userEnteredLastName.value, userEnteredUsername.value, gender = userEnteredGender.value)
                 val response = UpdateUserApi.retrofitService.updateUserResponseAsync(SharedConfigs.token ,usernameEditText)
                 if (response.isSuccessful) {
                     val user = ClassConverter.userToSignedUser(response.body()!!)

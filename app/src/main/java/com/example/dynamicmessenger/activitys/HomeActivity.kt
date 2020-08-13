@@ -32,6 +32,7 @@ import com.example.dynamicmessenger.userHome.fragments.UserCallFragment
 import com.example.dynamicmessenger.userHome.fragments.UserChatFragment
 import com.example.dynamicmessenger.userHome.fragments.UserInformationFragment
 import com.example.dynamicmessenger.utils.LocalizationUtil
+import com.example.dynamicmessenger.utils.notifications.FirebaseNotificationService
 import com.example.dynamicmessenger.utils.notifications.NotificationMessages
 import com.example.dynamicmessenger.utils.notifications.RemoteNotificationManager
 import com.github.nkzawa.socketio.client.Socket
@@ -95,7 +96,7 @@ class HomeActivity : AppCompatActivity() {
 ////            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
 //        })
         val androidId: String = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
-        RemoteNotificationManager.getFirebaseToken(androidId)
+        RemoteNotificationManager.registerDeviceToken(androidId)
 
 
         //TODO change badge for all icons

@@ -17,8 +17,10 @@ import com.example.dynamicmessenger.network.LogoutApi
 import com.example.dynamicmessenger.network.SaveAvatarApi
 import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.utils.MyAlertMessage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
+import java.net.URL
 
 class UserInformationViewModel(application: Application) : AndroidViewModel(application) {
     private val _username = MutableLiveData<String>()

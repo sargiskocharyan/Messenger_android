@@ -76,6 +76,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 
             override fun onFinish() {
                 if (!SignallingClient.getInstance()?.callStarted!!) {
+                    SignallingClient.getInstance()!!.leaveRoom()
                     onRemoteHangUp()
                 }
             }
@@ -514,7 +515,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 
         binding.hangUpCallCardView.setOnClickListener {
             SignallingClient.getInstance()!!.leaveRoom()
-            hangup()
+            onRemoteHangUp()
+//            hangup()
         }
     }
 
