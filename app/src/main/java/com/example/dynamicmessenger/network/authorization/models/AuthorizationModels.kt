@@ -31,3 +31,5 @@ data class UsernameExistsTask (val username: String?)
 data class DeleteUserCallTask (val callId: String)
 
 data class RegisterDeviceTask (val deviceUUID: String, val token: String, val voIPToken: String? = null, val platform: String = "android")
+
+data class CallNotification(val caller: String, val roomName: String, val username: String, val image: String, val name: String)

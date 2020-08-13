@@ -173,10 +173,10 @@ android:background="?android:attr/windowBackground">
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_marginEnd="15dp"
-        android:visibility="gone"
         android:layout_gravity="center">
         <ImageView
             android:id="@+id/notificationCallImage"
+            android:src="@drawable/ic_user_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </FrameLayout>

@@ -59,26 +59,9 @@ class UpdateUserInformationFragment : Fragment() {
 
         setValidations()
 
-        var selectedGender = ""
         val adapter = ArrayAdapter.createFromResource(requireContext(), R.array.genders, android.R.layout.simple_spinner_item)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.genderSpinner.adapter = adapter
         (binding.genderTextField.editText as? AutoCompleteTextView)?.setAdapter(adapter)
-        binding.genderSpinner.onItemSelectedListener = object :
-            AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View,
-                position: Int,
-                id: Long
-            ) {
-                when (position) {
-                    0 -> selectedGender = "male"
-                    1 -> selectedGender = "female"
-                }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
 
         binding.birthDateDatePicker.editText?.setOnClickListener {
             showDatePickerDialog()
@@ -88,6 +71,10 @@ class UpdateUserInformationFragment : Fragment() {
             if (viewModel.userEnteredName.value?.isEmpty()!!) { viewModel.userEnteredName.value = null }
             if (viewModel.userEnteredLastName.value?.isEmpty()!!) { viewModel.userEnteredLastName.value = null }
             if (viewModel.userEnteredPhoneNumber.value?.isEmpty()!!) { viewModel.userEnteredPhoneNumber.value = null }
+            val selectedGender = when (viewModel.userEnteredGender.value) {
+                resources.getString(R.string.male) -> "male"
+                else -> "female"
+            }
             val birthDate = viewModel.userEnteredDate.value
             val name = viewModel.userEnteredName.value
             val lastName = viewModel.userEnteredLastName.value

@@ -268,6 +268,7 @@
                         android:id="@+id/languageImage"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
+                        android:layout_marginEnd="4dp"
                         android:src="@drawable/ic_united_kingdom"
                         app:languageIMG="@{viewModel.appLanguage}"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -305,11 +306,12 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <Switch
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/darkModeSwitch"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
+                        app:trackTint="@color/dayNightBlack"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"

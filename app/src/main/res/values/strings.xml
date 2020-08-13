@@ -87,7 +87,6 @@
     <string name="this_username_is_taken">This username is taken</string>
 
     <string-array name="genders">
-        <item>@string/select_gender</item>
         <item>@string/male</item>
         <item>@string/female</item>
     </string-array>

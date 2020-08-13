@@ -21,6 +21,7 @@ import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 
 class PersonRegistrationViewModel(application: Application): AndroidViewModel(application), Observable {
+    val context = application
 
     @Bindable
     val userEnteredName = MutableLiveData<String>()
@@ -28,6 +29,7 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
     val userEnteredLastName = MutableLiveData<String>()
     @Bindable
     val userEnteredUsername = MutableLiveData<String>()
+    @Bindable
     val userEnteredGender = MutableLiveData<String?>()
     val isValidUsername = MutableLiveData<Boolean?>()
     val isValidName = MutableLiveData<Boolean>()
@@ -49,7 +51,11 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
             try {
                 if (userEnteredName.value?.isEmpty()!!) {userEnteredName.value = null}
                 if (userEnteredLastName.value?.isEmpty()!!) {userEnteredLastName.value = null}
-                val usernameEditText = UpdateUserTask(userEnteredName.value, userEnteredLastName.value, userEnteredUsername.value, gender = userEnteredGender.value)
+                val selectedGender = when (userEnteredGender.value) {
+                    context.resources.getString(R.string.male) -> "male"
+                    else -> "female"
+                }
+                val usernameEditText = UpdateUserTask(userEnteredName.value, userEnteredLastName.value, userEnteredUsername.value, gender = selectedGender)
                 val response = UpdateUserApi.retrofitService.updateUserResponseAsync(SharedConfigs.token ,usernameEditText)
                 if (response.isSuccessful) {
                     val user = ClassConverter.userToSignedUser(response.body()!!)

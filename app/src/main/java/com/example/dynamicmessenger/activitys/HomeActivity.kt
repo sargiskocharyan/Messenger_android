@@ -21,6 +21,9 @@ import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.MyTime
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.UserTokenVerifyApi
+import com.example.dynamicmessenger.network.authorization.models.CallNotification
+import com.example.dynamicmessenger.network.authorization.models.ChatRoom
+import com.example.dynamicmessenger.network.authorization.models.Message
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
@@ -39,10 +42,12 @@ import com.github.nkzawa.socketio.client.Socket
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -218,10 +223,20 @@ class HomeActivity : AppCompatActivity() {
 
         mSocket.on("call") {
             if (!SharedConfigs.isCallingInProgress) {
-                SharedConfigs.callingOpponentId = it[0].toString()
-                SharedConfigs.callRoomName = it[1].toString()
-                SharedConfigs.isCalling = true
-                NotificationMessages.setCallNotification(this, managers)
+                try {
+                    val data = it[0] as JSONObject
+                    val gson = Gson()
+                    val gsonMessage = gson.fromJson(data.toString(), CallNotification::class.java)
+                    SharedConfigs.callingOpponentId = gsonMessage.caller
+                    SharedConfigs.callRoomName = gsonMessage.roomName
+                    SharedConfigs.isCalling = true
+                    NotificationMessages.setCallNotification(this, managers)
+                } catch (e: Exception) {
+                    Log.i("+++", "onMessageForNotification $e")
+                }
+                Log.i("+++", """on call
+                    |${Arrays.toString(it)}
+                """.trimMargin())
 
 //                val intent = Intent(this, CallRoomActivity::class.java)
 //                startActivity(intent)

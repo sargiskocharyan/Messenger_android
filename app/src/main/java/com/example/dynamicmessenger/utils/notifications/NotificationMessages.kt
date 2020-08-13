@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
+import android.view.View
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -49,9 +50,21 @@ class NotificationMessages {
             val pendingIntent = PendingIntent.getActivity(context, 1 , intent, PendingIntent.FLAG_UPDATE_CURRENT)
             val collapsedView = RemoteViews(context.packageName, R.layout.notification_call)
             collapsedView.setOnClickPendingIntent(R.id.notificationCallAcceptButton, pendingIntent)
-            SharedConfigs.userRepository.getAvatarFromDB(SharedConfigs.signedUser?.avatarURL)?.let {
-                collapsedView.setImageViewBitmap(R.id.notificationCallImage, it)
+
+            SharedConfigs.userRepository.getUserInformationFromDB(SharedConfigs.callingOpponentId)?.let {user ->
+                collapsedView.setTextViewText(R.id.notificationCallName, user.username)
+                try {
+                    val url = URL(user.avatarURL)
+                    val image = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+                    collapsedView.setImageViewBitmap(R.id.notificationCallImage, image)
+                } catch (e: Exception) {
+                    println(e)
+                }
+//                SharedConfigs.userRepository.getAvatarFromDB(user.avatarURL)?.let {
+//                    collapsedView.setImageViewBitmap(R.id.notificationCallImage, it)
+//                }
             }
+
 //            try {
 //                val url = URL(SharedConfigs.signedUser?.avatarURL)
 //                val image = BitmapFactory.decodeStream(url.openConnection().getInputStream())

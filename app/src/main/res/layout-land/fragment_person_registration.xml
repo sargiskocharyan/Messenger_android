@@ -117,14 +117,23 @@
                         android:inputType="textPersonName"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Spinner
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/registrationGenderSpinner"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginEnd="32dp"
-                    android:entries="@array/genders"
-                    android:prompt="@string/select_gender" />
+                    android:hint="@string/select_gender">
+
+                    <AutoCompleteTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:text="@={viewModel.userEnteredGender}"
+                        android:backgroundTint="@android:color/transparent" />
+
+                </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
             <Button

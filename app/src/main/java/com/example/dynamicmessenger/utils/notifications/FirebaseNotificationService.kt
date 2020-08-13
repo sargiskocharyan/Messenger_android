@@ -18,13 +18,13 @@ class FirebaseNotificationService: FirebaseMessagingService() {
             |rawData ${p0.rawData}
             |priority ${p0.priority}
         """.trimMargin())
-//        if (p0.data["roomName"] != null) {
-//            val managers = NotificationManagerCompat.from(this)
-//            SharedConfigs.callingOpponentId = p0.data["id"].toString()
-//            SharedConfigs.callRoomName = p0.data["roomName"].toString()
-//            SharedConfigs.isCalling = true
-//            NotificationMessages.setCallNotification(this, managers)
-//        }
+        if (p0.data["roomName"] != null) {
+            val managers = NotificationManagerCompat.from(this)
+            SharedConfigs.callingOpponentId = p0.data["id"].toString()
+            SharedConfigs.callRoomName = p0.data["roomName"].toString()
+            SharedConfigs.isCalling = true
+            NotificationMessages.setCallNotification(this, managers)
+        }
 
     }
 

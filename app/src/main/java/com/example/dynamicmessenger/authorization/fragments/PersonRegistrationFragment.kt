@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -41,22 +42,7 @@ class PersonRegistrationFragment : Fragment() {
 
         val adapter = ArrayAdapter.createFromResource(requireContext(), R.array.genders, android.R.layout.simple_spinner_item)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.registrationGenderSpinner.adapter = adapter
-        binding.registrationGenderSpinner.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View,
-                position: Int,
-                id: Long
-            ) {
-                when (position) {
-                    0 -> viewModel.userEnteredGender.value = null
-                    1 -> viewModel.userEnteredGender.value = "male"
-                    2 -> viewModel.userEnteredGender.value = "female"
-                }
-            }
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
+        (binding.registrationGenderSpinner.editText as? AutoCompleteTextView)?.setAdapter(adapter)
 
         binding.root.setOnClickListener {
             val view = requireActivity().currentFocus

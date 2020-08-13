@@ -147,15 +147,6 @@
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                        <Spinner
-                            android:id="@+id/genderSpinner"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="32dp"
-                            android:layout_marginEnd="32dp"
-                            android:prompt="@string/select_gender"
-                            android:entries="@array/genders"/>
-
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/genderTextField"
                             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
@@ -169,6 +160,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="none"
+                                android:text="@={updateUserViewModel.userEnteredGender}"
                                 android:layout_marginStart="-10dp"
                                 android:backgroundTint="@android:color/transparent"
                                 />
