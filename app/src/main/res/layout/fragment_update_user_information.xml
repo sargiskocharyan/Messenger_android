@@ -223,26 +223,6 @@
                                 android:inputType="phone"/>
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/updateEmailEditText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="32dp"
-                            android:layout_marginEnd="32dp"
-                            android:ems="10"
-                            android:hint="@string/email"
-                            app:setEmailErrorText="@{updateUserViewModel.isEmailValid}"
-                            app:errorEnabled="true">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:text="@={updateUserViewModel.userEnteredEmail}"
-                                android:background="@android:color/transparent"
-                                android:layout_marginStart="-10dp"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="textEmailAddress"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-
                     </LinearLayout>
 
                     <Button

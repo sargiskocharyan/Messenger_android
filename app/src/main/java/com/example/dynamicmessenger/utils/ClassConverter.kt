@@ -1,5 +1,6 @@
 package com.example.dynamicmessenger.utils
 
+import com.example.dynamicmessenger.network.authorization.models.ChangePhoneNumberOrEmailProperty
 import com.example.dynamicmessenger.network.authorization.models.LoginProperty
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.database.SignedUser
@@ -31,5 +32,19 @@ object ClassConverter {
             user.phoneNumber,
             user.info,
             user.avatarURL)
+    }
+
+    fun changePhoneNumberOrEmailPropertyToSignedUser(changePhoneNumberOrEmailProperty: ChangePhoneNumberOrEmailProperty): SignedUser {
+        return SignedUser(
+            changePhoneNumberOrEmailProperty.user._id,
+            changePhoneNumberOrEmailProperty.user.gender,
+            changePhoneNumberOrEmailProperty.user.name,
+            changePhoneNumberOrEmailProperty.user.lastname,
+            changePhoneNumberOrEmailProperty.user.username,
+            changePhoneNumberOrEmailProperty.user.email,
+            changePhoneNumberOrEmailProperty.user.birthday,
+            changePhoneNumberOrEmailProperty.user.phoneNumber,
+            changePhoneNumberOrEmailProperty.user.info,
+            changePhoneNumberOrEmailProperty.user.avatarURL)
     }
 }

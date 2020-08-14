@@ -3,24 +3,19 @@ package com.example.dynamicmessenger.userHome.viewModels
 import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.*
-import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.AppLangKeys
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
-import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.LogoutApi
 import com.example.dynamicmessenger.network.SaveAvatarApi
-import com.example.dynamicmessenger.userDataController.database.DiskCache
+import com.example.dynamicmessenger.network.authorization.models.LogoutUserTask
 import com.example.dynamicmessenger.utils.MyAlertMessage
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
-import java.net.URL
 
 class UserInformationViewModel(application: Application) : AndroidViewModel(application) {
     private val _username = MutableLiveData<String>()
@@ -69,12 +64,12 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
 
     fun logoutNetwork(token: String?, context: Context?, closure: (Boolean) -> Unit) {
         if (token == null || token == "") {
-            closure(true)
             return
         }
         viewModelScope.launch {
             try {
-                val response = LogoutApi.retrofitService.logoutResponseAsync(token)
+                val logoutUserTask = LogoutUserTask(SharedConfigs.deviceUUID)
+                val response = LogoutApi.retrofitService.logoutUser(token, logoutUserTask)
                 if (response.isSuccessful) {
                     closure(true)
                 } else {

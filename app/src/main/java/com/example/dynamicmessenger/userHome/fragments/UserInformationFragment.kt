@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -103,11 +104,11 @@ class UserInformationFragment : Fragment() {
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 SharedConfigs.setDarkMode(true)
-                LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
+//                LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 SharedConfigs.setDarkMode(false)
-                LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
+//                LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
             }
         }
 
@@ -144,6 +145,24 @@ class UserInformationFragment : Fragment() {
 
         binding.updateUserInformationImageView.setOnClickListener {
             val selectedFragment = UpdateUserInformationFragment()
+            activity?.supportFragmentManager
+                ?.beginTransaction()
+                ?.replace(R.id.fragmentContainer, selectedFragment)
+                ?.addToBackStack(null)
+                ?.commit()
+        }
+
+        binding.updateUserEmailImageView.setOnClickListener {
+            val selectedFragment = UpdateUserEmailFragment()
+            activity?.supportFragmentManager
+                ?.beginTransaction()
+                ?.replace(R.id.fragmentContainer, selectedFragment)
+                ?.addToBackStack(null)
+                ?.commit()
+        }
+
+        binding.updateUserPhoneNumberImageView.setOnClickListener {
+            val selectedFragment = UpdateUserPhoneNumberFragment()
             activity?.supportFragmentManager
                 ?.beginTransaction()
                 ?.replace(R.id.fragmentContainer, selectedFragment)

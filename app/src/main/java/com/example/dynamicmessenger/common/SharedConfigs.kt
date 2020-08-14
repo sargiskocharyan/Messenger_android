@@ -18,6 +18,7 @@ object SharedConfigs {
     private lateinit var userRep: SignedUserRepository
     private lateinit var tokenDao: UserTokenDao
     private lateinit var tokenRep: UserTokenRepository
+    lateinit var deviceUUID: String
     var callingOpponentId: String? = null
     var callRoomName: String? = null
     var isCalling: Boolean = false //TODO

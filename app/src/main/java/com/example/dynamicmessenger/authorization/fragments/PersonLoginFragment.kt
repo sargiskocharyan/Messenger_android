@@ -38,9 +38,9 @@ class PersonLoginFragment : Fragment() {
 
         binding.root.setOnClickListener {
             val view = requireActivity().currentFocus
-            view?.let { v ->
+            view?.let {
                 val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-                imm?.hideSoftInputFromWindow(v.windowToken, 0)
+                imm?.hideSoftInputFromWindow(it.windowToken, 0)
             }
         }
 

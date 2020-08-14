@@ -15,7 +15,13 @@ import java.text.SimpleDateFormat
 data class MailExistProperty(val mailExist: Boolean, val code: String) : Parcelable
 
 @Parcelize
+data class PhoneNumberExistProperty(val phonenumberExists: Boolean, val code: String) : Parcelable
+
+@Parcelize
 data class LoginProperty(val token: String, val tokenExpire: String, val user: User) : Parcelable
+
+@Parcelize
+data class ChangePhoneNumberOrEmailProperty(val user: User) : Parcelable
 
 @Parcelize
 @Entity(tableName = "user")

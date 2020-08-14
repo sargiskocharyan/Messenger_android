@@ -32,6 +32,10 @@ class ResponseUrls {
         const val callHistory = "callhistory"
         const val call = "call"
         const val registerDevice = "registerdevice"
+        const val updateEmail = "updatemail"
+        const val verifyEmail = "verifyemail"
+        const val updatePhoneNumber = "updatephonenumber"
+        const val verifyPhoneNumber = "verifyphonenumber"
 
 //        users/me/avatar
 //        users/5ee76c90bfa0980017a39013/avatar
@@ -75,9 +79,10 @@ class MyHeaders {
 
 class ValidationConstants {
     companion object {
-        val NAME_REGEX = Pattern.compile("[a-zA-Z]{2,31}")
-        val LAST_NAME_REGEX = Pattern.compile("[a-zA-Z]{2,31}")
-        val USERNAME_REGEX = Pattern.compile("^[a-zA-Z0-9](_(?!(\\.|_|-))|\\.(?!(_|-|\\.))|-(?!(\\.|_|-))|[a-zA-Z0-9]){2,18}[a-zA-Z0-9]\$")
+        val NAME_REGEX: Pattern = Pattern.compile("[a-zA-Z]{2,31}")
+        val LAST_NAME_REGEX: Pattern = Pattern.compile("[a-zA-Z]{2,31}")
+        val USERNAME_REGEX: Pattern = Pattern.compile("^[a-zA-Z0-9](_(?!(\\.|_|-))|\\.(?!(_|-|\\.))|-(?!(\\.|_|-))|[a-zA-Z0-9]){2,18}[a-zA-Z0-9]\$")
+        val PHONE_NUMBER_REGEX: Pattern = Pattern.compile("([+])[0-9]{2,31}")
     }
 }
 
@@ -111,5 +116,7 @@ enum class MyFragments {
     OPPONENT_INFORMATION,
     UPDATE_INFORMATION,
     USER_IMAGE,
-    CALL_INFORMATION
+    CALL_INFORMATION,
+    UPDATE_EMAIL,
+    UPDATE_PHONE_NUMBER
 }

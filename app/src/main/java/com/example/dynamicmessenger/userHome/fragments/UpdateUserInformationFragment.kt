@@ -46,9 +46,6 @@ class UpdateUserInformationFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.updateUserViewModel = viewModel
 
-        //Bottom bar
-        val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
-//        bottomNavBar.visibility = View.GONE
         SharedConfigs.currentFragment.value = MyFragments.UPDATE_INFORMATION
         datePicker = DatePickerHelper(requireContext(), true)
 
@@ -63,6 +60,34 @@ class UpdateUserInformationFragment : Fragment() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         (binding.genderTextField.editText as? AutoCompleteTextView)?.setAdapter(adapter)
 
+        onClickListeners()
+
+        return binding.root
+    }
+    private fun showDatePickerDialog() {
+        val cal = Calendar.getInstance()
+        val d = cal.get(Calendar.DAY_OF_MONTH)
+        val m = cal.get(Calendar.MONTH)
+        val y = cal.get(Calendar.YEAR)
+        datePicker.showDialog(d, m, y, object : DatePickerHelper.Callback {
+            @SuppressLint("SetTextI18n")
+            override fun onDateSelected(dayOfMonth: Int, month: Int, year: Int) {
+                val dayStr = if (dayOfMonth < 10) "0${dayOfMonth}" else "$dayOfMonth"
+                val mon = month + 1
+                val monthStr = if (mon < 10) "0${mon}" else "$mon"
+                viewModel.userEnteredDate.value = "$monthStr/$dayStr/$year"
+            }
+        })
+    }
+
+    private fun configureTopNavBar(toolbar: Toolbar) {
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+    }
+
+    private fun onClickListeners() {
         binding.birthDateDatePicker.editText?.setOnClickListener {
             showDatePickerDialog()
         }
@@ -136,30 +161,6 @@ class UpdateUserInformationFragment : Fragment() {
 
         binding.hidePersonalDataSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.hidePersonalData(isChecked)
-        }
-
-        return binding.root
-    }
-    private fun showDatePickerDialog() {
-        val cal = Calendar.getInstance()
-        val d = cal.get(Calendar.DAY_OF_MONTH)
-        val m = cal.get(Calendar.MONTH)
-        val y = cal.get(Calendar.YEAR)
-        datePicker.showDialog(d, m, y, object : DatePickerHelper.Callback {
-            @SuppressLint("SetTextI18n")
-            override fun onDateSelected(dayOfMonth: Int, month: Int, year: Int) {
-                val dayStr = if (dayOfMonth < 10) "0${dayOfMonth}" else "$dayOfMonth"
-                val mon = month + 1
-                val monthStr = if (mon < 10) "0${mon}" else "$mon"
-                viewModel.userEnteredDate.value = "$monthStr/$dayStr/$year"
-            }
-        })
-    }
-
-    private fun configureTopNavBar(toolbar: Toolbar) {
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 

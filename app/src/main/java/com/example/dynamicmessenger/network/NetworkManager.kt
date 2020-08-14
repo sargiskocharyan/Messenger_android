@@ -8,6 +8,7 @@ import com.example.dynamicmessenger.common.MyHeaders
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs.myContext
 import com.example.dynamicmessenger.network.authorization.models.*
+import com.example.dynamicmessenger.userDataController.database.SignedUser
 import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
@@ -202,21 +203,6 @@ object UserTokenVerifyApi {
     }
 }
 
-//University
-interface JsonPlaceHolderUniversityApi {
-    @Headers(MyHeaders.accept)
-    @GET(ResponseUrls.allUniversity)
-    suspend fun universityResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String):
-            Response<List<UniversityProperty>>
-}
-
-object UniversityApi {
-    val retrofitService : JsonPlaceHolderUniversityApi by lazy {
-        retrofit.create(
-            JsonPlaceHolderUniversityApi::class.java)
-    }
-}
-
 //User contacts
 interface JsonPlaceHolderContactsApi {
     @Headers(MyHeaders.accept)
@@ -271,7 +257,8 @@ object AddContactApi {
 interface JsonPlaceHolderLogoutApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.logout)
-    suspend fun logoutResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
+    suspend fun logoutUser(@Header (MyHeaders.tokenAuthorization) header: String,
+                           @Body deviceUUID : LogoutUserTask) :
             Response<Void>
 }
 
@@ -529,6 +516,74 @@ object RegisterDeviceApi {
     val retrofitService : JsonPlaceHolderRegisterDeviceApi by lazy {
         retrofit.create(
             JsonPlaceHolderRegisterDeviceApi::class.java
+        )
+    }
+}
+
+//Update Mail
+interface JsonPlaceHolderUpdateEmailApi {
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.updateEmail)
+    suspend fun updateEmail(@Header (MyHeaders.tokenAuthorization) header: String,
+                            @Body updateEmail: UpdateEmailTask) :
+            Response<MailExistProperty>
+}
+
+object UpdateEmailApi {
+    val retrofitService : JsonPlaceHolderUpdateEmailApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderUpdateEmailApi::class.java
+        )
+    }
+}
+
+//Verify Email
+interface JsonPlaceHolderVerifyMailApi {
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.verifyEmail)
+    suspend fun verifyEmail(@Header (MyHeaders.tokenAuthorization) header: String,
+                            @Body verifyEmail: VerifyEmailTask) :
+            Response<ChangePhoneNumberOrEmailProperty>
+}
+
+object VerifyEmailApi {
+    val retrofitService : JsonPlaceHolderVerifyMailApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderVerifyMailApi::class.java
+        )
+    }
+}
+
+//Update Phone Number
+interface JsonPlaceHolderUpdatePhoneNumberApi {
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.updatePhoneNumber)
+    suspend fun updatePhoneNumber(@Header (MyHeaders.tokenAuthorization) header: String,
+                                  @Body updatePhoneNumber: UpdatePhoneNumberTask) :
+            Response<PhoneNumberExistProperty>
+}
+
+object UpdatePhoneNumberApi {
+    val retrofitService : JsonPlaceHolderUpdatePhoneNumberApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderUpdatePhoneNumberApi::class.java
+        )
+    }
+}
+
+//Verify Phone Number
+interface JsonPlaceHolderVerifyPhoneNumberApi {
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.verifyPhoneNumber)
+    suspend fun verifyPhoneNumber(@Header (MyHeaders.tokenAuthorization) header: String,
+                                  @Body verifyPhoneNumber: VerifyPhoneNumberTask) :
+            Response<ChangePhoneNumberOrEmailProperty>
+}
+
+object VerifyPhoneNumberApi {
+    val retrofitService : JsonPlaceHolderVerifyPhoneNumberApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderVerifyPhoneNumberApi::class.java
         )
     }
 }

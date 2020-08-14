@@ -21,6 +21,7 @@ import com.example.dynamicmessenger.userCalls.viewModels.CallRoomViewModel
 import com.example.dynamicmessenger.userCalls.webRtc.CustomPeerConnectionObserver
 import com.example.dynamicmessenger.userCalls.webRtc.CustomSdpObserver
 import com.example.dynamicmessenger.userCalls.webRtc.SignallingClient
+import com.example.dynamicmessenger.utils.notifications.RemoteNotificationManager
 import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.*
@@ -58,9 +59,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         binding.lifecycleOwner = this
         SharedConfigs.isCallingInProgress = true
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !== PackageManager.PERMISSION_GRANTED
-            || ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) !== PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO), ALL_PERMISSIONS_CODE)
+        if (!RemoteNotificationManager.checkPermissions(this)) {
+            RemoteNotificationManager.requestPermissions(this)
         } else {
             start()
         }

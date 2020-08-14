@@ -101,6 +101,7 @@ class HomeActivity : AppCompatActivity() {
 ////            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
 //        })
         val androidId: String = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+        SharedConfigs.deviceUUID = androidId
         RemoteNotificationManager.registerDeviceToken(androidId)
 
 
@@ -169,9 +170,8 @@ class HomeActivity : AppCompatActivity() {
                         .setMessage(getString(R.string.your_session_expires_please_log_in_again))
                         .setPositiveButton("ok") { _, _ ->
                             val intent = Intent(context, MainActivity::class.java)
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(intent)
+                            finish()
                         }
                         .create().show()
                 }

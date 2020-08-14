@@ -32,4 +32,14 @@ data class DeleteUserCallTask (val callId: String)
 
 data class RegisterDeviceTask (val deviceUUID: String, val token: String, val voIPToken: String? = null, val platform: String = "android")
 
+data class LogoutUserTask (val deviceUUID: String)
+
+data class UpdateEmailTask (val mail: String)
+
+data class VerifyEmailTask (val mail: String, val code: String)
+
+data class UpdatePhoneNumberTask (val number: String)
+
+data class VerifyPhoneNumberTask (val number: String, val code: String)
+
 data class CallNotification(val caller: String, val roomName: String, val username: String, val image: String, val name: String)
