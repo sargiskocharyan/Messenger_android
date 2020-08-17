@@ -79,12 +79,12 @@ fun loginRegisterTextChange(textView: TextView, answer: Boolean) {
     }
 }
 
-@BindingAdapter("setCircleImageVisible")
-fun setCircleImageVisible(circleImage: CircleImageView, answer: Boolean) {
+@BindingAdapter("setViewVisible")
+fun setViewVisible(view: View, answer: Boolean) {
     if (answer) {
-        circleImage.visibility = View.VISIBLE
+        view.visibility = View.VISIBLE
     } else {
-        circleImage.visibility = View.INVISIBLE
+        view.visibility = View.INVISIBLE
     }
 }
 

@@ -19,6 +19,7 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.GetUserInfoByIdApi
+import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userCalls.fragments.CallInformationFragment
 import com.example.dynamicmessenger.userDataController.database.*
@@ -56,34 +57,23 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: UserCallsViewHolder, position: Int) {
         val item = data[position]
-        val opponentId: String = if (item.participants.size > 1) {
-            if (item.participants[0] == SharedConfigs.signedUser?._id ?: "") {
-                item.participants[1]
+        val opponentId: String = if (item.caller == SharedConfigs.signedUser?._id ?: "") {
+                item.receiver!!
             } else {
-                item.participants[0]
+                item.caller!!
             }
-        } else {
-            item.caller!!
-        }
-
-        SharedConfigs.userRepository.getUserInformation(opponentId).observeForever { user ->
-            if (user != null) {
-                if (user.name != null) {
-                    holder.name.text = user.name
-                    holder.lastName.text = user.lastname
-                } else {
-                    holder.name.text = user.username
-                }
-
-                if (user.avatarURL != null) {
-                    SharedConfigs.userRepository.getAvatar(user.avatarURL).observeForever {
-                        holder.userImageView.setImageBitmap(it)
+        SharedConfigs.userRepository.getUserInformationFromDB(opponentId).let {
+            if (it == null) {
+                SharedConfigs.userRepository.getUserInformation(opponentId).observeForever { user ->
+                    if (user != null) {
+                        configureUserInformation(user, holder)
                     }
-                } else {
-                    holder.userImageView.setImageResource(R.drawable.ic_user_image)
                 }
+            } else {
+                configureUserInformation(it, holder)
             }
         }
+
         val callStartTime = Utils.convertStringToDate(item.callStartTime)
         val callEndTime = Utils.convertStringToDate(item.callEndTime)
         if (callStartTime != null && callEndTime != null) {
@@ -131,16 +121,33 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
         val callState: ImageView = itemView.findViewById(R.id.callState)
         init {
             itemView.setOnClickListener {
-                val opponentId = if (userCalls!!.participants[0] == SharedConfigs.signedUser?._id ?: "") {
-                    userCalls!!.participants[1]
+                val opponentId = if (userCalls!!.caller == SharedConfigs.signedUser?._id ?: "") {
+                    userCalls!!.receiver
                 } else {
-                    userCalls!!.participants[0]
+                    userCalls!!.caller
                 }
                 SharedConfigs.callingOpponentId = opponentId
                 val intent = Intent(context, CallRoomActivity::class.java)
                 context.startActivity(intent)
                 (context as Activity?)!!.overridePendingTransition(1, 1)
             }
+        }
+    }
+
+    private fun configureUserInformation(user: User, holder: UserCallsViewHolder) {
+        if (user.name != null) {
+            holder.name.text = user.name
+            holder.lastName.text = user.lastname
+        } else {
+            holder.name.text = user.username
+        }
+
+        if (user.avatarURL != null) {
+            SharedConfigs.userRepository.getAvatar(user.avatarURL).observeForever {
+                holder.userImageView.setImageBitmap(it)
+            }
+        } else {
+            holder.userImageView.setImageResource(R.drawable.ic_user_image)
         }
     }
 }

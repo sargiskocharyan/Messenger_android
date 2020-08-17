@@ -35,6 +35,7 @@ import com.example.dynamicmessenger.userHome.fragments.UserCallFragment
 import com.example.dynamicmessenger.userHome.fragments.UserChatFragment
 import com.example.dynamicmessenger.userHome.fragments.UserInformationFragment
 import com.example.dynamicmessenger.utils.LocalizationUtil
+import com.example.dynamicmessenger.utils.NetworkUtils
 import com.example.dynamicmessenger.utils.notifications.FirebaseNotificationService
 import com.example.dynamicmessenger.utils.notifications.NotificationMessages
 import com.example.dynamicmessenger.utils.notifications.RemoteNotificationManager
@@ -230,7 +231,8 @@ class HomeActivity : AppCompatActivity() {
                     SharedConfigs.callingOpponentId = gsonMessage.caller
                     SharedConfigs.callRoomName = gsonMessage.roomName
                     SharedConfigs.isCalling = true
-                    NotificationMessages.setCallNotification(this, managers)
+//                    NotificationMessages.setCallNotification(this, managers)
+                    NotificationMessages.setNewCallNotification(this, managers)
                 } catch (e: Exception) {
                     Log.i("+++", "onMessageForNotification $e")
                 }

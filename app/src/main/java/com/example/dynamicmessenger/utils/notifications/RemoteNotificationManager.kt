@@ -48,24 +48,25 @@ object RemoteNotificationManager {
 
     fun registerDeviceToken(deviceUUID: String, firebaseToken: String? = getFirebaseToken() ) {
         val signedUser = SharedConfigs.signedUser
-        if (!signedUser?.deviceRegistered!!) {
-            firebaseToken?.let {
-                GlobalScope.launch(Dispatchers.IO) {
-                    try {
-                        val response = RegisterDeviceApi.retrofitService.registerDevice(SharedConfigs.token, RegisterDeviceTask(deviceUUID, it))
-                        if (response.isSuccessful) {
-                            signedUser.deviceRegistered = true
-                            SharedConfigs.signedUser = signedUser
+        if (signedUser != null) {
+            if (!signedUser.deviceRegistered!!) {
+                firebaseToken?.let {
+                    GlobalScope.launch(Dispatchers.IO) {
+                        try {
+                            val response = RegisterDeviceApi.retrofitService.registerDevice(SharedConfigs.token, RegisterDeviceTask(deviceUUID, it))
+                            if (response.isSuccessful) {
+                                signedUser.deviceRegistered = true
+                                SharedConfigs.signedUser = signedUser
+                            }
+                            Log.i("+++", "register device response ${response}")
+                        } catch (e: Exception) {
+                            Log.i("+++", "register device exception ${e}")
                         }
-                        Log.i("+++", "register device response ${response}")
-                    } catch (e: Exception) {
-                        Log.i("+++", "register device exception ${e}")
+                        this.cancel()
                     }
-                    this.cancel()
                 }
             }
         }
-
     }
 
     private fun getFirebaseToken(): String? {

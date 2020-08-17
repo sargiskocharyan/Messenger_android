@@ -3,6 +3,13 @@ package com.example.dynamicmessenger.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
+import android.os.Build
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import java.text.SimpleDateFormat
@@ -100,5 +107,48 @@ object Utils {
         } else {
             "${hours}h ${minutes}m ${seconds}s"
         }
+    }
+}
+
+object NetworkUtils : ConnectivityManager.NetworkCallback() {
+
+    private val networkLiveData: MutableLiveData<Boolean> = MutableLiveData()
+
+    fun getNetworkLiveData(context: Context): LiveData<Boolean> {
+        networkLiveData.postValue(networkAvailable(context))
+
+        return networkLiveData
+    }
+
+    fun networkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        var isConnected = false
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            connectivityManager.registerDefaultNetworkCallback(this)
+        } else {
+            val builder = NetworkRequest.Builder()
+            connectivityManager.registerNetworkCallback(builder.build(), this)
+        }
+
+        connectivityManager.allNetworks.forEach { network ->
+            val networkCapability = connectivityManager.getNetworkCapabilities(network)
+
+            networkCapability?.let {
+                if (it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
+                    isConnected = true
+                    return@forEach
+                }
+            }
+        }
+        return isConnected
+    }
+
+    override fun onAvailable(network: Network) {
+        networkLiveData.postValue(true)
+    }
+
+    override fun onLost(network: Network) {
+        networkLiveData.postValue(false)
     }
 }

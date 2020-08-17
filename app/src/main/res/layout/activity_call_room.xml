@@ -39,12 +39,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/switchCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_flip_camera_ios_24"
+            app:setImageVisibility="@{viewModel.isEnableSwitchCamera}"
+            app:layout_constraintBottom_toBottomOf="@+id/localView"
+            app:layout_constraintStart_toStartOf="@+id/localView" />
+
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/callerCircleImageView"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_marginBottom="20dp"
-            app:setCircleImageVisible="@{signalingClient.isCallingNotProgress}"
+            app:setViewVisible="@{signalingClient.isCallingNotProgress}"
             app:setCircleImageBitmap="@{viewModel.opponentAvatarBitmap}"
             app:layout_constraintBottom_toTopOf="@+id/callerNameTextView"
             app:layout_constraintEnd_toEndOf="@+id/activityCallRoomConstraintLayout"
@@ -109,7 +119,7 @@
             android:src="@drawable/ic_baseline_mic_on_24"
             android:backgroundTint="@color/white"
             android:background="@drawable/background_for_buttons"
-            app:setCircleImageVisible="@{!signalingClient.isCallingNotProgress}"
+            app:setViewVisible="@{!signalingClient.isCallingNotProgress}"
             app:setMicrophoneImage="@{viewModel.isEnabledMicrophone}"
             app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
             app:layout_constraintEnd_toStartOf="@+id/hangUpCallCardView"
@@ -128,7 +138,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/hangUpCallCardView"
             app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView"
-            app:setCircleImageVisible="@{!signalingClient.isCallingNotProgress}"
+            app:setViewVisible="@{!signalingClient.isCallingNotProgress}"
             app:setVolumeImage="@{viewModel.isEnabledVolume}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

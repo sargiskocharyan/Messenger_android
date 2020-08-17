@@ -106,6 +106,7 @@ class UserChatFragment : Fragment() {
             } else {
                 Toast.makeText(requireContext(), "try again", Toast.LENGTH_SHORT).show()
             }
+            swipeRefreshLayout?.isRefreshing = false
         })
     }
 

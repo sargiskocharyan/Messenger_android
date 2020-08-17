@@ -1,15 +1,12 @@
 package com.example.dynamicmessenger.network
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import com.example.dynamicmessenger.common.MyHeaders
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs.myContext
 import com.example.dynamicmessenger.network.authorization.models.*
-import com.example.dynamicmessenger.userDataController.database.SignedUser
 import com.example.dynamicmessenger.userDataController.database.UserCalls
+import com.example.dynamicmessenger.utils.NetworkUtils
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -37,15 +34,6 @@ private const val ERO_URL = ResponseUrls.ErosServerIP
 private var cacheSize: Long = 10 * 1024 * 1024 // 10 MB
 
 private var cache = Cache(myContext.codeCacheDir, cacheSize)
-
-fun networkAvailable(context: Context): Boolean? {
-    var isConnected: Boolean? = false // Initial Value
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
-    if (activeNetwork != null && activeNetwork.isConnected)
-        isConnected = true
-    return isConnected
-}
 
 fun getUnsafeOkHttpClient(): OkHttpClient? {
     return try {
@@ -85,7 +73,7 @@ fun getUnsafeOkHttpClient(): OkHttpClient? {
             .cache(cache)
             .addInterceptor { chain ->
                 var request = chain.request()
-                request = if (networkAvailable(myContext)!!)
+                request = if (NetworkUtils.networkAvailable(myContext))
                     request.newBuilder().header("Cache-Control", "public, max-age=" + 10).build()
                 else
                     request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build()
@@ -101,7 +89,7 @@ val okHttpClient: OkHttpClient = OkHttpClient.Builder()
     .cache(cache)
     .addInterceptor { chain ->
         var request = chain.request()
-        request = if (networkAvailable(myContext)!!)
+        request = if (NetworkUtils.networkAvailable(myContext))
             request.newBuilder().header("Cache-Control", "public, max-age=" + 10).build()
         else
             request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build()

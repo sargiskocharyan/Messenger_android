@@ -50,7 +50,7 @@ class UserCallFragment : Fragment() {
 
         SharedConfigs.userRepository.getUserCalls().observe(viewLifecycleOwner, Observer {
             if (it != null) {
-                adapter.submitList(it)
+                adapter.submitList(it.reversed())
             }
         })
 

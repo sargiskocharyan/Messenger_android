@@ -11,7 +11,6 @@
     <string name="last_name">Фамилия</string>
     <string name="username">Имя пользователя</string>
     <string name="email">Адрес электронной почты</string>
-    <string name="university">Университет</string>
     <string name="contacts">Контакты</string>
     <string name="reset">Сброс</string>
     <string name="found_users">Найденные пользователи</string>
@@ -23,7 +22,6 @@
     <string name="email_will_be_used_to_confirm">Электронная почта будет использоваться для подтверждения</string>
     <string name="continue_button">Продолжить</string>
     <string name="enter_code">Введите код...</string>
-    <string name="select_university">Выберите университет</string>
     <string name="create_account">Обновить информацию</string>
     <string name="skip">Пропускать</string>
     <string name="congratulations">Congratulations</string>

@@ -54,6 +54,7 @@ data class UserCalls(
     val _id: String,
     val callSuggestTime: String?,
     val caller: String?,
+    val receiver: String?,
     var message: String?,
     val createdAt: String?,
     val updatedAt: String?,

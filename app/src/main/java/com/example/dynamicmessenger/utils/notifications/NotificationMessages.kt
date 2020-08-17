@@ -7,12 +7,15 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.common.ChanelConstants
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
@@ -63,25 +66,6 @@ class NotificationMessages {
 //                }
             }
 
-//            try {
-//                val url = URL(SharedConfigs.signedUser?.avatarURL)
-//                val image = BitmapFactory.decodeStream(url.openConnection().getInputStream())
-////                val image = SharedConfigs.userRepository.getAvatar(SharedConfigs.signedUser?.avatarURL).value
-//                collapsedView.setImageViewBitmap(R.id.notificationCallImage, image)
-//            } catch (e: Exception) {
-//                println(e)
-//            }
-//            SharedConfigs.userRepository.getUserInformation(SharedConfigs.callingOpponentId).observeForever {user ->
-//                if (user != null) {
-//                    collapsedView.setTextViewText(R.id.notificationCallName, user.username)
-//                    SharedConfigs.userRepository.getAvatar(user.avatarURL).observeForever {
-//                        if (it != null) {
-//                            collapsedView.setImageViewBitmap(R.id.notificationCallImage, it)
-//                        }
-//                    }
-//                }
-//            }
-
             val builder = NotificationCompat.Builder(context, ChanelConstants.CALL_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_call)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -96,6 +80,45 @@ class NotificationMessages {
             manager.notify(1155, builder)
 
 
+        }
+
+        fun setNewCallNotification(context: Context, manager: NotificationManagerCompat) {
+
+            // Create Notification
+            val intent = Intent(context, CallRoomActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            val pendingIntent = PendingIntent.getActivity(context, 1155, intent, PendingIntent.FLAG_ONE_SHOT)
+            val collapsedView = RemoteViews(context.packageName, R.layout.notification_call)
+            collapsedView.setOnClickPendingIntent(R.id.notificationCallAcceptButton, pendingIntent)
+
+            SharedConfigs.userRepository.getUserInformationFromDB(SharedConfigs.callingOpponentId)?.let {user ->
+                collapsedView.setTextViewText(R.id.notificationCallName, user.username)
+                try {
+                    val url = URL(user.avatarURL)
+                    val image = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+                    collapsedView.setImageViewBitmap(R.id.notificationCallImage, image)
+                } catch (e: Exception) {
+                    println(e)
+                }
+//                SharedConfigs.userRepository.getAvatarFromDB(user.avatarURL)?.let {
+//                    collapsedView.setImageViewBitmap(R.id.notificationCallImage, it)
+//                }
+            }
+
+            val builder = NotificationCompat.Builder(context, ChanelConstants.CALL_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_call)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_CALL)
+                .setAutoCancel(true)
+                .setTimeoutAfter(30000)
+                .setCustomContentView(collapsedView)
+//                .setContentIntent(pendingIntent)
+//                .setCustomBigContentView(collapsedView)
+                .setContent(collapsedView)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+
+            manager.notify(1155, builder.build())
         }
 
         @RequiresApi(api = Build.VERSION_CODES.O)

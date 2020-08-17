@@ -32,7 +32,7 @@ interface RepositoryInterface {
 
 }
 
-class Repository(val context: Context): RepositoryInterface {
+class Repository private constructor(val context: Context): RepositoryInterface {
 
     private val signedUserRepository = SignedUserDatabase.getUserDatabase(context)!!.signedUserDao()
     private val tokenRepository = SignedUserDatabase.getUserDatabase(context)!!.userTokenDao()
@@ -62,9 +62,9 @@ class Repository(val context: Context): RepositoryInterface {
             } catch (e: Exception) {
                 userChats.postValue(null)
             }
-            swipeRefreshLayout?.isRefreshing = false
             this.cancel()
         }
+//        swipeRefreshLayout?.isRefreshing = false
         return userChats
     }
 
