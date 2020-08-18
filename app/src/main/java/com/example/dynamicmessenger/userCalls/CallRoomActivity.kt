@@ -21,6 +21,8 @@ import com.example.dynamicmessenger.userCalls.webRtc.CustomPeerConnectionObserve
 import com.example.dynamicmessenger.userCalls.webRtc.CustomSdpObserver
 import com.example.dynamicmessenger.userCalls.webRtc.SignallingClient
 import com.example.dynamicmessenger.utils.notifications.RemoteNotificationManager
+import com.example.dynamicmessenger.utils.turnScreenOffAndKeyguardOn
+import com.example.dynamicmessenger.utils.turnScreenOnAndKeyguardOff
 import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.*
@@ -87,6 +89,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
 
         timer.start()
+
+        turnScreenOnAndKeyguardOff()
 
 
     }
@@ -452,6 +456,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         surfaceTextureHelper.dispose()
 //            surfaceTextureHelper = null
 //        }
+
+        turnScreenOffAndKeyguardOn()
     }
 
     private fun dpToPx(dp: Int): Int {

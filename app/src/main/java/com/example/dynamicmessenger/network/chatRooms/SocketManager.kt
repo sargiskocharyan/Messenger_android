@@ -21,6 +21,7 @@ import com.google.gson.Gson
 import org.json.JSONException
 import org.json.JSONObject
 import java.security.cert.X509Certificate
+import java.util.*
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSession
 import javax.net.ssl.TrustManager
@@ -164,6 +165,33 @@ object SocketManager {
                     return@Runnable
                 }
             })
+        }
+    }
+
+    fun callSocketEvents() {
+        mSocket?.on("callAccepted") {
+            onCallAccepted(it)
+            Log.d("SignallingClientAcc", "Home activity call accepted: args = " + Arrays.toString(it))
+        }
+
+        mSocket?.on("offer") {
+            onOffer(it)
+            Log.d("SignallingClientAcc", "Home activity offer ")
+        }
+
+        mSocket?.on("answer") {
+            onAnswer(it)
+            Log.d("SignallingClientAcc", "Home activity answer ")
+        }
+
+        mSocket?.on("candidates") {
+            onCandidate(it)
+            Log.d("SignallingClientAcc", "Home activity candidates ")
+        }
+
+        mSocket?.on("callEnded") {
+            onCallEnded()
+            Log.d("SignallingClientAcc", "Home activity call Ended ")
         }
     }
 

@@ -21,6 +21,7 @@ import com.example.dynamicmessenger.common.AppLangKeys
 import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
+import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
 import com.example.dynamicmessenger.utils.LocalizationUtil
@@ -123,6 +124,7 @@ class UserInformationFragment : Fragment() {
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
+                    SocketManager.closeSocket()
                     (activity as Activity?)!!.overridePendingTransition(1, 1)
                 }
             }

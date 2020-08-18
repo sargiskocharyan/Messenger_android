@@ -5,14 +5,22 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.graphics.Color
 import android.os.Build
+import android.util.Log
 import com.example.dynamicmessenger.common.ChanelConstants
 import com.example.dynamicmessenger.common.SharedConfigs
+import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.github.nkzawa.socketio.client.Socket
 
 
 class App: Application() {
+//    private lateinit var socketManager: SocketManager
+
     override fun onCreate() {
         super.onCreate()
         SharedConfigs.init(this)
+        if (SharedConfigs.token != "") {
+            SharedConfigs.connectSocket()
+        }
         createNotificationChannels()
     }
 
@@ -31,20 +39,28 @@ class App: Application() {
             messageChannel.description = "New message"
             messageChannel.enableLights(true)
             messageChannel.lightColor = Color.BLUE
+            messageChannel.enableVibration(true)
 
             val callChannel = NotificationChannel(
                 ChanelConstants.CALL_CHANNEL_ID,
                 "Calls",
                 NotificationManager.IMPORTANCE_HIGH
             )
+
             callChannel.enableLights(true)
             callChannel.lightColor = Color.RED
+            callChannel.enableVibration(true)
 
 
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(messageChannel)
             manager.createNotificationChannel(callChannel)
         }
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+        SocketManager.closeSocket()
     }
 
 }

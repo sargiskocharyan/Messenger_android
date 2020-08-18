@@ -79,15 +79,32 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
         if (callStartTime != null && callEndTime != null) {
             val duration = callEndTime.time - callStartTime.time
             holder.callDuration.text = Utils.getCallDurationInSeconds(duration)
+        } else {
+            holder.callDuration.text = item.status
         }
 
         holder.callTime.text = item.callSuggestTime?.let { Utils.dateConverter(it) }
 
-        if (item.caller != SharedConfigs.signedUser?._id) {
-            holder.callState.setImageResource(R.drawable.ic_incoming_call)
-        } else {
-            holder.callState.setImageResource(R.drawable.ic_outgoing_call)
+        if (item.status == "accepted") {
+            if (item.caller != SharedConfigs.signedUser?._id) {
+                holder.callState.setImageResource(R.drawable.ic_incoming_call)
+            } else {
+                holder.callState.setImageResource(R.drawable.ic_outgoing_call)
+            }
+        } else if (item.status == "cancelled") {
+            if (item.caller != SharedConfigs.signedUser?._id) {
+                holder.callState.setImageResource(R.drawable.ic_baseline_call_made_24)
+            } else {
+                holder.callState.setImageResource(R.drawable.ic_baseline_call_received_24)
+            }
+        } else if (item.status == "missed") {
+            if (item.caller != SharedConfigs.signedUser?._id) {
+                holder.callState.setImageResource(R.drawable.ic_baseline_call_missed_24)
+            } else {
+                holder.callState.setImageResource(R.drawable.ic_baseline_call_missed_outgoing_24)
+            }
         }
+
 
         holder.userCalls = item
 

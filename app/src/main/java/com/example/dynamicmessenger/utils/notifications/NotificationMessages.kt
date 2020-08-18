@@ -18,13 +18,14 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.common.ChanelConstants
 import com.example.dynamicmessenger.common.SharedConfigs
+import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import java.net.URL
 
 
 class NotificationMessages {
     companion object {
-        fun setNotificationMessage(messageTitle: String, message: String, context: Context, manager: NotificationManager) {
+        fun setNotificationMessage(messageTitle: String, message: String, context: Context, manager: NotificationManagerCompat) {
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //                setupChannels(manager)
 //            }
@@ -38,6 +39,7 @@ class NotificationMessages {
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setColor(Color.BLUE)
 //                .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
                 .setGroup(messageTitle)
@@ -87,7 +89,7 @@ class NotificationMessages {
             // Create Notification
             val intent = Intent(context, CallRoomActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            val pendingIntent = PendingIntent.getActivity(context, 1155, intent, PendingIntent.FLAG_ONE_SHOT)
+            val pendingIntent = PendingIntent.getActivity(context, 1155, intent, PendingIntent.FLAG_UPDATE_CURRENT)
             val collapsedView = RemoteViews(context.packageName, R.layout.notification_call)
             collapsedView.setOnClickPendingIntent(R.id.notificationCallAcceptButton, pendingIntent)
 
@@ -100,11 +102,8 @@ class NotificationMessages {
                 } catch (e: Exception) {
                     println(e)
                 }
-//                SharedConfigs.userRepository.getAvatarFromDB(user.avatarURL)?.let {
-//                    collapsedView.setImageViewBitmap(R.id.notificationCallImage, it)
-//                }
             }
-
+            SocketManager.callSocketEvents()
             val builder = NotificationCompat.Builder(context, ChanelConstants.CALL_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_call)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -112,30 +111,12 @@ class NotificationMessages {
                 .setAutoCancel(true)
                 .setTimeoutAfter(30000)
                 .setCustomContentView(collapsedView)
-//                .setContentIntent(pendingIntent)
-//                .setCustomBigContentView(collapsedView)
                 .setContent(collapsedView)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
+                .setFullScreenIntent(pendingIntent, true)
 
             manager.notify(1155, builder.build())
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        private fun setupChannels(notificationManager: NotificationManager?) {
-            val adminChannelName: CharSequence = "New notification"
-            val adminChannelDescription = "Device to device notification"
-            val adminChannel: NotificationChannel
-            adminChannel = NotificationChannel(
-                "101",
-                adminChannelName,
-                NotificationManager.IMPORTANCE_HIGH
-            )
-            adminChannel.description = adminChannelDescription
-            adminChannel.enableLights(true)
-            adminChannel.lightColor = Color.RED
-            adminChannel.enableVibration(true)
-            notificationManager?.createNotificationChannel(adminChannel)
         }
     }
 }

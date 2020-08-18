@@ -24,6 +24,7 @@ import com.example.dynamicmessenger.databinding.FragmentUpdateUserInformationBin
 import com.example.dynamicmessenger.dialogs.DeactivateUserDialog
 import com.example.dynamicmessenger.dialogs.DeleteUserDialog
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
+import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UpdateUserInformationViewModel
 import com.example.dynamicmessenger.utils.DatePickerHelper
@@ -131,6 +132,7 @@ class UpdateUserInformationFragment : Fragment() {
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(intent)
+                            SocketManager.closeSocket()
                             (activity as Activity?)!!.overridePendingTransition(1, 1)
                         }
                     }
@@ -151,6 +153,7 @@ class UpdateUserInformationFragment : Fragment() {
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(intent)
+                            SocketManager.closeSocket()
                             (activity as Activity?)!!.overridePendingTransition(1, 1)
                         }
                     }

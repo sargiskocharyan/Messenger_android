@@ -14,6 +14,7 @@ import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import com.example.dynamicmessenger.activitys.MainActivity
 import com.example.dynamicmessenger.common.SharedConfigs
+import com.example.dynamicmessenger.utils.scheduleNotification
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -27,14 +28,18 @@ class FirebaseNotificationService: FirebaseMessagingService() {
             |messageType ${p0.messageType}
             |rawData ${p0.rawData}
             |priority ${p0.priority}
+            |${p0.priority}
         """.trimMargin())
+        val managers = NotificationManagerCompat.from(this)
         if (p0.data["roomName"] != null) {
-            val managers = NotificationManagerCompat.from(this)
             SharedConfigs.callingOpponentId = p0.data["id"].toString()
             SharedConfigs.callRoomName = p0.data["roomName"].toString()
             SharedConfigs.isCalling = true
 //            NotificationMessages.setCallNotification(this, managers)
-            NotificationMessages.setNewCallNotification(this, managers)
+//            NotificationMessages.setNewCallNotification(this, managers)
+            this.scheduleNotification(true)
+        } else if (p0.notification != null) {
+            NotificationMessages.setNotificationMessage(p0.notification!!.title ?: "", p0.notification!!.body ?: "", this, managers)
         }
     }
 

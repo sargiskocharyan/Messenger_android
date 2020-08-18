@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.dynamicmessenger">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,6 +15,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <application
         android:name=".activitys.App"
@@ -25,6 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
         <activity android:name=".activitys.SplashScreenActivity"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -33,20 +36,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".userCalls.CallRoomActivity"
             android:showOnLockScreen="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name=".userCalls.CallRoomActivity" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
+
         <activity android:name=".activitys.MainActivity"/>
+
         <activity android:name=".activitys.HomeActivity" />
 
         <service android:name=".utils.notifications.FirebaseNotificationService"
-            android:exported="false">
+            android:exported="false"
+            android:directBootAware="true"
+            tools:targetApi="n">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />

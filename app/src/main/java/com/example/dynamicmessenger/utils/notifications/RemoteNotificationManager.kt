@@ -1,24 +1,23 @@
 package com.example.dynamicmessenger.utils.notifications
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.provider.Settings
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.RegisterDeviceApi
 import com.example.dynamicmessenger.network.authorization.models.RegisterDeviceTask
-import com.google.android.gms.tasks.OnCompleteListener
+import com.example.dynamicmessenger.userDataController.database.SignedUser
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import java.util.*
+
 /**
  *
  * static func registerDeviceToken(pushDeviceToken: String, voipDeviceToken)+
@@ -46,37 +45,42 @@ object RemoteNotificationManager {
     }
 
 
-    fun registerDeviceToken(deviceUUID: String, firebaseToken: String? = getFirebaseToken() ) {
-        val signedUser = SharedConfigs.signedUser
-        if (signedUser != null) {
+    fun registerDeviceToken(deviceUUID: String, firebaseToken: String? = null) {
+        SharedConfigs.signedUser?.let { signedUser ->
             if (!signedUser.deviceRegistered!!) {
-                firebaseToken?.let {
-                    GlobalScope.launch(Dispatchers.IO) {
-                        try {
-                            val response = RegisterDeviceApi.retrofitService.registerDevice(SharedConfigs.token, RegisterDeviceTask(deviceUUID, it))
-                            if (response.isSuccessful) {
-                                signedUser.deviceRegistered = true
-                                SharedConfigs.signedUser = signedUser
-                            }
-                            Log.i("+++", "register device response ${response}")
-                        } catch (e: Exception) {
-                            Log.i("+++", "register device exception ${e}")
-                        }
-                        this.cancel()
+                if (firebaseToken != null) {
+                    sendFirebaseToken(deviceUUID, firebaseToken, signedUser)
+                } else {
+                    getFirebaseToken {
+                        sendFirebaseToken(deviceUUID, it, signedUser)
                     }
                 }
             }
         }
     }
 
-    private fun getFirebaseToken(): String? {
-        var firebaseToken: String? = null
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                firebaseToken = task.result?.token
+    private fun sendFirebaseToken(deviceUUID: String, token: String?, signedUser: SignedUser) {
+        token?.let {
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    val response = RegisterDeviceApi.retrofitService.registerDevice(SharedConfigs.token, RegisterDeviceTask(deviceUUID, it))
+                    if (response.isSuccessful) {
+                        signedUser.deviceRegistered = true
+                        SharedConfigs.signedUser = signedUser
+                    }
+                } catch (e: Exception) {
+                }
+                this.cancel()
             }
         }
-        return firebaseToken
+    }
+
+    private fun getFirebaseToken(closure: (String) -> Unit) {
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                task.result?.token?.let { closure(it) }
+            }
+        }
     }
 
 }

@@ -82,25 +82,25 @@ class HomeActivity : AppCompatActivity() {
             //TODO: Use TAGS
             Log.e("+++", "HomeActivity Socket $e")
         }
-        mSocket.connect()
+//        mSocket.connect()
 
         socketEvents()
 
-//        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(OnCompleteListener { task ->
-//            if (!task.isSuccessful) {
-//                Log.w("FireBase", "getInstanceId failed", task.exception)
-//                return@OnCompleteListener
-//            }
-//
-//            // Get new Instance ID token
-//            val token = task.result?.token
-//
-//            // Log and toast
-////            val msg = getString(R.string.msg_token_fmt, token)
-//
-//            Log.d("FireBase", token)
-////            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
-//        })
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("FireBase", "getInstanceId failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new Instance ID token
+            val token = task.result?.token
+
+            // Log and toast
+//            val msg = getString(R.string.msg_token_fmt, token)
+
+            Log.d("FireBase", token)
+//            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+        })
         val androidId: String = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         SharedConfigs.deviceUUID = androidId
         RemoteNotificationManager.registerDeviceToken(androidId)
@@ -133,7 +133,7 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        socketManager.closeSocket()
+//        socketManager.closeSocket()
         activityJob.cancel()
     }
 
@@ -183,8 +183,8 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun socketEvents() {
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val managers = NotificationManagerCompat.from(this)
+//        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val manager = NotificationManagerCompat.from(this)
 
         mSocket.on("message", socketManager.onMessageForNotification(Activity()){
             try {
@@ -197,30 +197,32 @@ class HomeActivity : AppCompatActivity() {
             }
         })
 
-        mSocket.on("callAccepted") {
-            socketManager.onCallAccepted(it)
-            Log.d("SignallingClientAcc", "Home activity call accepted: args = " + Arrays.toString(it))
-        }
+        socketManager.callSocketEvents()
 
-        mSocket.on("offer") {
-            socketManager.onOffer(it)
-            Log.d("SignallingClientAcc", "Home activity offer ")
-        }
-
-        mSocket.on("answer") {
-            socketManager.onAnswer(it)
-            Log.d("SignallingClientAcc", "Home activity answer ")
-        }
-
-        mSocket.on("candidates") {
-            socketManager.onCandidate(it)
-            Log.d("SignallingClientAcc", "Home activity candidates ")
-        }
-
-        mSocket.on("callEnded") {
-            socketManager.onCallEnded()
-            Log.d("SignallingClientAcc", "Home activity call Ended ")
-        }
+//        mSocket.on("callAccepted") {
+//            socketManager.onCallAccepted(it)
+//            Log.d("SignallingClientAcc", "Home activity call accepted: args = " + Arrays.toString(it))
+//        }
+//
+//        mSocket.on("offer") {
+//            socketManager.onOffer(it)
+//            Log.d("SignallingClientAcc", "Home activity offer ")
+//        }
+//
+//        mSocket.on("answer") {
+//            socketManager.onAnswer(it)
+//            Log.d("SignallingClientAcc", "Home activity answer ")
+//        }
+//
+//        mSocket.on("candidates") {
+//            socketManager.onCandidate(it)
+//            Log.d("SignallingClientAcc", "Home activity candidates ")
+//        }
+//
+//        mSocket.on("callEnded") {
+//            socketManager.onCallEnded()
+//            Log.d("SignallingClientAcc", "Home activity call Ended ")
+//        }
 
         mSocket.on("call") {
             if (!SharedConfigs.isCallingInProgress) {
@@ -232,7 +234,7 @@ class HomeActivity : AppCompatActivity() {
                     SharedConfigs.callRoomName = gsonMessage.roomName
                     SharedConfigs.isCalling = true
 //                    NotificationMessages.setCallNotification(this, managers)
-                    NotificationMessages.setNewCallNotification(this, managers)
+                    NotificationMessages.setNewCallNotification(this, manager)
                 } catch (e: Exception) {
                     Log.i("+++", "onMessageForNotification $e")
                 }

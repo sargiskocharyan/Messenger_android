@@ -42,6 +42,7 @@ class PersonLoginViewModel: ViewModel(), Observable {
                         SharedConfigs.signedUser = ClassConverter.loginPropertyToSignedUser(response.body()!!)
 //                        SharedConfigs.token = response.body()!!.token
                         SharedConfigs.saveToken(response.body()!!.token, response.body()!!.tokenExpire)
+                        SharedConfigs.connectSocket()
                         _goToNextPage.value = true
                     } else {
                         MyAlertMessage.showAlertDialog(view.context, "Enter correct code")
@@ -58,6 +59,7 @@ class PersonLoginViewModel: ViewModel(), Observable {
                         SharedConfigs.signedUser = ClassConverter.loginPropertyToSignedUser(response.body()!!)
 //                        SharedConfigs.token = response.body()!!.token
                         SharedConfigs.saveToken(response.body()!!.token, response.body()!!.tokenExpire)
+                        SharedConfigs.connectSocket()
                         view.findNavController().navigate(R.id.action_personLoginFragment_to_personRegistrationFragment)
                     } else {
                         MyAlertMessage.showAlertDialog(view.context, "Enter correct code")
