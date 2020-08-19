@@ -11,6 +11,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
@@ -91,6 +92,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         timer.start()
 
         turnScreenOnAndKeyguardOff()
+        val notificationManager = NotificationManagerCompat.from(this)
+        notificationManager.cancel(1155)
 
 
     }

@@ -66,7 +66,6 @@ class PersonLoginFragment : Fragment() {
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
-                (activity as Activity?)!!.overridePendingTransition(1, 1)
             }
         })
 

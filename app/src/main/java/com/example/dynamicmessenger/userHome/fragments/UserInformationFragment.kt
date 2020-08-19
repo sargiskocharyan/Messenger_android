@@ -111,6 +111,7 @@ class UserInformationFragment : Fragment() {
                 SharedConfigs.setDarkMode(false)
 //                LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
             }
+            SharedConfigs.currentFragment.value = MyFragments.INFORMATION
         }
 
         binding.logoutConstraintLayout.setOnClickListener {
@@ -120,12 +121,11 @@ class UserInformationFragment : Fragment() {
                     SharedConfigs.deleteToken()
                     SharedConfigs.deleteSignedUser()
                     SharedConfigs.userRepository.deleteAllData()
-                    val intent = Intent(activity, MainActivity::class.java)
+                    val intent = Intent(requireActivity(), MainActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
                     SocketManager.closeSocket()
-                    (activity as Activity?)!!.overridePendingTransition(1, 1)
                 }
             }
         }

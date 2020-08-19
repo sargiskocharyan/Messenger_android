@@ -91,11 +91,7 @@ class UserContactsAdapter(val context: Context): RecyclerView.Adapter<UserContac
                 if (SharedConfigs.lastFragment == MyFragments.CALLS) {
                     SharedConfigs.callingOpponentId = userContact!!._id
                     val intent = Intent(context, CallRoomActivity::class.java)
-//                    userCalls!!.time = System.currentTimeMillis()
-//                    userCalls!!.callingState = 1   TODO save call
-//                    viewModel.saveCall(userCalls!!)
                     context.startActivity(intent)
-                    (context as Activity?)!!.overridePendingTransition(1, 1)
                     return@setOnClickListener
                 }
 

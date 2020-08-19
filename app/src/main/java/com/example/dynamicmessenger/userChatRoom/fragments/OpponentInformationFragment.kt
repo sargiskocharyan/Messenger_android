@@ -54,7 +54,6 @@ class OpponentInformationFragment : Fragment() {
             SharedConfigs.callingOpponentId = opponentUser._id
             val intent = Intent(activity, CallRoomActivity::class.java)
             startActivity(intent)
-            (activity as Activity?)!!.overridePendingTransition(1, 1)
         }
 
         binding.sendMessageImageView.setOnClickListener {

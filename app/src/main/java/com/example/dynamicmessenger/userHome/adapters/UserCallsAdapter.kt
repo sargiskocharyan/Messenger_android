@@ -146,7 +146,6 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
                 SharedConfigs.callingOpponentId = opponentId
                 val intent = Intent(context, CallRoomActivity::class.java)
                 context.startActivity(intent)
-                (context as Activity?)!!.overridePendingTransition(1, 1)
             }
         }
     }

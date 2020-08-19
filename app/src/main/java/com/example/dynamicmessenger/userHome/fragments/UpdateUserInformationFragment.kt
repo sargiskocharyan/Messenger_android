@@ -133,7 +133,6 @@ class UpdateUserInformationFragment : Fragment() {
                                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(intent)
                             SocketManager.closeSocket()
-                            (activity as Activity?)!!.overridePendingTransition(1, 1)
                         }
                     }
                 }
@@ -154,7 +153,6 @@ class UpdateUserInformationFragment : Fragment() {
                                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(intent)
                             SocketManager.closeSocket()
-                            (activity as Activity?)!!.overridePendingTransition(1, 1)
                         }
                     }
                 }
