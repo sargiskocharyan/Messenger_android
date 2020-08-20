@@ -99,7 +99,7 @@ class NotificationMessages {
             val alarmSound: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
 //            val mp: MediaPlayer = MediaPlayer.create(context, alarmSound)
 //            mp.start()
-            SocketManager.callSocketEvents()
+//            SocketManager.callSocketEvents()
             val builder = NotificationCompat.Builder(context, ChanelConstants.CALL_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_call)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

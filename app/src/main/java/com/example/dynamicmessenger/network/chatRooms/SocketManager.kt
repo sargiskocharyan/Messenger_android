@@ -4,16 +4,18 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
 import android.widget.EditText
+import androidx.core.app.NotificationManagerCompat
 import androidx.recyclerview.widget.DiffUtil
+import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.authorization.models.Call
-import com.example.dynamicmessenger.network.authorization.models.ChatRoom
-import com.example.dynamicmessenger.network.authorization.models.Message
-import com.example.dynamicmessenger.network.authorization.models.Sender
+import com.example.dynamicmessenger.network.authorization.models.*
 import com.example.dynamicmessenger.userCalls.webRtc.SignallingClient
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomDiffUtilCallback
+import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
+import com.example.dynamicmessenger.userHome.fragments.UserChatFragment
+import com.example.dynamicmessenger.utils.notifications.NotificationMessages
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
@@ -32,6 +34,8 @@ object SocketManager {
     private var mSocket: Socket? = null
 
     private var signalingClient: SignallingClient? = null
+    private var chatFragment: UserChatFragment? = null
+    private var chatRoomFragment: ChatRoomFragment? = null
 
     @SuppressLint("TrustAllX509TrustManager")
     private val trustAllCerts =
@@ -54,14 +58,6 @@ object SocketManager {
             ) {
             }
         })
-
-    fun addSignalingClient(client: SignallingClient) {
-        this.signalingClient = client
-    }
-
-    fun removeSignallingClient() {
-        this.signalingClient = null
-    }
 
     fun getSocketInstance(): Socket? {
         if (mSocket == null) {
@@ -90,24 +86,64 @@ object SocketManager {
         deleteSocket()
     }
 
-    fun onCallAccepted(array: Array<Any>) {
+    fun connectSocket() {
+        getSocketInstance()?.connect()
+        callSocketEvents()
+    }
+
+    //Signaling client
+    fun addSignalingClient(client: SignallingClient) {
+        this.signalingClient = client
+    }
+
+    fun removeSignallingClient() {
+        this.signalingClient = null
+    }
+
+    private fun onCallAccepted(array: Array<Any>) {
         signalingClient?.onCallAccepted(array)
     }
 
-    fun onOffer(array: Array<Any>) {
+    private fun onOffer(array: Array<Any>) {
         signalingClient?.onOffer(array)
     }
 
-    fun onAnswer(array: Array<Any>) {
+    private fun onAnswer(array: Array<Any>) {
         signalingClient?.onAnswer(array)
     }
 
-    fun onCandidate(array: Array<Any>) {
+    private fun onCandidate(array: Array<Any>) {
         signalingClient?.onCandidate(array)
     }
 
-    fun onCallEnded() {
+    private fun onCallEnded() {
         signalingClient?.onCallEnded()
+    }
+
+    //User Chat Fragment
+    fun addChatFragment(fragment: UserChatFragment) {
+        chatFragment = fragment
+    }
+
+    fun removeChatFragment() {
+        chatFragment = null
+    }
+
+    private fun refreshChatFragment() {
+        chatFragment?.updateRecyclerView()
+    }
+
+    //User Chat Room Fragment
+    fun addChatRoomFragment(fragment: ChatRoomFragment) {
+        chatRoomFragment = fragment
+    }
+
+    fun removeChatRoomFragment() {
+        chatRoomFragment = null
+    }
+
+    private fun refreshChatRoomFragment(newMessage: ChatRoom) {
+        chatRoomFragment?.receiveMessage(newMessage)
     }
 
     fun sendMessage(receiverID: String, editText: EditText) {
@@ -115,43 +151,7 @@ object SocketManager {
         editText.text.clear()
     }
 
-    fun onMessage(adapter: ChatRoomAdapter, chatID: String, activity: Activity?, closure: (Boolean) -> Unit): Emitter.Listener {
-        return Emitter.Listener { args ->
-            activity?.runOnUiThread(Runnable {
-                val data = args[0] as JSONObject
-                Log.i("+++", "message $data")
-                val gson = Gson()
-                val gsonMessage = gson.fromJson(data.toString(), Message::class.java)
-                try {
-                    val message = ChatRoom(gsonMessage.senderId,null , gsonMessage.type, gsonMessage.text!!, gsonMessage.reciever, gsonMessage.createdAt)//TODO change
-                    if (message.senderId == chatID || message.reciever == chatID) {
-                        val newData = adapter.data.toMutableList()
-                        newData += message
-                        adapter.submitList(newData)
-                        closure(true)
-                    }
-                } catch (e: Exception) {
-                    Log.i("+++", "onMessage $e")
-                    return@Runnable
-                }
-            })
-        }
-    }
-
-    fun onMessageForAllChats(activity: Activity?, closure: (Boolean) -> Unit): Emitter.Listener {
-        return Emitter.Listener {
-            activity?.runOnUiThread(Runnable {
-                try {
-                    closure(true)
-                } catch (e: Exception) {
-                    Log.i("+++", "onMessageForAllChats $e")
-                    return@Runnable
-                }
-            })
-        }
-    }
-
-    fun onMessageForNotification(activity: Activity?, closure: (Message) -> Unit): Emitter.Listener {
+    private fun onMessageForNotification(activity: Activity?, closure: (Message, ChatRoom) -> Unit): Emitter.Listener {
         return Emitter.Listener { args ->
             activity?.runOnUiThread(Runnable {
                 try {
@@ -159,7 +159,7 @@ object SocketManager {
                     val gson = Gson()
                     val gsonMessage = gson.fromJson(data.toString(), Message::class.java)
                     val message = ChatRoom(gsonMessage.senderId,null , gsonMessage.type, gsonMessage.text!!, gsonMessage.reciever, gsonMessage.createdAt)
-                    closure(gsonMessage)
+                    closure(gsonMessage, message)
                 } catch (e: Exception) {
                     Log.i("+++", "onMessageForNotification $e")
                     return@Runnable
@@ -168,7 +168,9 @@ object SocketManager {
         }
     }
 
-    fun callSocketEvents() {
+    private fun callSocketEvents() {
+        val manager = NotificationManagerCompat.from(SharedConfigs.myContext)
+
         mSocket?.on("callAccepted") {
             onCallAccepted(it)
             Log.d("SignallingClientAcc", "Home activity call accepted: args = " + Arrays.toString(it))
@@ -192,6 +194,43 @@ object SocketManager {
         mSocket?.on("callEnded") {
             onCallEnded()
             Log.d("SignallingClientAcc", "Home activity call Ended ")
+        }
+
+        mSocket?.on("message", onMessageForNotification(Activity()){ message: Message, chatRoom: ChatRoom ->
+            try {
+                when {
+                    SharedConfigs.currentFragment.value == MyFragments.CHAT_ROOM -> refreshChatRoomFragment(chatRoom)
+                    SharedConfigs.currentFragment.value == MyFragments.CHATS -> refreshChatFragment()
+                    message.senderId != SharedConfigs.signedUser?._id ?: true -> {
+                        message.senderUsername?.let { senderName -> NotificationMessages.setNotificationMessage(senderName, message.text!!, SharedConfigs.myContext, manager) }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.i("+++catch", e.toString())
+            }
+        })
+
+        mSocket?.on("call") {
+            if (!SharedConfigs.isCallingInProgress) {
+                try {
+                    val data = it[0] as JSONObject
+                    val gson = Gson()
+                    val gsonMessage = gson.fromJson(data.toString(), CallNotification::class.java)
+                    SharedConfigs.callingOpponentId = gsonMessage.caller
+                    SharedConfigs.callRoomName = gsonMessage.roomName
+                    SharedConfigs.isCalling = true
+//                    NotificationMessages.setCallNotification(this, managers)
+                    NotificationMessages.setNewCallNotification(SharedConfigs.myContext, manager)
+                } catch (e: Exception) {
+                    Log.i("+++", "onMessageForNotification $e")
+                }
+                Log.i("+++", """on call
+                    |${Arrays.toString(it)}
+                """.trimMargin())
+            } else {
+                mSocket?.emit("callAccepted", SharedConfigs.callingOpponentId, false)
+                NotificationMessages.setNotificationMessage("Incoming Call", "Incoming Call", SharedConfigs.myContext, manager)
+            }
         }
     }
 

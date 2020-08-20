@@ -9,6 +9,7 @@ import android.util.Log
 import com.example.dynamicmessenger.common.ChanelConstants
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.utils.NetworkUtils
 import com.github.nkzawa.socketio.client.Socket
 
 
@@ -19,8 +20,10 @@ class App: Application() {
         super.onCreate()
         SharedConfigs.init(this)
         if (SharedConfigs.token != "") {
-            SharedConfigs.connectSocket()
+            SocketManager.connectSocket()
+//            SocketManager.callSocketEvents()
         }
+        NetworkUtils.createConnectivityManager()
         createNotificationChannels()
     }
 
@@ -28,6 +31,11 @@ class App: Application() {
 //        val lang = SharedConfigs.appLang.value ?: Locale.getDefault().getLanguage()
 //        super.attachBaseContext(LocalizationUtil.applyLanguage(base!!, lang))
 //    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+        SocketManager.closeSocket()
+    }
 
     private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -56,11 +64,6 @@ class App: Application() {
             manager.createNotificationChannel(messageChannel)
             manager.createNotificationChannel(callChannel)
         }
-    }
-
-    override fun onTerminate() {
-        super.onTerminate()
-        SocketManager.closeSocket()
     }
 
 }

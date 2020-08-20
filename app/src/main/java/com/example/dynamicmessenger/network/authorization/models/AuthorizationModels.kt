@@ -10,7 +10,6 @@ data class UpdateUserTask (
     val name: String? = null,
     val lastname: String? = null,
     val username: String? = null,
-    val phoneNumber: String? = null,
     val info: String? = null,
     val address: String? = null,
     val gender: String? = null,

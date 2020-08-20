@@ -113,23 +113,25 @@ object Utils {
 object NetworkUtils : ConnectivityManager.NetworkCallback() {
 
     private val networkLiveData: MutableLiveData<Boolean> = MutableLiveData()
+    private val connectivityManager = SharedConfigs.myContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    fun getNetworkLiveData(context: Context): LiveData<Boolean> {
-        networkLiveData.postValue(networkAvailable(context))
+    fun getNetworkLiveData(): LiveData<Boolean> {
+        networkLiveData.postValue(networkAvailable())
 
         return networkLiveData
     }
 
-    fun networkAvailable(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        var isConnected = false
-
+    fun createConnectivityManager() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             connectivityManager.registerDefaultNetworkCallback(this)
         } else {
             val builder = NetworkRequest.Builder()
             connectivityManager.registerNetworkCallback(builder.build(), this)
         }
+    }
+
+    fun networkAvailable(): Boolean {
+        var isConnected = false
 
         connectivityManager.allNetworks.forEach { network ->
             val networkCapability = connectivityManager.getNetworkCapabilities(network)

@@ -16,6 +16,7 @@ import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
+import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
@@ -25,10 +26,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ChatRoomFragment : Fragment() {
     private lateinit var viewModel: ChatRoomViewModel
-    private lateinit var mSocket: Socket
     private lateinit var binding: FragmentChatRoomBinding
     private lateinit var adapter: ChatRoomAdapter
-    private lateinit var socketManager: SocketManager
     private var scrollUpWhenKeyboardOpened = true
 
     override fun onCreateView(
@@ -48,29 +47,15 @@ class ChatRoomFragment : Fragment() {
         SharedConfigs.currentFragment.value = MyFragments.CHAT_ROOM
         //Toolbar
         setHasOptionsMenu(true)
-        val toolbar: Toolbar = binding.chatRoomToolbar
-        configureTopNavBar(toolbar)
-
+        configureTopNavBar(binding.chatRoomToolbar)
         observers(receiverID, linearLayoutManager)
         updateRecyclerView(receiverID)
 
         //socket
-        socketManager = SocketManager
-
-        try {
-            mSocket = socketManager.getSocketInstance()!!
-        } catch (e: Exception) {
-            Log.i("+++", "ChatRoomFragment Socket $e")
-        }
-//        mSocket.connect()
-        mSocket.on("message", socketManager.onMessage(adapter, receiverID, activity) {
-            if (it && scrollUpWhenKeyboardOpened) {
-                scrollToBottom(binding, adapter)
-            }
-        })
+        SocketManager.addChatRoomFragment(this)
 
         binding.sendMessageButton.setOnClickListener {
-            socketManager.sendMessage(receiverID, binding.sendMessageEditText)
+            SocketManager.sendMessage(receiverID, binding.sendMessageEditText)
         }
 
         return binding.root
@@ -83,10 +68,11 @@ class ChatRoomFragment : Fragment() {
         super.onPrepareOptionsMenu(menu)
     }
 
-//    override fun onDestroyView() {
-//        super.onDestroyView()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        SocketManager.removeChatRoomFragment()
 //        HomeActivity.isAddContacts = false
-//    }
+    }
 
     private fun observers(receiverID: String, linearLayoutManager: LinearLayoutManager) {
         SharedConfigs.userRepository.getUserInformation(receiverID).observe(viewLifecycleOwner, Observer {user ->
@@ -102,7 +88,7 @@ class ChatRoomFragment : Fragment() {
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 super.onChanged()
-                scrollToBottom(binding, adapter)
+                scrollToBottom()
             }
         })
 
@@ -126,7 +112,7 @@ class ChatRoomFragment : Fragment() {
 
         viewModel.isKeyboardVisible.observe(viewLifecycleOwner, Observer {
             if (it && scrollUpWhenKeyboardOpened) {
-                scrollToBottom(binding, adapter)
+                scrollToBottom()
             }
         })
     }
@@ -134,11 +120,11 @@ class ChatRoomFragment : Fragment() {
     private fun updateRecyclerView(receiverID: String) {
         viewModel.getMessagesFromNetwork(requireContext(), receiverID) {
             adapter.submitList(it)
-            scrollToBottom(binding, adapter)
+            scrollToBottom()
         }
     }
 
-    private fun scrollToBottom(binding: FragmentChatRoomBinding, adapter: ChatRoomAdapter) {
+    private fun scrollToBottom() {
         binding.chatRecyclerView.scrollToPosition(adapter.itemCount - 1)
     }
 
@@ -154,6 +140,15 @@ class ChatRoomFragment : Fragment() {
                 ?.addToBackStack(null)
                 ?.commit()
             return@setOnMenuItemClickListener true
+        }
+    }
+
+    fun receiveMessage(newMessage: ChatRoom) {
+        val newData = adapter.data.toMutableList()
+        newData += newMessage
+        adapter.submitList(newData)
+        if (scrollUpWhenKeyboardOpened) {
+            scrollToBottom()
         }
     }
 }

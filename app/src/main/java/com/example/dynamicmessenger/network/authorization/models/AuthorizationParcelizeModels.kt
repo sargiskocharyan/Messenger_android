@@ -41,22 +41,6 @@ data class User (
 ) : Parcelable
 
 @Parcelize
-data class University(
-    @PrimaryKey
-    @ColumnInfo(name = "universityId") val _id: String,
-    @ColumnInfo(name = "universityName") val name: String,
-    @ColumnInfo(name = "universityNameRU") val nameRU: String,
-    @ColumnInfo(name = "universityNameEN") val nameEN: String) : Parcelable {
-    override fun toString(): String {
-        return when (SharedConfigs.appLang.value) {
-            AppLangKeys.AM ->  name
-            AppLangKeys.RU ->  nameRU
-            else -> nameEN
-        }
-    }
-}
-
-@Parcelize
 data class UserTokenProperty(val tokenExists: Boolean?, val Error: String?) : Parcelable
 
 @Parcelize
@@ -125,24 +109,6 @@ data class ChatRoom(
     val text: String?,
     val reciever: String,
     val createdAt: String) : Parcelable
-
-@Parcelize
-data class UniversityProperty(val _id: String, val name: String, val nameRU: String , val nameEN: String) : Parcelable {
-    override fun toString(): String {
-        return when (SharedConfigs.appLang.value) {
-            AppLangKeys.AM ->  name
-            AppLangKeys.RU ->  nameRU
-            else -> nameEN
-        }
-    }
-}
-
-@Parcelize
-data class UniversityPropertyList(val list: List<UniversityProperty>) : Parcelable {
-    override fun toString(): String {
-        return list.toString()
-    }
-}
 
 @Parcelize
 data class OnlineUsers(val usersOnline: List<String>) : Parcelable

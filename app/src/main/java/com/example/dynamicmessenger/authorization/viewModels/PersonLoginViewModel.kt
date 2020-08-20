@@ -13,6 +13,7 @@ import com.example.dynamicmessenger.network.LoginApi
 import com.example.dynamicmessenger.network.MailExistApi
 import com.example.dynamicmessenger.network.RegistrationApi
 import com.example.dynamicmessenger.network.authorization.models.*
+import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
@@ -40,9 +41,8 @@ class PersonLoginViewModel: ViewModel(), Observable {
                     if (response.isSuccessful) {
                         //TODO:Use GsonFactory or Moshi?
                         SharedConfigs.signedUser = ClassConverter.loginPropertyToSignedUser(response.body()!!)
-//                        SharedConfigs.token = response.body()!!.token
                         SharedConfigs.saveToken(response.body()!!.token, response.body()!!.tokenExpire)
-                        SharedConfigs.connectSocket()
+                        SocketManager.connectSocket()
                         _goToNextPage.value = true
                     } else {
                         MyAlertMessage.showAlertDialog(view.context, "Enter correct code")
@@ -57,9 +57,8 @@ class PersonLoginViewModel: ViewModel(), Observable {
                     val response = RegistrationApi.retrofitService.registrationResponseAsync(LoginTask(personEmail.value!!, userEnteredCode.value!!))
                     if (response.isSuccessful) {
                         SharedConfigs.signedUser = ClassConverter.loginPropertyToSignedUser(response.body()!!)
-//                        SharedConfigs.token = response.body()!!.token
                         SharedConfigs.saveToken(response.body()!!.token, response.body()!!.tokenExpire)
-                        SharedConfigs.connectSocket()
+                        SocketManager.connectSocket()
                         view.findNavController().navigate(R.id.action_personLoginFragment_to_personRegistrationFragment)
                     } else {
                         MyAlertMessage.showAlertDialog(view.context, "Enter correct code")

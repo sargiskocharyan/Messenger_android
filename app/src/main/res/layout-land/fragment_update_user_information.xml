@@ -205,23 +205,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
                     </com.google.android.material.textfield.TextInputLayout>
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/phoneNumberEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
-                        android:layout_marginEnd="32dp"
-                        android:ems="10"
-                        android:hint="@string/number"
-                        android:inputType="textPersonName">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:text="@={updateUserViewModel.userEnteredPhoneNumber}"
-                            android:background="@android:color/transparent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="phone"/>
-                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 

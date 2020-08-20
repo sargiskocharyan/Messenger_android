@@ -35,8 +35,6 @@ class UpdateUserInformationViewModel(application: Application) : AndroidViewMode
     @Bindable
     val userEnteredInfo = MutableLiveData<String>(SharedConfigs.signedUser?.info ?: "")
     @Bindable
-    val userEnteredPhoneNumber = MutableLiveData<String>(SharedConfigs.signedUser?.phoneNumber ?: "")
-    @Bindable
     val userEnteredEmail = MutableLiveData<String>(SharedConfigs.signedUser?.email ?: "")
     @Bindable
     val userEnteredGender = MutableLiveData<String>()

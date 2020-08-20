@@ -65,7 +65,7 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
         holder.chat = item
         holder.lastname.text = item.lastname
         if (item.message?.type == "call") {//TODO change for all types
-            holder.lastMessage.text = "${item.message.call?.type} call ${item.message.call?.duration}"
+            holder.lastMessage.text = "${item.message.call?.type} call ${item.message.call?.duration ?: ""}"
         } else {
             holder.lastMessage.text = item.message?.text
         }

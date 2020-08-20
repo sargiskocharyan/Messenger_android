@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.dynamicmessenger.network.authorization.models.University
 import kotlinx.android.parcel.Parcelize
 
 @Entity(tableName = "signed_user")

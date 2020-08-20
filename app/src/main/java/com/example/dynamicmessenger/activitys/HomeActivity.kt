@@ -57,8 +57,6 @@ class HomeActivity : AppCompatActivity() {
     private var activityJob = Job()
     private val coroutineScope = CoroutineScope(activityJob + Dispatchers.Main)
     private lateinit var selectedFragment: Fragment
-    private lateinit var socketManager: SocketManager
-    private lateinit var mSocket: Socket
     private lateinit var viewModel: HomeActivityViewModel
     private lateinit var tokenDao: UserTokenDao
     private lateinit var tokenRep: UserTokenRepository
@@ -73,18 +71,6 @@ class HomeActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(HomeActivityViewModel::class.java)
         tokenDao = SignedUserDatabase.getUserDatabase(this)!!.userTokenDao()
         tokenRep = UserTokenRepository(tokenDao)
-
-        //socket
-        socketManager = SocketManager
-        try {
-            mSocket = socketManager.getSocketInstance()!!
-        } catch (e: Exception){
-            //TODO: Use TAGS
-            Log.e("+++", "HomeActivity Socket $e")
-        }
-//        mSocket.connect()
-
-        socketEvents()
 
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
@@ -122,6 +108,7 @@ class HomeActivity : AppCompatActivity() {
                 }
                 else -> bottomNavBar.visibility = View.GONE
             }
+            Log.i("+++", "current fragment = $it")
         })
 //        SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
 //        })
@@ -133,7 +120,6 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-//        socketManager.closeSocket()
         activityJob.cancel()
     }
 
@@ -178,75 +164,6 @@ class HomeActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Toast.makeText(context, "Please check yur internet connection", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun socketEvents() {
-//        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val manager = NotificationManagerCompat.from(this)
-
-        mSocket.on("message", socketManager.onMessageForNotification(Activity()){
-            try {
-                if (selectedFragment != UserChatFragment() && it.senderId != SharedConfigs.signedUser?._id ?: true){
-                    it.senderUsername?.let { senderName -> NotificationMessages.setNotificationMessage(senderName, it.text!!, this, manager) }
-//                    it.senderUsername?.let { senderName -> NotificationMessages.setCallNotification(this, managers) }
-                }
-            } catch (e: Exception) {
-                Log.i("+++catch", e.toString())
-            }
-        })
-
-        socketManager.callSocketEvents()
-
-//        mSocket.on("callAccepted") {
-//            socketManager.onCallAccepted(it)
-//            Log.d("SignallingClientAcc", "Home activity call accepted: args = " + Arrays.toString(it))
-//        }
-//
-//        mSocket.on("offer") {
-//            socketManager.onOffer(it)
-//            Log.d("SignallingClientAcc", "Home activity offer ")
-//        }
-//
-//        mSocket.on("answer") {
-//            socketManager.onAnswer(it)
-//            Log.d("SignallingClientAcc", "Home activity answer ")
-//        }
-//
-//        mSocket.on("candidates") {
-//            socketManager.onCandidate(it)
-//            Log.d("SignallingClientAcc", "Home activity candidates ")
-//        }
-//
-//        mSocket.on("callEnded") {
-//            socketManager.onCallEnded()
-//            Log.d("SignallingClientAcc", "Home activity call Ended ")
-//        }
-
-        mSocket.on("call") {
-            if (!SharedConfigs.isCallingInProgress) {
-                try {
-                    val data = it[0] as JSONObject
-                    val gson = Gson()
-                    val gsonMessage = gson.fromJson(data.toString(), CallNotification::class.java)
-                    SharedConfigs.callingOpponentId = gsonMessage.caller
-                    SharedConfigs.callRoomName = gsonMessage.roomName
-                    SharedConfigs.isCalling = true
-//                    NotificationMessages.setCallNotification(this, managers)
-                    NotificationMessages.setNewCallNotification(this, manager)
-                } catch (e: Exception) {
-                    Log.i("+++", "onMessageForNotification $e")
-                }
-                Log.i("+++", """on call
-                    |${Arrays.toString(it)}
-                """.trimMargin())
-
-//                val intent = Intent(this, CallRoomActivity::class.java)
-//                startActivity(intent)
-            } else {
-                mSocket.emit("callAccepted", SharedConfigs.callingOpponentId, false)
-                NotificationMessages.setNotificationMessage("Incoming Call", "Incoming Call", this, manager)
             }
         }
     }

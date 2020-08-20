@@ -456,6 +456,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         SignallingClient.getInstance()!!.isCallingNotProgress.value = true
         SignallingClient.destroyInstance()
 //        if (surfaceTextureHelper != null) {
+//        stream?.dispose()
+//        stream = null
         surfaceTextureHelper.dispose()
 //            surfaceTextureHelper = null
 //        }

@@ -38,6 +38,7 @@ class UserChatFragment : Fragment() {
     private lateinit var binding: FragmentUserChatBinding
     private lateinit var socketManager: SocketManager
     private lateinit var mSocket: Socket
+    private lateinit var adapter: UserChatsAdapter
 
     @SuppressLint("ResourceType")
     override fun onCreateView(
@@ -53,7 +54,7 @@ class UserChatFragment : Fragment() {
         configureTopNavBar(toolbar)
 
         SharedConfigs.currentFragment.value = MyFragments.CHATS
-        val adapter = UserChatsAdapter(requireContext())
+        adapter = UserChatsAdapter(requireContext())
         binding.root.setHasTransientState(true)
 
         binding.chatsRecyclerView.adapter = adapter
@@ -69,23 +70,7 @@ class UserChatFragment : Fragment() {
         HomeActivity.isAddContacts = null
 
         //Socket
-        socketManager = SocketManager
-        try {
-            mSocket = socketManager.getSocketInstance()!!
-        } catch (e: Exception) {
-            Log.i("+++", "UserChatFragment socket $e")
-        }
-
-//        mSocket.connect()
-        mSocket.on("message", socketManager.onMessageForAllChats(Activity()) {
-            if (SharedConfigs.currentFragment.value == MyFragments.CHATS) {
-                try {
-                    if (it) updateRecyclerView(adapter)
-                } catch (e: Exception) {
-                    Log.i("+++", "UserChatFragment socket event message $e")
-                }
-            }
-        })
+        SocketManager.addChatFragment(this)
 
         return binding.root
     }
@@ -95,6 +80,11 @@ class UserChatFragment : Fragment() {
         val inflater: MenuInflater = requireActivity().menuInflater
         inflater.inflate(R.menu.plus_top_bar, menu)
         super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        SocketManager.removeChatFragment()
     }
 
     private fun getUserChats(adapter: UserChatsAdapter, swipeRefreshLayout: SwipeRefreshLayout? = null) {
@@ -110,7 +100,7 @@ class UserChatFragment : Fragment() {
         })
     }
 
-    private fun updateRecyclerView(adapter: UserChatsAdapter) {
+    fun updateRecyclerView() {
         getUserChats(adapter)
     }
 

@@ -73,7 +73,7 @@ fun getUnsafeOkHttpClient(): OkHttpClient? {
             .cache(cache)
             .addInterceptor { chain ->
                 var request = chain.request()
-                request = if (NetworkUtils.networkAvailable(myContext))
+                request = if (NetworkUtils.networkAvailable())
                     request.newBuilder().header("Cache-Control", "public, max-age=" + 10).build()
                 else
                     request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build()
@@ -89,7 +89,7 @@ val okHttpClient: OkHttpClient = OkHttpClient.Builder()
     .cache(cache)
     .addInterceptor { chain ->
         var request = chain.request()
-        request = if (NetworkUtils.networkAvailable(myContext))
+        request = if (NetworkUtils.networkAvailable())
             request.newBuilder().header("Cache-Control", "public, max-age=" + 10).build()
         else
             request.newBuilder().header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7).build()

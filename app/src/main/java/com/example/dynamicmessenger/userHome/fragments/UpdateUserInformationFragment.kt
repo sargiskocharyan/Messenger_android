@@ -96,7 +96,6 @@ class UpdateUserInformationFragment : Fragment() {
         binding.continueButton.setOnClickListener {
             if (viewModel.userEnteredName.value?.isEmpty()!!) { viewModel.userEnteredName.value = null }
             if (viewModel.userEnteredLastName.value?.isEmpty()!!) { viewModel.userEnteredLastName.value = null }
-            if (viewModel.userEnteredPhoneNumber.value?.isEmpty()!!) { viewModel.userEnteredPhoneNumber.value = null }
             val selectedGender = when (viewModel.userEnteredGender.value) {
                 resources.getString(R.string.male) -> "male"
                 else -> "female"
@@ -105,9 +104,8 @@ class UpdateUserInformationFragment : Fragment() {
             val name = viewModel.userEnteredName.value
             val lastName = viewModel.userEnteredLastName.value
             val username = viewModel.userEnteredUsername.value
-            val phoneNumber = viewModel.userEnteredPhoneNumber.value
             val userBio = viewModel.userEnteredInfo.value
-            val updateUserTask = UpdateUserTask(name, lastName, username, phoneNumber, userBio, gender = selectedGender, birthday = birthDate)
+            val updateUserTask = UpdateUserTask(name, lastName, username, userBio, gender = selectedGender, birthday = birthDate)
             viewModel.updateUserNetwork(updateUserTask, context){closure ->
                 if (closure) {
                     val selectedFragment = UserInformationFragment()

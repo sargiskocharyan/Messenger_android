@@ -3,15 +3,10 @@ package com.example.dynamicmessenger.authorization.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
@@ -20,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.authorization.viewModels.PersonRegistrationViewModel
 import com.example.dynamicmessenger.databinding.FragmentPersonRegistrationBinding
-import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.utils.Validations
 
 
