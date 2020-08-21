@@ -23,8 +23,6 @@ import kotlinx.coroutines.launch
 class OpponentInformationViewModel(application: Application) : AndroidViewModel(application) {
 
     private val context = application
-    private val callsDao = SignedUserDatabase.getUserDatabase(application)!!.userCallsDao()
-//    private val callsRepository = UserCallsRepository(callsDao)
     private val userContactsDao = SignedUserDatabase.getUserDatabase(application)!!.userContactsDao()
     private val contactsRepository = UserContactsRepository(userContactsDao)
     private val contactsList: List<String> = getSavedContacts()
@@ -43,12 +41,6 @@ class OpponentInformationViewModel(application: Application) : AndroidViewModel(
         val savedContacts = contactsRepository.getUserAllContacts
         savedContacts.forEach { list.add(it._id) }
         return list
-    }
-
-    fun saveCall(userCalls: UserCalls) {
-//        viewModelScope.launch {
-//            callsRepository.insert(userCalls)
-//        }
     }
 
     fun removeUserFromContacts() {

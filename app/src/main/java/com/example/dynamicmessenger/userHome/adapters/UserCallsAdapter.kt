@@ -1,7 +1,6 @@
 package com.example.dynamicmessenger.userHome.adapters
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -11,21 +10,17 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.PrimaryKey
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.GetUserInfoByIdApi
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userCalls.fragments.CallInformationFragment
 import com.example.dynamicmessenger.userDataController.database.*
 import com.example.dynamicmessenger.userHome.viewModels.UserCallViewModel
 import com.example.dynamicmessenger.utils.Utils
-import kotlinx.coroutines.launch
 
 class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) : RecyclerView.Adapter<UserCallsAdapter.UserCallsViewHolder>() {
     private var data = mutableListOf<UserCalls>()
@@ -104,7 +99,6 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
                 holder.callState.setImageResource(R.drawable.ic_baseline_call_missed_outgoing_24)
             }
         }
-
 
         holder.userCalls = item
 

@@ -26,8 +26,8 @@ class EmailAndPhoneFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentEmailAndPhoneBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(EmailAndPhoneViewModel::class.java)
+        binding = FragmentEmailAndPhoneBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 

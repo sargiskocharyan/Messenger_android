@@ -92,13 +92,8 @@ class UserInformationFragment : Fragment() {
         }
 
         binding.contactConstraintLayout.setOnClickListener {
-            val selectedFragment = UserContactsFragment()
             SharedConfigs.lastFragment = MyFragments.INFORMATION
-            activity?.supportFragmentManager
-                ?.beginTransaction()
-                ?.replace(R.id.fragmentContainer, selectedFragment)
-                ?.addToBackStack(null)
-                ?.commit()
+            navigateToFragment(UserContactsFragment())
         }
 
         binding.darkModeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -137,39 +132,19 @@ class UserInformationFragment : Fragment() {
         }
 
         binding.userProfileImageView.setOnClickListener {
-            val selectedFragment = UserImageFragment()
-            activity?.supportFragmentManager
-                ?.beginTransaction()
-                ?.replace(R.id.fragmentContainer, selectedFragment)
-                ?.addToBackStack(null)
-                ?.commit()
+            navigateToFragment(UserImageFragment())
         }
 
         binding.updateUserInformationImageView.setOnClickListener {
-            val selectedFragment = UpdateUserInformationFragment()
-            activity?.supportFragmentManager
-                ?.beginTransaction()
-                ?.replace(R.id.fragmentContainer, selectedFragment)
-                ?.addToBackStack(null)
-                ?.commit()
+            navigateToFragment(UpdateUserInformationFragment())
         }
 
         binding.updateUserEmailImageView.setOnClickListener {
-            val selectedFragment = UpdateUserEmailFragment()
-            activity?.supportFragmentManager
-                ?.beginTransaction()
-                ?.replace(R.id.fragmentContainer, selectedFragment)
-                ?.addToBackStack(null)
-                ?.commit()
+            navigateToFragment(UpdateUserEmailFragment())
         }
 
         binding.updateUserPhoneNumberImageView.setOnClickListener {
-            val selectedFragment = UpdateUserPhoneNumberFragment()
-            activity?.supportFragmentManager
-                ?.beginTransaction()
-                ?.replace(R.id.fragmentContainer, selectedFragment)
-                ?.addToBackStack(null)
-                ?.commit()
+            navigateToFragment(UpdateUserPhoneNumberFragment())
         }
 
         binding.userInformationConstraintLayout.setOnClickListener {
@@ -207,5 +182,13 @@ class UserInformationFragment : Fragment() {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
+    }
+
+    private fun navigateToFragment(fragment: Fragment) {
+        activity?.supportFragmentManager
+            ?.beginTransaction()
+            ?.replace(R.id.fragmentContainer, fragment)
+            ?.addToBackStack(null)
+            ?.commit()
     }
 }

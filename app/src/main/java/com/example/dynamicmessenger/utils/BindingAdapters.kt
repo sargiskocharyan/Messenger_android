@@ -89,7 +89,7 @@ fun setViewVisible(view: View, answer: Boolean) {
 }
 
 @BindingAdapter("setCardViewVisible")
-fun setCardViewVisible(cardView: CardView, answer: Boolean) {
+fun setCardViewVisible(cardView: View, answer: Boolean) {
     if (answer) {
         cardView.visibility = View.VISIBLE
     } else {
@@ -115,7 +115,7 @@ fun setImageViewBitmap(image: ImageView, bitmap: Bitmap?) {
 }
 
 @BindingAdapter("setMicrophoneImage")
-fun setMicrophoneImage(circleImage: CircleImageView, answer: Boolean) {
+fun setMicrophoneImage(circleImage: ImageView, answer: Boolean) {
     if (answer) {
         circleImage.setImageResource(R.drawable.ic_baseline_mic_on_24)
     } else {
@@ -124,7 +124,7 @@ fun setMicrophoneImage(circleImage: CircleImageView, answer: Boolean) {
 }
 
 @BindingAdapter("setVolumeImage")
-fun setVolumeImage(circleImage: CircleImageView, answer: Boolean) {
+fun setVolumeImage(circleImage: ImageView, answer: Boolean) {
     if (answer) {
         circleImage.setImageResource(R.drawable.ic_baseline_volume_up_24)
     } else {

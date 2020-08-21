@@ -73,45 +73,37 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="caller name" />
 
-        <androidx.cardview.widget.CardView
+        <ImageView
             android:id="@+id/hangUpCallCardView"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginBottom="40dp"
             android:backgroundTint="@android:color/holo_red_light"
-            app:cardCornerRadius="50dp"
+            android:background="@drawable/background_for_buttons"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_call_end_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/acceptCallCardView"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent">
+        </ImageView>
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="10dp"
-                android:src="@drawable/ic_baseline_call_end_24" />
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
+        <ImageView
             android:id="@+id/acceptCallCardView"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:backgroundTint="@android:color/holo_green_light"
-            app:cardCornerRadius="50dp"
+            android:background="@drawable/background_for_buttons"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/hangUpCallCardView"
             app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_call_24"
             app:setCardViewVisible="@{signalingClient.isCallingNotProgress}">
+        </ImageView>
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="10dp"
-                android:src="@drawable/ic_baseline_call_24" />
-        </androidx.cardview.widget.CardView>
-
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/disableMicrophoneCircleImageView"
             android:layout_width="60dp"
             android:layout_height="60dp"
@@ -126,12 +118,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/disableAudioCircleImageView"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@drawable/background_for_buttons"
             android:padding="10dp"
+            android:background="@drawable/background_for_buttons"
             android:backgroundTint="@color/white"
             android:src="@drawable/ic_baseline_volume_up_24"
             app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"

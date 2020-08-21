@@ -27,8 +27,8 @@ class PersonRegistrationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentPersonRegistrationBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(PersonRegistrationViewModel::class.java)
+        binding = FragmentPersonRegistrationBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 

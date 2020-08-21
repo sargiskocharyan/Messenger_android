@@ -29,7 +29,6 @@ import javax.security.cert.CertificateException
 
 //private const val BASE_URL = ResponseUrls.herokuIP
 private const val BASE_URL = ResponseUrls.ErosServerIP
-private const val ERO_URL = ResponseUrls.ErosServerIP
 
 private var cacheSize: Long = 10 * 1024 * 1024 // 10 MB
 
@@ -107,12 +106,6 @@ private val retrofit = Retrofit.Builder()
     .addCallAdapterFactory(CoroutineCallAdapterFactory())
     .baseUrl(BASE_URL)
     .client(getUnsafeOkHttpClient()!!)
-    .build()
-
-private val retrofitEro = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .addCallAdapterFactory(CoroutineCallAdapterFactory())
-    .baseUrl(ERO_URL)
     .build()
 
 //Email exist

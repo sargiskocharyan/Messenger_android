@@ -1,6 +1,5 @@
 package com.example.dynamicmessenger.authorization.fragments
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -27,9 +26,8 @@ class PersonLoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-//        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-        binding = FragmentPersonLoginBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(PersonLoginViewModel::class.java)
+        binding = FragmentPersonLoginBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 

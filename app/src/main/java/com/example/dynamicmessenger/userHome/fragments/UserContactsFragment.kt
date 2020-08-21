@@ -18,9 +18,6 @@ import com.example.dynamicmessenger.dialogs.ContactsSearchDialog
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userHome.adapters.UserContactsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 
 
 class UserContactsFragment : Fragment() {

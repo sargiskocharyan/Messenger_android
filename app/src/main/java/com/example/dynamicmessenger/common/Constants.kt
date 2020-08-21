@@ -13,7 +13,6 @@ class ResponseUrls {
         const val login = "login"
         const val updateUser = "updateuser"
         const val verifyToken = "tokenExists"
-        const val allUniversity = "university/all"
         const val contacts = "contacts"
         const val searchContacts = "findusers"
         const val addContact = "addcontact"
@@ -58,15 +57,9 @@ object ChanelConstants {
 class SharedPrefConstants {
     companion object {
         const val sharedPrefCreate = "messengerAuth"
-        const val sharedPrefMail = "mail"
-        const val sharedPrefIsMailExist = "isMailExist"
         const val sharedPrefToken = "sharedToken"
-        const val sharedPrefCode = "code"
         const val sharedPrefDarkMode = "darkMode"
-        const val sharedPrefReceiverID = "receiverID"
-        const val sharedPrefIsContacts = "isContacts"
         const val sharedPrefAppLang = "appLanguage"
-        const val sharedPrefReceiverAvatar = "receiverAvatar"
     }
 }
 

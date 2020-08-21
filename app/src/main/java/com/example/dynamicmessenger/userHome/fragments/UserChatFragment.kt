@@ -1,15 +1,11 @@
 package com.example.dynamicmessenger.userHome.fragments
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -19,25 +15,15 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
 import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
-import com.example.dynamicmessenger.dialogs.ContactsSearchDialog
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
-import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userHome.adapters.UserChatsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserChatViewModel
-import com.github.nkzawa.socketio.client.Socket
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 
 
 class UserChatFragment : Fragment() {
     private lateinit var viewModel: UserChatViewModel
     private lateinit var binding: FragmentUserChatBinding
-    private lateinit var socketManager: SocketManager
-    private lateinit var mSocket: Socket
     private lateinit var adapter: UserChatsAdapter
 
     @SuppressLint("ResourceType")

@@ -42,8 +42,8 @@ class UpdateUserInformationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentUpdateUserInformationBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(UpdateUserInformationViewModel::class.java)
+        binding = FragmentUpdateUserInformationBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.updateUserViewModel = viewModel
 
@@ -52,8 +52,7 @@ class UpdateUserInformationFragment : Fragment() {
 
         //Toolbar
         setHasOptionsMenu(true)
-        val toolbar: Toolbar = binding.updateUserInformationToolbar
-        configureTopNavBar(toolbar)
+        configureTopNavBar(binding.updateUserInformationToolbar)
 
         setValidations()
 
@@ -94,15 +93,15 @@ class UpdateUserInformationFragment : Fragment() {
         }
 
         binding.continueButton.setOnClickListener {
-            if (viewModel.userEnteredName.value?.isEmpty()!!) { viewModel.userEnteredName.value = null }
-            if (viewModel.userEnteredLastName.value?.isEmpty()!!) { viewModel.userEnteredLastName.value = null }
+            var name = viewModel.userEnteredName.value
+            var lastName = viewModel.userEnteredLastName.value
+            if (viewModel.userEnteredName.value?.isEmpty()!!) { name = null }
+            if (viewModel.userEnteredLastName.value?.isEmpty()!!) { lastName = null }
             val selectedGender = when (viewModel.userEnteredGender.value) {
                 resources.getString(R.string.male) -> "male"
                 else -> "female"
             }
             val birthDate = viewModel.userEnteredDate.value
-            val name = viewModel.userEnteredName.value
-            val lastName = viewModel.userEnteredLastName.value
             val username = viewModel.userEnteredUsername.value
             val userBio = viewModel.userEnteredInfo.value
             val updateUserTask = UpdateUserTask(name, lastName, username, userBio, gender = selectedGender, birthday = birthDate)
@@ -123,14 +122,7 @@ class UpdateUserInformationFragment : Fragment() {
                 if (userAnswer) {
                     viewModel.deactivateUserAccount {
                         if (it) {
-                            SharedPreferencesManager.deleteUserAllInformation(requireContext())
-                            SharedConfigs.deleteToken()
-                            SharedConfigs.deleteSignedUser()
-                            val intent = Intent(activity, MainActivity::class.java)
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                            startActivity(intent)
-                            SocketManager.closeSocket()
+                            navigateToMainActivity()
                         }
                     }
                 }
@@ -143,14 +135,7 @@ class UpdateUserInformationFragment : Fragment() {
                 if (userAnswer) {
                     viewModel.deleteUserAccount {
                         if (it) {
-                            SharedPreferencesManager.deleteUserAllInformation(requireContext())
-                            SharedConfigs.deleteToken()
-                            SharedConfigs.deleteSignedUser()
-                            val intent = Intent(activity, MainActivity::class.java)
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                            startActivity(intent)
-                            SocketManager.closeSocket()
+                            navigateToMainActivity()
                         }
                     }
                 }
@@ -203,5 +188,16 @@ class UpdateUserInformationFragment : Fragment() {
             viewModel.isLastNameValid.value = Validations.isNameValid(it) || it.isEmpty()
             viewModel.changeIsValidParameters()
         })
+    }
+
+    private fun navigateToMainActivity() {
+        SharedPreferencesManager.deleteUserAllInformation(requireContext())
+        SharedConfigs.deleteToken()
+        SharedConfigs.deleteSignedUser()
+        val intent = Intent(activity, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+        SocketManager.closeSocket()
     }
 }

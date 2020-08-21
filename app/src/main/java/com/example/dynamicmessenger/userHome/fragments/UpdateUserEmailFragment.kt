@@ -35,8 +35,7 @@ class UpdateUserEmailFragment : Fragment() {
 
         //Toolbar
         setHasOptionsMenu(true)
-        val toolbar: Toolbar = binding.updateUserEmailToolbar
-        configureTopNavBar(toolbar)
+        configureTopNavBar(binding.updateUserEmailToolbar)
         observers()
         onClickListeners()
 

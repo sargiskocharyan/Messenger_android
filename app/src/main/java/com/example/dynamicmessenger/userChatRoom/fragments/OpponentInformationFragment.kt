@@ -1,6 +1,5 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,7 +17,6 @@ import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentOpponentInformationBinding
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userChatRoom.viewModels.OpponentInformationViewModel
-import com.example.dynamicmessenger.userDataController.database.UserCalls
 
 class OpponentInformationFragment : Fragment() {
 
@@ -38,8 +36,8 @@ class OpponentInformationFragment : Fragment() {
 
         //Toolbar
         setHasOptionsMenu(true)
-        val toolbar: Toolbar = binding.opponentInformationToolbar
-        configureTopNavBar(toolbar)
+        onClickListeners()
+        configurePage()
 
         SharedConfigs.userRepository.getUserInformation(HomeActivity.receiverID).observe(viewLifecycleOwner, Observer {user ->
             viewModel.getOpponentInformation(user)
@@ -49,6 +47,31 @@ class OpponentInformationFragment : Fragment() {
             })
         })
 
+        return binding.root
+    }
+
+    private fun configureTopNavBar(toolbar: Toolbar) {
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+    }
+
+    private fun configurePage() {
+        configureTopNavBar(binding.opponentInformationToolbar)
+        val opponentUser = HomeActivity.opponentUser
+        //TODO:binding
+        binding.opponentInfoBirthDateTextView.text = opponentUser?.birthday?.substring(0, 10)
+
+        if (HomeActivity.isAddContacts == false) {
+//            binding.addToContactsImageView.visibility = View.GONE
+        } else if (HomeActivity.isAddContacts == null) {
+//            binding.addToContactsImageView.visibility = View.GONE
+            binding.sendMessageImageView.visibility = View.GONE
+        }
+    }
+
+    private fun onClickListeners() {
         binding.callOpponentImageView.setOnClickListener {
             val opponentUser = HomeActivity.opponentUser!!
             SharedConfigs.callingOpponentId = opponentUser._id
@@ -63,30 +86,6 @@ class OpponentInformationFragment : Fragment() {
                 .replace(R.id.fragmentContainer, ChatRoomFragment())
                 .addToBackStack(null)
                 .commit()
-        }
-
-        configurePage()
-
-        return binding.root
-    }
-
-    private fun configureTopNavBar(toolbar: Toolbar) {
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
-        }
-    }
-
-    private fun configurePage() {
-        val opponentUser = HomeActivity.opponentUser
-        //TODO:binding
-        binding.opponentInfoBirthDateTextView.text = opponentUser?.birthday?.substring(0, 10)
-
-        if (HomeActivity.isAddContacts == false) {
-//            binding.addToContactsImageView.visibility = View.GONE
-        } else if (HomeActivity.isAddContacts == null) {
-//            binding.addToContactsImageView.visibility = View.GONE
-            binding.sendMessageImageView.visibility = View.GONE
         }
     }
 }

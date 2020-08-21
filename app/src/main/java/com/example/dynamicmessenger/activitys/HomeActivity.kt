@@ -153,9 +153,9 @@ class HomeActivity : AppCompatActivity() {
                     SharedConfigs.deleteToken()
                     SharedConfigs.deleteSignedUser()
                     AlertDialog.Builder(context)
-                        .setTitle("Error")
+                        .setTitle(getString(R.string.error_message))
                         .setMessage(getString(R.string.your_session_expires_please_log_in_again))
-                        .setPositiveButton("ok") { _, _ ->
+                        .setPositiveButton(getString(R.string.ok)) { _, _ ->
                             val intent = Intent(context, MainActivity::class.java)
                             startActivity(intent)
                             finish()

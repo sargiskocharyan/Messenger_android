@@ -1,6 +1,5 @@
 package com.example.dynamicmessenger.userCalls.fragments
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -20,7 +19,6 @@ import com.example.dynamicmessenger.databinding.FragmentCallInformationBinding
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userCalls.viewModels.CallInformationViewModel
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
-import com.example.dynamicmessenger.userDataController.database.UserCalls
 
 class CallInformationFragment : Fragment() {
 

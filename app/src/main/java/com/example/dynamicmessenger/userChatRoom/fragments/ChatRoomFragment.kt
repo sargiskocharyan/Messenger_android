@@ -20,8 +20,6 @@ import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
-import com.github.nkzawa.socketio.client.Socket
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class ChatRoomFragment : Fragment() {
@@ -34,12 +32,12 @@ class ChatRoomFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentChatRoomBinding.inflate(layoutInflater)
-        viewModel = ViewModelProvider(this).get(ChatRoomViewModel::class.java)
         val myID = SharedConfigs.signedUser!!._id
         val receiverID = HomeActivity.receiverID!!
-        adapter = ChatRoomAdapter(requireContext(), myID)
         val linearLayoutManager = LinearLayoutManager(requireContext())
+        viewModel = ViewModelProvider(this).get(ChatRoomViewModel::class.java)
+        adapter = ChatRoomAdapter(requireContext(), myID)
+        binding = FragmentChatRoomBinding.inflate(layoutInflater)
         binding.chatRecyclerView.adapter = adapter
         binding.chatRecyclerView.layoutManager = linearLayoutManager
         binding.root.setHasTransientState(true)

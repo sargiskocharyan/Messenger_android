@@ -3,7 +3,6 @@ package com.example.dynamicmessenger.userChatRoom.adapters
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.network.authorization.models.ChatRoom
 import com.example.dynamicmessenger.utils.Utils
-import java.text.SimpleDateFormat
-import java.util.*
 
 class ChatRoomAdapter(val context: Context, private val myID: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {

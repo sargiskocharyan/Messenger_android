@@ -1,7 +1,6 @@
 package com.example.dynamicmessenger.authorization.viewModels
 
 import android.app.Application
-import android.content.Context
 import android.view.View
 import androidx.databinding.Bindable
 import androidx.databinding.Observable
@@ -11,8 +10,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.activitys.MainActivity
-import com.example.dynamicmessenger.databinding.FragmentEmailAndPhoneBinding
 import com.example.dynamicmessenger.network.MailExistApi
 import com.example.dynamicmessenger.network.authorization.models.EmailExistTask
 import com.example.dynamicmessenger.utils.MyAlertMessage
@@ -24,7 +21,6 @@ class EmailAndPhoneViewModel(application: Application) : AndroidViewModel(applic
     val userEnteredEmail = MutableLiveData<String>()
     val isEmailValid = MutableLiveData<Boolean>()
     val progressBarVisibility = MutableLiveData<Boolean>()
-
     val isEmailExists = MutableLiveData<Boolean>()
     val userCode = MutableLiveData<String>()
 
