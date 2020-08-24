@@ -71,7 +71,7 @@ class PersonLoginViewModel: ViewModel(), Observable {
         progressBarVisibility.value = true
         viewModelScope.launch {
             try {
-                val response = MailExistApi.retrofitService.isMailExistAsync(EmailExistTask(personEmail.value!!))
+                val response = MailExistApi.retrofitService.isMailExist(EmailExistTask(personEmail.value!!))
                 if (response.isSuccessful) {
                     isEmailExists.value = response.body()!!.mailExist
                     userEnteredCode.value = response.body()!!.code

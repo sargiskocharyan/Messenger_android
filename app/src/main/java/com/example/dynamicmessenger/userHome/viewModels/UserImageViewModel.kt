@@ -46,7 +46,7 @@ class UserImageViewModel(application: Application): AndroidViewModel(application
     fun deleteUserAvatar(closure: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
-                val response = DeleteAvatarApi.retrofitService.deleteAvatarResponseAsync(SharedConfigs.token)
+                val response = DeleteAvatarApi.retrofitService.deleteUserAvatar(SharedConfigs.token)
                 if (response.isSuccessful) {
                     SharedConfigs.deleteAvatar()
                     closure(true)

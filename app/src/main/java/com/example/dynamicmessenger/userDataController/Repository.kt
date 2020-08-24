@@ -4,27 +4,19 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-import android.widget.ImageView
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.*
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.DeleteUserCallTask
-import com.example.dynamicmessenger.network.authorization.models.LoginTask
+import com.example.dynamicmessenger.network.authorization.models.ReadCallHistoryTask
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.database.DiskCache
-import com.example.dynamicmessenger.userDataController.database.SignedUserDao
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserCalls
-import com.example.dynamicmessenger.utils.ClassConverter
-import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.*
 
 interface RepositoryInterface {
@@ -57,9 +49,11 @@ class Repository private constructor(val context: Context): RepositoryInterface 
                     userChatsRepository.insert(response.body()!!)
                     userChats.postValue(response.body()!!)
                 } else {
+                    Log.i("++++", "get chats else ${response}")
                     userChats.postValue(null)
                 }
             } catch (e: Exception) {
+                Log.i("++++", "get chats catch ${e}")
                 userChats.postValue(null)
             }
             this.cancel()
@@ -111,7 +105,7 @@ class Repository private constructor(val context: Context): RepositoryInterface 
             user.postValue(savedUserRepository.getUserById(userId))
             GlobalScope.launch(Dispatchers.IO) {
                 try {
-                    val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, userId)
+                    val response = GetUserInfoByIdApi.retrofitService.getUserInfoById(SharedConfigs.token, userId)
                     if (response.isSuccessful) {
                         user.postValue(response.body())
                         response.body()?.let { savedUserRepository.insert(it) }
@@ -146,7 +140,7 @@ class Repository private constructor(val context: Context): RepositoryInterface 
         userContacts.value = contactsList
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                val response = ContactsApi.retrofitService.contactsResponseAsync(SharedConfigs.token)
+                val response = ContactsApi.retrofitService.getUserContacts(SharedConfigs.token)
                 if (response.isSuccessful) {
                     userContacts.postValue(response.body())
                     response.body()?.let { savedUserRepository.insertList(it) }
@@ -162,8 +156,9 @@ class Repository private constructor(val context: Context): RepositoryInterface 
     }
 
     //Calls
-    fun getUserCalls(): LiveData<List<UserCalls>?> {
+    fun getUserCalls(): Pair<LiveData<List<UserCalls>?>, LiveData<Boolean>> {
         val userCalls = MutableLiveData<List<UserCalls>?>()
+        val readCallHistory = MutableLiveData<Boolean>()
         if (userCallsRepository.getUserCalls() != null) {
             userCalls.value = userCallsRepository.getUserCalls()
         }
@@ -172,7 +167,10 @@ class Repository private constructor(val context: Context): RepositoryInterface 
                 val response = GetUserCallsApi.retrofitService.getUserCalls(SharedConfigs.token)
                 if (response.isSuccessful) {
                     userCalls.postValue(response.body())
-                    response.body()?.let { userCallsRepository.insertList(it) }
+                    response.body()?.let {
+                        userCallsRepository.insertList(it)
+                        readCallHistory.postValue(readCallHistory(it[it.size - 1]._id))
+                    }
                 } else {
                     userCalls.postValue(null)
                 }
@@ -181,7 +179,7 @@ class Repository private constructor(val context: Context): RepositoryInterface 
             }
             this.cancel()
         }
-        return userCalls
+        return Pair(userCalls, readCallHistory)
     }
 
     fun getUserCallById(callId: String) = userCallsRepository.getCallById(callId)
@@ -204,6 +202,17 @@ class Repository private constructor(val context: Context): RepositoryInterface 
             this.cancel()
         }
     }
+
+    private suspend fun readCallHistory(lastCallId: String): Boolean =
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                val response = ReadCallHistoryApi.retrofitService.readCallHistory(SharedConfigs.token, ReadCallHistoryTask(lastCallId))
+                response.isSuccessful
+            } catch (e: Exception) {
+                Log.i("+++exception", "userInformationViewModel getAvatar $e")
+                false
+            }
+        }
 
 
 

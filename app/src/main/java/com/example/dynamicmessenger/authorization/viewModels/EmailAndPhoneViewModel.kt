@@ -28,7 +28,7 @@ class EmailAndPhoneViewModel(application: Application) : AndroidViewModel(applic
         progressBarVisibility.value = true
         viewModelScope.launch {
             try {
-                val response = MailExistApi.retrofitService.isMailExistAsync(EmailExistTask(userEnteredEmail.value!!))
+                val response = MailExistApi.retrofitService.isMailExist(EmailExistTask(userEnteredEmail.value!!))
                 if (response.isSuccessful) {
                     userCode.value = response.body()!!.code
                     isEmailExists.value = response.body()!!.mailExist

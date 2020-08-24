@@ -1,9 +1,7 @@
 package com.example.dynamicmessenger.activitys
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlertDialog
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -12,7 +10,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
@@ -21,12 +18,7 @@ import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.MyTime
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.UserTokenVerifyApi
-import com.example.dynamicmessenger.network.authorization.models.CallNotification
-import com.example.dynamicmessenger.network.authorization.models.ChatRoom
-import com.example.dynamicmessenger.network.authorization.models.Message
 import com.example.dynamicmessenger.network.authorization.models.User
-import com.example.dynamicmessenger.network.chatRooms.SocketManager
-import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserTokenDao
@@ -34,21 +26,17 @@ import com.example.dynamicmessenger.userDataController.database.UserTokenReposit
 import com.example.dynamicmessenger.userHome.fragments.UserCallFragment
 import com.example.dynamicmessenger.userHome.fragments.UserChatFragment
 import com.example.dynamicmessenger.userHome.fragments.UserInformationFragment
+import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.LocalizationUtil
-import com.example.dynamicmessenger.utils.NetworkUtils
-import com.example.dynamicmessenger.utils.notifications.FirebaseNotificationService
-import com.example.dynamicmessenger.utils.notifications.NotificationMessages
 import com.example.dynamicmessenger.utils.notifications.RemoteNotificationManager
-import com.github.nkzawa.socketio.client.Socket
+import com.example.dynamicmessenger.utils.observeOnce
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.iid.FirebaseInstanceId
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -93,9 +81,15 @@ class HomeActivity : AppCompatActivity() {
 
 
         //TODO change badge for all icons
-        val badge = bottomNavBar.getOrCreateBadge(R.id.chat)
-        badge.isVisible = true
-        badge.number = 10
+
+        val badge = bottomNavBar.getOrCreateBadge(R.id.call)
+        when (val missedCallHistorySize = SharedConfigs.signedUser?.missedCallHistory?.size) {
+            0, null -> {badge.isVisible = false}
+            else -> {
+                badge.isVisible = true
+                badge.number = missedCallHistorySize
+            }
+        }
 
         SharedConfigs.appLang.value?.value?.let { LocalizationUtil.setApplicationLocale(this, it) }
         SharedConfigs.currentFragment.observe(this, androidx.lifecycle.Observer {
@@ -109,6 +103,14 @@ class HomeActivity : AppCompatActivity() {
                 else -> bottomNavBar.visibility = View.GONE
             }
             Log.i("+++", "current fragment = $it")
+        })
+
+        SharedConfigs.userRepository.getUserInformation(SharedConfigs.signedUser?._id).observeOnce(this, androidx.lifecycle.Observer { user ->
+            user?.let {
+                SharedConfigs.signedUser = ClassConverter.userToSignedUser(it).apply {
+                    deviceRegistered = SharedConfigs.signedUser?.deviceRegistered!!
+                }
+            }
         })
 //        SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
 //        })
@@ -143,7 +145,7 @@ class HomeActivity : AppCompatActivity() {
     private fun tokenCheck(context: Context?, token: String) {
         coroutineScope.launch {
             try {
-                val response = UserTokenVerifyApi.retrofitService.userTokenResponseAsync(token)
+                val response = UserTokenVerifyApi.retrofitService.verifyUserToken(token)
                 val tokenExpire = tokenRep.tokenExpire
                 val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                 val date: Date = format.parse(tokenExpire!!)!!

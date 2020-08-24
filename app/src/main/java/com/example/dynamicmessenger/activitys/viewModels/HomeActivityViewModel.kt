@@ -56,6 +56,12 @@ class HomeActivityViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+//    fun updateUserInformation() {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            SharedConfigs.userRepository.getUserInformation(SharedConfigs.signedUser?._id).
+//        }
+//    }
+
     fun getUserById(id: String): User? {
         return usersRepository.getUserById(id)
     }

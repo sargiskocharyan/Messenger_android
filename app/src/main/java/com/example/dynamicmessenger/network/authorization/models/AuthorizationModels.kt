@@ -41,4 +41,6 @@ data class UpdatePhoneNumberTask (val number: String)
 
 data class VerifyPhoneNumberTask (val number: String, val code: String)
 
+data class ReadCallHistoryTask (val callId: String)
+
 data class CallNotification(val caller: String, val roomName: String, val username: String, val image: String, val name: String)

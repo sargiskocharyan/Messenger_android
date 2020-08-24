@@ -44,7 +44,7 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
         binding.imageUploadProgressBar.visibility = View.VISIBLE
         viewModelScope.launch {
             try {
-                val response = SaveAvatarApi.retrofitService.saveAvatarResponseAsync(SharedConfigs.token, avatar)
+                val response = SaveAvatarApi.retrofitService.saveUserAvatar(SharedConfigs.token, avatar)
                 if (response.isSuccessful) {
                     val user = SharedConfigs.signedUser
                     user!!.avatarURL = response.body()!!.string()

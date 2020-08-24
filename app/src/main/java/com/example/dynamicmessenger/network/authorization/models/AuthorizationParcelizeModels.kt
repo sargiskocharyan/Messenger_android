@@ -37,7 +37,8 @@ data class User (
     val address: String?,
     val birthday: String?,
     val info: String?,
-    val avatarURL: String?
+    val avatarURL: String?,
+    var missedCallHistory: List<String?>?
 ) : Parcelable
 
 @Parcelize

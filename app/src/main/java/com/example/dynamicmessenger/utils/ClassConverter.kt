@@ -17,7 +17,9 @@ object ClassConverter {
             loginProperty.user.birthday,
             loginProperty.user.phoneNumber,
             loginProperty.user.info,
-            loginProperty.user.avatarURL)
+            loginProperty.user.avatarURL,
+            loginProperty.user.missedCallHistory
+        )
     }
 
     fun userToSignedUser(user: User): SignedUser {
@@ -31,7 +33,9 @@ object ClassConverter {
             user.birthday,
             user.phoneNumber,
             user.info,
-            user.avatarURL)
+            user.avatarURL,
+            user.missedCallHistory
+        )
     }
 
     fun changePhoneNumberOrEmailPropertyToSignedUser(changePhoneNumberOrEmailProperty: ChangePhoneNumberOrEmailProperty): SignedUser {
@@ -45,6 +49,8 @@ object ClassConverter {
             changePhoneNumberOrEmailProperty.user.birthday,
             changePhoneNumberOrEmailProperty.user.phoneNumber,
             changePhoneNumberOrEmailProperty.user.info,
-            changePhoneNumberOrEmailProperty.user.avatarURL)
+            changePhoneNumberOrEmailProperty.user.avatarURL,
+            changePhoneNumberOrEmailProperty.user.missedCallHistory
+        )
     }
 }

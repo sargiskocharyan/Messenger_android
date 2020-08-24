@@ -142,11 +142,13 @@ class ChatRoomFragment : Fragment() {
     }
 
     fun receiveMessage(newMessage: ChatRoom) {
-        val newData = adapter.data.toMutableList()
-        newData += newMessage
-        adapter.submitList(newData)
-        if (scrollUpWhenKeyboardOpened) {
-            scrollToBottom()
+        if (HomeActivity.receiverID!! == newMessage.senderId || HomeActivity.receiverID!! == newMessage.reciever) {
+            val newData = adapter.data.toMutableList()
+            newData += newMessage
+            adapter.submitList(newData)
+            if (scrollUpWhenKeyboardOpened) {
+                scrollToBottom()
+            }
         }
     }
 }

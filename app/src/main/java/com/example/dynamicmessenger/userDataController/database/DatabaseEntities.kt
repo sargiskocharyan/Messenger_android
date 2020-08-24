@@ -21,6 +21,7 @@ data class SignedUser(
     var phoneNumber: String?,
     var info: String?,
     var avatarURL: String?,
+    var missedCallHistory: List<String?>?,
     var deviceRegistered: Boolean? = false
 )
 

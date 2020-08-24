@@ -14,7 +14,6 @@ import com.github.nkzawa.socketio.client.Socket
 
 
 class App: Application() {
-//    private lateinit var socketManager: SocketManager
 
     override fun onCreate() {
         super.onCreate()

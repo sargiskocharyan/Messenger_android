@@ -22,6 +22,7 @@ import com.example.dynamicmessenger.userDataController.database.UserCallsDao
 //import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
 import com.example.dynamicmessenger.userHome.adapters.UserCallsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserCallViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class UserCallFragment : Fragment() {
 
@@ -48,9 +49,17 @@ class UserCallFragment : Fragment() {
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.callRecyclerView.layoutManager = linearLayoutManager
 
-        SharedConfigs.userRepository.getUserCalls().observe(viewLifecycleOwner, Observer {
+        SharedConfigs.userRepository.getUserCalls().first.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 adapter.submitList(it.reversed())
+            }
+        })
+
+        SharedConfigs.userRepository.getUserCalls().second.observe(viewLifecycleOwner, Observer {
+            if (it == true) {
+                val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+                val badge = bottomNavBar.getOrCreateBadge(R.id.call)
+                badge.isVisible = false
             }
         })
 

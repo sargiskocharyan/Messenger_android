@@ -35,6 +35,7 @@ class ResponseUrls {
         const val verifyEmail = "verifyemail"
         const val updatePhoneNumber = "updatephonenumber"
         const val verifyPhoneNumber = "verifyphonenumber"
+        const val readCallHistory = "readcallhistory"
 
 //        users/me/avatar
 //        users/5ee76c90bfa0980017a39013/avatar

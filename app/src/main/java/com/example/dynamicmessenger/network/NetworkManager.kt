@@ -26,9 +26,8 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 import javax.security.cert.CertificateException
 
-
-//private const val BASE_URL = ResponseUrls.herokuIP
-private const val BASE_URL = ResponseUrls.ErosServerIP
+private const val BASE_URL = ResponseUrls.herokuIP
+//private const val BASE_URL = ResponseUrls.ErosServerIP
 
 private var cacheSize: Long = 10 * 1024 * 1024 // 10 MB
 
@@ -112,14 +111,15 @@ private val retrofit = Retrofit.Builder()
 interface JsonPlaceHolderMailExistApi {
     @Headers(MyHeaders.contentType)
     @POST(ResponseUrls.mailIsExist)
-    suspend fun isMailExistAsync(@Body task: EmailExistTask):
+    suspend fun isMailExist(@Body task: EmailExistTask):
             Response<MailExistProperty>
 }
 
 object MailExistApi {
     val retrofitService : JsonPlaceHolderMailExistApi by lazy {
         retrofit.create(
-            JsonPlaceHolderMailExistApi::class.java)
+            JsonPlaceHolderMailExistApi::class.java
+        )
     }
 }
 
@@ -135,7 +135,8 @@ interface JsonPlaceHolderLoginApi {
 object LoginApi {
     val retrofitService : JsonPlaceHolderLoginApi by lazy {
         retrofit.create(
-            JsonPlaceHolderLoginApi::class.java)
+            JsonPlaceHolderLoginApi::class.java
+        )
     }
 }
 
@@ -150,7 +151,8 @@ interface JsonPlaceHolderRegistrationApi {
 object RegistrationApi {
     val retrofitService : JsonPlaceHolderRegistrationApi by lazy {
         retrofit.create(
-            JsonPlaceHolderRegistrationApi::class.java)
+            JsonPlaceHolderRegistrationApi::class.java
+        )
     }
 }
 
@@ -166,21 +168,23 @@ interface JsonPlaceHolderUpdateUserApi {
 object UpdateUserApi {
     val retrofitService : JsonPlaceHolderUpdateUserApi by lazy {
         retrofit.create(
-            JsonPlaceHolderUpdateUserApi::class.java)
+            JsonPlaceHolderUpdateUserApi::class.java
+        )
     }
 }
 
 //User token verify
 interface JsonPlaceHolderUserTokenVerifyApi {
     @POST(ResponseUrls.verifyToken)
-    suspend fun userTokenResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String):
+    suspend fun verifyUserToken(@Header (MyHeaders.tokenAuthorization) header: String):
             Response<UserTokenProperty>
 }
 
 object UserTokenVerifyApi {
     val retrofitService : JsonPlaceHolderUserTokenVerifyApi by lazy {
         retrofit.create(
-            JsonPlaceHolderUserTokenVerifyApi::class.java)
+            JsonPlaceHolderUserTokenVerifyApi::class.java
+        )
     }
 }
 
@@ -188,7 +192,7 @@ object UserTokenVerifyApi {
 interface JsonPlaceHolderContactsApi {
     @Headers(MyHeaders.accept)
     @GET(ResponseUrls.contacts)
-    suspend fun contactsResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String):
+    suspend fun getUserContacts(@Header (MyHeaders.tokenAuthorization) header: String):
             Response<List<User>>
 }
 
@@ -289,8 +293,8 @@ interface JsonPlaceHolderSaveAvatarApi {
     @Multipart
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.saveAvatar)
-    suspend fun saveAvatarResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                                        @Part avatar : MultipartBody.Part) :
+    suspend fun saveUserAvatar(@Header (MyHeaders.tokenAuthorization) header: String,
+                               @Part avatar : MultipartBody.Part) :
             Response<ResponseBody>
 }
 
@@ -338,7 +342,7 @@ object DeactivateUserApi {
 interface JsonPlaceHolderDeleteAvatarApi {
     @Headers(MyHeaders.accept)
     @DELETE(ResponseUrls.saveAvatar)
-    suspend fun deleteAvatarResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
+    suspend fun deleteUserAvatar(@Header (MyHeaders.tokenAuthorization) header: String) :
             Response<Void>
 }
 
@@ -354,8 +358,8 @@ object DeleteAvatarApi {
 interface JsonPlaceHolderGetUserInfoByIdApi {
     @Headers(MyHeaders.accept)
     @GET("${ResponseUrls.userInfoById}/{id}")
-    suspend fun getUserInfoByIdResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                                             @Path ("id") receiverId: String) :
+    suspend fun getUserInfoById(@Header (MyHeaders.tokenAuthorization) header: String,
+                                @Path ("id") receiverId: String) :
             Response<User>
 }
 
@@ -565,6 +569,23 @@ object VerifyPhoneNumberApi {
     val retrofitService : JsonPlaceHolderVerifyPhoneNumberApi by lazy {
         retrofit.create(
             JsonPlaceHolderVerifyPhoneNumberApi::class.java
+        )
+    }
+}
+
+//Read call history
+interface JsonPlaceHolderReadCallHistoryApi {
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.readCallHistory)
+    suspend fun readCallHistory(@Header (MyHeaders.tokenAuthorization) header: String,
+                                @Body readCallHistoryTask: ReadCallHistoryTask) :
+            Response<Void>
+}
+
+object ReadCallHistoryApi {
+    val retrofitService : JsonPlaceHolderReadCallHistoryApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderReadCallHistoryApi::class.java
         )
     }
 }
