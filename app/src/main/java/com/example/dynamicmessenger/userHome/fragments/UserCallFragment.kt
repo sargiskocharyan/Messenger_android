@@ -22,6 +22,8 @@ import com.example.dynamicmessenger.userDataController.database.UserCallsDao
 //import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
 import com.example.dynamicmessenger.userHome.adapters.UserCallsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserCallViewModel
+import com.example.dynamicmessenger.utils.ClassConverter
+import com.example.dynamicmessenger.utils.observeOnce
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class UserCallFragment : Fragment() {
@@ -55,13 +57,18 @@ class UserCallFragment : Fragment() {
             }
         })
 
-        SharedConfigs.userRepository.getUserCalls().second.observe(viewLifecycleOwner, Observer {
-            if (it == true) {
-                val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
-                val badge = bottomNavBar.getOrCreateBadge(R.id.call)
-                badge.isVisible = false
-            }
-        })
+        if (SharedConfigs.signedUser?.missedCallHistory?.size!! > 0) {
+            SharedConfigs.userRepository.getUserCalls().second.observeOnce(viewLifecycleOwner, Observer {
+                if (it == true) {
+                    val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+                    val badge = bottomNavBar.getOrCreateBadge(R.id.call)
+                    badge.isVisible = false
+                    SharedConfigs.signedUser = SharedConfigs.signedUser?.apply {
+                        missedCallHistory = null
+                    }
+                }
+            })
+        }
 
         val simpleCallback: ItemTouchHelper.SimpleCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, viewHolder1: RecyclerView.ViewHolder): Boolean {

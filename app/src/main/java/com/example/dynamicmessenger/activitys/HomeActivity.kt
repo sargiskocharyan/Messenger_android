@@ -84,10 +84,14 @@ class HomeActivity : AppCompatActivity() {
 
         val badge = bottomNavBar.getOrCreateBadge(R.id.call)
         when (val missedCallHistorySize = SharedConfigs.signedUser?.missedCallHistory?.size) {
-            0, null -> {badge.isVisible = false}
+            0, null -> {
+                badge.isVisible = false
+                Log.i("+++", "missed Call History Size $missedCallHistorySize")
+            }
             else -> {
                 badge.isVisible = true
                 badge.number = missedCallHistorySize
+                Log.i("+++", "missed Call History Size $missedCallHistorySize")
             }
         }
 

@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -203,16 +204,15 @@ class Repository private constructor(val context: Context): RepositoryInterface 
         }
     }
 
-    private suspend fun readCallHistory(lastCallId: String): Boolean =
-        withContext(Dispatchers.IO) {
-            return@withContext try {
-                val response = ReadCallHistoryApi.retrofitService.readCallHistory(SharedConfigs.token, ReadCallHistoryTask(lastCallId))
-                response.isSuccessful
-            } catch (e: Exception) {
-                Log.i("+++exception", "userInformationViewModel getAvatar $e")
-                false
-            }
+    private suspend fun readCallHistory(lastCallId: String): Boolean {
+        return try {
+            val response = ReadCallHistoryApi.retrofitService.readCallHistory(SharedConfigs.token, ReadCallHistoryTask(lastCallId))
+            response.isSuccessful
+        } catch (e: Exception) {
+            Log.i("+++exception", "userInformationViewModel getAvatar $e")
+            false
         }
+    }
 
 
 

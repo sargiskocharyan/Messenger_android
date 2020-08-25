@@ -193,7 +193,6 @@ class SignallingClient {
             obj.put("sdp", message.description)
             Log.d("emitMessage", obj.toString())
             mSocket.emit("message", obj)
-            Log.d("vivek1794", obj.toString())
         } catch (e: JSONException) {
             e.printStackTrace()
         }
@@ -245,13 +244,12 @@ class SignallingClient {
 
     fun callOpponent() {
         Log.d("SignallingClient", "call call")
-        mSocket.emit("call", SharedConfigs.callingOpponentId, Ack {
+        mSocket.emit("call", SharedConfigs.callingOpponentId, "video", Ack {
             roomName = it[0] as String?
         })
     }
 
     fun callStarted() {
-        val currentTime = System.currentTimeMillis()
         callStarted = true
         mSocket.emit("callStarted", roomName)
     }

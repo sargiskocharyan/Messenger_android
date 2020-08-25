@@ -51,6 +51,7 @@ class UserInformationFragment : Fragment() {
 
         val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
         bottomNavBar.visibility = View.VISIBLE
+        SharedConfigs.currentFragment.value = MyFragments.INFORMATION
         changeDarkMode()
         observers()
         popupMenu(binding)
@@ -106,7 +107,7 @@ class UserInformationFragment : Fragment() {
                 SharedConfigs.setDarkMode(false)
 //                LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
             }
-            SharedConfigs.currentFragment.value = MyFragments.INFORMATION
+//            SharedConfigs.currentFragment.value = MyFragments.INFORMATION
         }
 
         binding.logoutConstraintLayout.setOnClickListener {
