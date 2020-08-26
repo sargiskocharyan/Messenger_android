@@ -31,21 +31,18 @@ class UserChatFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentUserChatBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(UserChatViewModel::class.java)
+        adapter = UserChatsAdapter(requireContext())
+        binding = FragmentUserChatBinding.inflate(layoutInflater)
+        binding.root.setHasTransientState(true)
+        binding.chatsRecyclerView.adapter = adapter
+        binding.chatsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         //toolbar
         setHasOptionsMenu(true)
-        val toolbar: Toolbar = binding.userChatToolbar
-        configureTopNavBar(toolbar)
+        configureTopNavBar(binding.userChatToolbar)
 
         SharedConfigs.currentFragment.value = MyFragments.CHATS
-        adapter = UserChatsAdapter(requireContext())
-        binding.root.setHasTransientState(true)
-
-        binding.chatsRecyclerView.adapter = adapter
-        val linearLayoutManager = LinearLayoutManager(requireContext())
-        binding.chatsRecyclerView.layoutManager = linearLayoutManager
 
         refreshRecyclerView(adapter)
         binding.userChatSwipeRefreshLayout.setOnRefreshListener {

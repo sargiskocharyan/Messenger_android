@@ -260,7 +260,7 @@ interface JsonPlaceHolderChatsApi {
     @Headers(MyHeaders.accept)
     @GET("${ResponseUrls.chats}/")
     suspend fun chatsResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
-            Response<List<Chat>>
+            Response<AllChats>
 }
 
 object ChatsApi {
@@ -277,7 +277,7 @@ interface JsonPlaceHolderChatRoomApi {
     @GET("${ResponseUrls.chats}/{id}")
     suspend fun chatRoomResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
                                       @Path ("id") receiverId: String) :
-            Response<List<ChatRoom>>
+            Response<ChatRoom>
 }
 
 object ChatRoomApi {

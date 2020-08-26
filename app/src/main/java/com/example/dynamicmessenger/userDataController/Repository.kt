@@ -47,8 +47,12 @@ class Repository private constructor(val context: Context): RepositoryInterface 
             try {
                 val response = ChatsApi.retrofitService.chatsResponseAsync(SharedConfigs.token)
                 if (response.isSuccessful) {
-                    userChatsRepository.insert(response.body()!!)
-                    userChats.postValue(response.body()!!)
+                    response.body()?.let {allChats ->
+                        allChats.array?.let {
+                            userChatsRepository.insert(it)
+                            userChats.postValue(it)
+                        }
+                    }
                 } else {
                     Log.i("++++", "get chats else ${response}")
                     userChats.postValue(null)

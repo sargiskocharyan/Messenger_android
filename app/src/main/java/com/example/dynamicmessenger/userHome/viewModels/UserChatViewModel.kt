@@ -22,23 +22,23 @@ class UserChatViewModel(application: Application) : AndroidViewModel(application
         return chatsRepository.getUserAllChats
     }
 
-    fun getUserChatsFromNetwork(context: Context?, swipeRefreshLayout: SwipeRefreshLayout, closure: (List<Chat>) -> Unit) {
-        viewModelScope.launch {
-            try {
-                val response = ChatsApi.retrofitService.chatsResponseAsync(SharedConfigs.token)
-                if (response.isSuccessful) {
-                    chatsRepository.insert(response.body()!!)
-                    closure(response.body()!!)
-                } else {
-                    Toast.makeText(context, "User chats else", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Log.i("+++catch",e.toString())
-                Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
-            }
-            swipeRefreshLayout.isRefreshing = false
-        }
-    }
+//    fun getUserChatsFromNetwork(context: Context?, swipeRefreshLayout: SwipeRefreshLayout, closure: (List<Chat>) -> Unit) {
+//        viewModelScope.launch {
+//            try {
+//                val response = ChatsApi.retrofitService.chatsResponseAsync(SharedConfigs.token)
+//                if (response.isSuccessful) {
+//                    chatsRepository.insert(response.body()!!)
+//                    closure(response.body()!!)
+//                } else {
+//                    Toast.makeText(context, "User chats else", Toast.LENGTH_SHORT).show()
+//                }
+//            } catch (e: Exception) {
+//                Log.i("+++catch",e.toString())
+//                Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
+//            }
+//            swipeRefreshLayout.isRefreshing = false
+//        }
+//    }
 
     fun getUserChatsFromRepo(swipeRefreshLayout: SwipeRefreshLayout) {
 //        SharedConfigs.userRepository.getUserChats(swipeRefreshLayout).

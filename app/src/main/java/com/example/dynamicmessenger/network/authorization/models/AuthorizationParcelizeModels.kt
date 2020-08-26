@@ -61,7 +61,13 @@ data class Chat(
     val chatCreateDay: String) : Parcelable
 
 @Parcelize
+data class AllChats(
+    val array: List<Chat>?,
+    var badge: Int?) : Parcelable
+
+@Parcelize
 data class Message(
+    val _id: String,
     val senderId: String?,
     @Embedded
     val call: Call?,
@@ -103,13 +109,24 @@ data class Call(
     val duration: Double?) : Parcelable
 
 @Parcelize
-data class ChatRoom(
+data class ChatRoomMessage(
+    val _id: String,
     val senderId: String?,
     val call: Call?,
     val type: String,
     val text: String?,
     val reciever: String,
     val createdAt: String) : Parcelable
+
+@Parcelize
+data class ChatRoom(val array: List<ChatRoomMessage>, val statuses: List<MessageStatus>) : Parcelable
+
+@Parcelize
+data class MessageStatus(
+    val receivedMessageDate: String,
+    val readMessageDate: String,
+    val _id: String,
+    val userId: String) : Parcelable
 
 @Parcelize
 data class OnlineUsers(val usersOnline: List<String>) : Parcelable

@@ -33,6 +33,15 @@ fun setTextViewVisible(textView: TextView, answer: Boolean) {
     }
 }
 
+@BindingAdapter("setTextViewGone")
+fun setTextViewGone(textView: TextView, answer: Boolean) {
+    if (answer) {
+        textView.visibility = View.VISIBLE
+    } else {
+        textView.visibility = View.GONE
+    }
+}
+
 @BindingAdapter("setHintColour")
 fun setHintColour(textView: TextView, answer: Boolean) {
     if (answer) {

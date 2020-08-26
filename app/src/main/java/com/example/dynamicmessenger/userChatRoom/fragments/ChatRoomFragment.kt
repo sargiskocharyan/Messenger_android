@@ -2,8 +2,10 @@ package com.example.dynamicmessenger.userChatRoom.fragments
 
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -16,7 +18,8 @@ import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
-import com.example.dynamicmessenger.network.authorization.models.ChatRoom
+import com.example.dynamicmessenger.network.authorization.models.ChatRoomMessage
+import com.example.dynamicmessenger.network.authorization.models.MessageStatus
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
@@ -38,6 +41,8 @@ class ChatRoomFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(ChatRoomViewModel::class.java)
         adapter = ChatRoomAdapter(requireContext(), myID)
         binding = FragmentChatRoomBinding.inflate(layoutInflater)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
         binding.chatRecyclerView.adapter = adapter
         binding.chatRecyclerView.layoutManager = linearLayoutManager
         binding.root.setHasTransientState(true)
@@ -53,7 +58,7 @@ class ChatRoomFragment : Fragment() {
         SocketManager.addChatRoomFragment(this)
 
         binding.sendMessageButton.setOnClickListener {
-            SocketManager.sendMessage(receiverID, binding.sendMessageEditText)
+            SocketManager.sendMessage(receiverID, viewModel.userEnteredMessage)
         }
 
         return binding.root
@@ -76,7 +81,7 @@ class ChatRoomFragment : Fragment() {
         SharedConfigs.userRepository.getUserInformation(receiverID).observe(viewLifecycleOwner, Observer {user ->
             if (user != null) {
                 HomeActivity.opponentUser = user
-                binding.userChatToolbarTitle.text = user.username ?: ""
+                viewModel.toolbarOpponentUsername.value = user.username ?: ""
                 SharedConfigs.userRepository.getAvatar(user.avatarURL).observe(viewLifecycleOwner, Observer {bitmap ->
                     adapter.receiverImage = bitmap
                 })
@@ -113,11 +118,26 @@ class ChatRoomFragment : Fragment() {
                 scrollToBottom()
             }
         })
+
+        viewModel.userEnteredMessage.observe(viewLifecycleOwner, Observer {
+            SocketManager.messageTyping(receiverID)
+        })
+
+        viewModel.opponentTypingTextVisibility.observe(viewLifecycleOwner, Observer {
+            if (scrollUpWhenKeyboardOpened) {
+                scrollToBottom()
+            }
+        })
     }
 
     private fun updateRecyclerView(receiverID: String) {
-        viewModel.getMessagesFromNetwork(requireContext(), receiverID) {
-            adapter.submitList(it)
+        viewModel.getMessagesFromNetwork(requireContext(), receiverID) { list, statuses ->
+            adapter.submitList(list)
+            adapter.statuses.addAll(statuses)
+            val lastElementNumber = list.size - 1
+            if (list[lastElementNumber].senderId != SharedConfigs.signedUser?._id) {
+                list[lastElementNumber].senderId?.let { SocketManager.messageRead(it, list[lastElementNumber]._id) }
+            }
             scrollToBottom()
         }
     }
@@ -141,7 +161,7 @@ class ChatRoomFragment : Fragment() {
         }
     }
 
-    fun receiveMessage(newMessage: ChatRoom) {
+    fun receiveMessage(newMessage: ChatRoomMessage) {
         if (HomeActivity.receiverID!! == newMessage.senderId || HomeActivity.receiverID!! == newMessage.reciever) {
             val newData = adapter.data.toMutableList()
             newData += newMessage
@@ -149,6 +169,21 @@ class ChatRoomFragment : Fragment() {
             if (scrollUpWhenKeyboardOpened) {
                 scrollToBottom()
             }
+        }
+    }
+
+    private val countDownTimer = object: CountDownTimer(2000, 1000) {
+        override fun onTick(millisUntilFinished: Long) {}
+
+        override fun onFinish() {
+            viewModel.opponentTypingTextVisibility.postValue(false)
+        }
+    }
+    fun opponentTyping(array: Array<Any>) {
+        if (HomeActivity.receiverID!! == array[0]) {
+            viewModel.opponentTypingTextVisibility.postValue(true)
+            countDownTimer.cancel()
+            countDownTimer.start()
         }
     }
 }

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
@@ -17,6 +18,7 @@ import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
 import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
+import com.example.dynamicmessenger.utils.observeOnceWithoutOwner
 import com.example.dynamicmessenger.common.MyFragments as MyFragments
 
 class UserContactsAdapter(val context: Context): RecyclerView.Adapter<UserContactsAdapter.UserContactsViewHolder>() {
@@ -47,9 +49,9 @@ class UserContactsAdapter(val context: Context): RecyclerView.Adapter<UserContac
         holder.name.text = item.name
         holder.lastname.text = item.lastname
         if (item.avatarURL != null) {
-            SharedConfigs.userRepository.getAvatar(item.avatarURL).observeForever {
+            SharedConfigs.userRepository.getAvatar(item.avatarURL).observeOnceWithoutOwner(Observer {
                 holder.contactsUserImageView.setImageBitmap(it)
-            }
+            })
         } else  {
             holder.contactsUserImageView.setImageResource(R.drawable.ic_user_image)
         }
@@ -71,10 +73,10 @@ class UserContactsAdapter(val context: Context): RecyclerView.Adapter<UserContac
             itemView.setOnClickListener {
                 HomeActivity.receiverID = userContact!!._id
                 if (SharedConfigs.lastFragment == MyFragments.CHATS) {
-                    SharedConfigs.userRepository.getUserInformation(userContact!!._id).observeForever {
+                    SharedConfigs.userRepository.getUserInformation(userContact!!._id).observe((context as AppCompatActivity), Observer {
                         HomeActivity.opponentUser = it
-                    }
-                    (context as AppCompatActivity?)!!.supportFragmentManager
+                    })
+                    context.supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.fragmentContainer , ChatRoomFragment())
                         .addToBackStack(null)

@@ -3,6 +3,7 @@ package com.example.dynamicmessenger.userChatRoom.adapters
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,8 @@ import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
-import com.example.dynamicmessenger.network.authorization.models.ChatRoom
+import com.example.dynamicmessenger.network.authorization.models.ChatRoomMessage
+import com.example.dynamicmessenger.network.authorization.models.MessageStatus
 import com.example.dynamicmessenger.utils.Utils
 
 class ChatRoomAdapter(val context: Context, private val myID: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -23,15 +25,17 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
         private const val RECEIVER_CALL = 2
     }
 
-    var data = mutableListOf<ChatRoom>()
+    var data = mutableListOf<ChatRoomMessage>()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
+    var statuses = mutableListOf<MessageStatus>()
+
     var receiverImage: Bitmap? = null
 
-    fun submitList(newList: List<ChatRoom>) {
+    fun submitList(newList: List<ChatRoomMessage>) {
         val userChatDiffUtilCallback = ChatRoomDiffUtilCallback(data, newList)
         val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)
         authorDiffResult.dispatchUpdatesTo(this)
@@ -92,7 +96,7 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
         }
 
     inner class ChatRoomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-        val chatRoom: ChatRoom? = null
+        val chatRoom: ChatRoomMessage? = null
         private val message: TextView = itemView.findViewById(R.id.receiverTextView)
         private val receiverImageView: ImageView = itemView.findViewById(R.id.receiverImageView)
         @SuppressLint("SetTextI18n")
@@ -108,8 +112,31 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
 
     inner class ChatRoomSenderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val message: TextView = itemView.findViewById(R.id.senderTextView)
+        private val status: TextView = itemView.findViewById(R.id.messageStatusTextView)
         internal fun bind(position: Int) {
             message.text = data[position].text
+            if (statuses[0].userId != myID) {
+                configureStatus(statuses[0], position)
+            } else {
+                configureStatus(statuses[1], position)
+            }
+        }
+
+        private fun configureStatus(messageStatus: MessageStatus, position: Int) {
+            val readMessageDate = Utils.convertStringToDate(messageStatus.readMessageDate)
+            val receivedMessageDate = Utils.convertStringToDate(messageStatus.receivedMessageDate)
+            val messageDate = Utils.convertStringToDate(data[position].createdAt)
+            messageDate?.let {
+                if (it <= readMessageDate) {
+                    status.text = "Seen"
+                } else {
+                    if (it <= receivedMessageDate) {
+                        status.text = "Reached"
+                    } else {
+                        status.text = "Sent"
+                    }
+                }
+            }
         }
     }
 
@@ -175,7 +202,7 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
 
 }
 
-class ChatRoomDiffUtilCallback(private val oldList: List<ChatRoom>, private val newList: List<ChatRoom>): DiffUtil.Callback() {
+class ChatRoomDiffUtilCallback(private val oldList: List<ChatRoomMessage>, private val newList: List<ChatRoomMessage>): DiffUtil.Callback() {
     override fun getOldListSize() = oldList.size
     override fun getNewListSize() = newList.size
 

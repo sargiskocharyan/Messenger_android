@@ -3,16 +3,13 @@ package com.example.dynamicmessenger.network.chatRooms
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
-import android.widget.EditText
 import androidx.core.app.NotificationManagerCompat
-import androidx.recyclerview.widget.DiffUtil
+import androidx.lifecycle.MutableLiveData
 import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.models.*
 import com.example.dynamicmessenger.userCalls.webRtc.SignallingClient
-import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
-import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomDiffUtilCallback
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
 import com.example.dynamicmessenger.userHome.fragments.UserChatFragment
 import com.example.dynamicmessenger.utils.notifications.NotificationMessages
@@ -20,7 +17,6 @@ import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
 import com.google.gson.Gson
-import org.json.JSONException
 import org.json.JSONObject
 import java.security.cert.X509Certificate
 import java.util.*
@@ -88,7 +84,7 @@ object SocketManager {
 
     fun connectSocket() {
         getSocketInstance()?.connect()
-        callSocketEvents()
+        allSocketEvents()
     }
 
     //Signaling client
@@ -142,23 +138,40 @@ object SocketManager {
         chatRoomFragment = null
     }
 
-    private fun refreshChatRoomFragment(newMessage: ChatRoom) {
+    private fun refreshChatRoomFragment(newMessage: ChatRoomMessage) {
         chatRoomFragment?.receiveMessage(newMessage)
     }
 
-    fun sendMessage(receiverID: String, editText: EditText) {
-        mSocket?.emit("sendMessage" , editText.text.toString() , receiverID)
-        editText.text.clear()
+    private fun opponentIsTyping(array: Array<Any>) {
+        chatRoomFragment?.opponentTyping(array)
     }
 
-    private fun onMessageForNotification(activity: Activity?, closure: (Message, ChatRoom) -> Unit): Emitter.Listener {
+    //Messaging events
+    fun sendMessage(receiverID: String, editText: MutableLiveData<String>) {
+        mSocket?.emit("sendMessage" , editText.value , receiverID)
+        editText.value = ""
+    }
+
+    fun messageTyping(receiverID: String) {
+        mSocket?.emit("messageTyping" , receiverID)
+    }
+
+    private fun messageReceived(receiverID: String, messageId: String) {
+        mSocket?.emit("messageReceived" , receiverID, messageId)
+    }
+
+    fun messageRead(receiverID: String, messageId: String) {
+        mSocket?.emit("messageRead" , receiverID, messageId)
+    }
+
+    private fun onMessageForNotification(activity: Activity?, closure: (Message, ChatRoomMessage) -> Unit): Emitter.Listener {
         return Emitter.Listener { args ->
             activity?.runOnUiThread(Runnable {
                 try {
                     val data = args[0] as JSONObject
                     val gson = Gson()
                     val gsonMessage = gson.fromJson(data.toString(), Message::class.java)
-                    val message = ChatRoom(gsonMessage.senderId,null , gsonMessage.type, gsonMessage.text!!, gsonMessage.reciever, gsonMessage.createdAt)
+                    val message = ChatRoomMessage(gsonMessage._id, gsonMessage.senderId,null , gsonMessage.type, gsonMessage.text!!, gsonMessage.reciever, gsonMessage.createdAt)
                     closure(gsonMessage, message)
                 } catch (e: Exception) {
                     Log.i("+++", "onMessageForNotification $e")
@@ -168,8 +181,44 @@ object SocketManager {
         }
     }
 
-    private fun callSocketEvents() {
+    private fun allSocketEvents() {
         val manager = NotificationManagerCompat.from(SharedConfigs.myContext)
+        callSocketEvents(manager)
+        messageSocketEvents(manager)
+    }
+
+    private fun messageSocketEvents(manager: NotificationManagerCompat) {
+        mSocket?.on("message", onMessageForNotification(Activity()){ message: Message, chatRoom: ChatRoomMessage ->
+            try {
+                Log.i("+++", "chat Room $chatRoom")
+                if (chatRoom.senderId != SharedConfigs.signedUser?._id) {
+                    chatRoom.senderId?.let { messageReceived(it, chatRoom._id) }
+                }
+                when {
+                    SharedConfigs.currentFragment.value == MyFragments.CHAT_ROOM -> {
+                        refreshChatRoomFragment(chatRoom)
+                        if (chatRoom.senderId != SharedConfigs.signedUser?._id) {
+                            chatRoom.senderId?.let { messageRead(it, chatRoom._id) }
+                        }
+                    }
+                    SharedConfigs.currentFragment.value == MyFragments.CHATS -> refreshChatFragment()
+                    message.senderId != SharedConfigs.signedUser?._id ?: true -> {
+                        message.senderUsername?.let { senderName ->
+                            NotificationMessages.setNotificationMessage(senderName, message.text!!, SharedConfigs.myContext, manager)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.i("+++catch", e.toString())
+            }
+        })
+
+        mSocket?.on("messageTyping") {
+            opponentIsTyping(it)
+        }
+    }
+
+    private fun callSocketEvents(manager: NotificationManagerCompat) {
 
         mSocket?.on("callAccepted") {
             onCallAccepted(it)
@@ -195,20 +244,6 @@ object SocketManager {
             onCallEnded()
             Log.d("SignallingClientAcc", "Home activity call Ended ")
         }
-
-        mSocket?.on("message", onMessageForNotification(Activity()){ message: Message, chatRoom: ChatRoom ->
-            try {
-                when {
-                    SharedConfigs.currentFragment.value == MyFragments.CHAT_ROOM -> refreshChatRoomFragment(chatRoom)
-                    SharedConfigs.currentFragment.value == MyFragments.CHATS -> refreshChatFragment()
-                    message.senderId != SharedConfigs.signedUser?._id ?: true -> {
-                        message.senderUsername?.let { senderName -> NotificationMessages.setNotificationMessage(senderName, message.text!!, SharedConfigs.myContext, manager) }
-                    }
-                }
-            } catch (e: Exception) {
-                Log.i("+++catch", e.toString())
-            }
-        })
 
         mSocket?.on("call") {
             if (!SharedConfigs.isCallingInProgress) {

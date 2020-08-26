@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
@@ -18,9 +19,10 @@ import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userCalls.fragments.CallInformationFragment
-import com.example.dynamicmessenger.userDataController.database.*
+import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userHome.viewModels.UserCallViewModel
 import com.example.dynamicmessenger.utils.Utils
+import com.example.dynamicmessenger.utils.observeOnceWithoutOwner
 
 class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) : RecyclerView.Adapter<UserCallsAdapter.UserCallsViewHolder>() {
     private var data = mutableListOf<UserCalls>()
@@ -59,11 +61,12 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
             }
         SharedConfigs.userRepository.getUserInformationFromDB(opponentId).let {
             if (it == null) {
-                SharedConfigs.userRepository.getUserInformation(opponentId).observeForever { user ->
-                    if (user != null) {
-                        configureUserInformation(user, holder)
-                    }
-                }
+                SharedConfigs.userRepository.getUserInformation(opponentId).observe(
+                    (context as AppCompatActivity), Observer {user ->
+                        if (user != null) {
+                            configureUserInformation(user, holder)
+                        }
+                    })
             } else {
                 configureUserInformation(it, holder)
             }
@@ -108,7 +111,7 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
             Log.i("+++", "receiverID ${HomeActivity.receiverID}")
             (context as AppCompatActivity?)!!.supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.fragmentContainer , CallInformationFragment())
+                .replace(R.id.fragmentContainer, CallInformationFragment())
                 .addToBackStack(null)
                 .commit()
         }
@@ -121,7 +124,9 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
         return UserCallsViewHolder(view, context)
     }
 
-    inner class UserCallsViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(itemView){
+    inner class UserCallsViewHolder(itemView: View, context: Context) : RecyclerView.ViewHolder(
+        itemView
+    ){
         var userCalls: UserCalls? = null
         val name: TextView = itemView.findViewById(R.id.callUserNameTextView)
         val lastName: TextView = itemView.findViewById(R.id.callUserLastnameTextView)
@@ -153,16 +158,19 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
         }
 
         if (user.avatarURL != null) {
-            SharedConfigs.userRepository.getAvatar(user.avatarURL).observeForever {
+            SharedConfigs.userRepository.getAvatar(user.avatarURL).observeOnceWithoutOwner(Observer {
                 holder.userImageView.setImageBitmap(it)
-            }
+            })
         } else {
             holder.userImageView.setImageResource(R.drawable.ic_user_image)
         }
     }
 }
 
-class UserCallsDiffUtilCallback(private val oldList: List<UserCalls>, private val newList: List<UserCalls>): DiffUtil.Callback() {
+class UserCallsDiffUtilCallback(
+    private val oldList: List<UserCalls>,
+    private val newList: List<UserCalls>
+): DiffUtil.Callback() {
     override fun getOldListSize() = oldList.size
     override fun getNewListSize() = newList.size
 

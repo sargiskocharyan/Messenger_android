@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
@@ -16,6 +17,7 @@ import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
 import com.example.dynamicmessenger.utils.Utils
+import com.example.dynamicmessenger.utils.observeOnceWithoutOwner
 
 
 class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
@@ -60,24 +62,25 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
             holder.lastMessage.text = item.message?.text
         }
         if (item.recipientAvatarURL != null) {
-            SharedConfigs.userRepository.getAvatar(item.recipientAvatarURL).observeForever {
-                if (it != null) {
-                    holder.chatUserImageView.setImageBitmap(it)
-                } else {
-                    holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
-                }
-            }
+            SharedConfigs.userRepository.getAvatar(item.recipientAvatarURL).observeOnceWithoutOwner(
+                Observer {
+                    if (it != null) {
+                        holder.chatUserImageView.setImageBitmap(it)
+                    } else {
+                        holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
+                    }
+                })
         } else  {
             holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
         }
         SharedConfigs.onlineUsers?.let {onlineUsers ->
-            onlineUsers.observeForever {
+            onlineUsers.observe((context as AppCompatActivity), Observer {
                 if (it.contains(holder.chat!!.id)) {
                     holder.chatUserOnlineStatus.visibility = View.VISIBLE
                 } else {
                     holder.chatUserOnlineStatus.visibility = View.INVISIBLE
                 }
-            }
+            })
         }
     }
 
