@@ -10,6 +10,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
@@ -31,7 +34,8 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
             notifyDataSetChanged()
         }
 
-    var statuses = mutableListOf<MessageStatus>()
+    var opponentStatuses = MutableLiveData<MessageStatus>()
+    lateinit var myStatuses: MessageStatus
 
     var receiverImage: Bitmap? = null
 
@@ -96,7 +100,6 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
         }
 
     inner class ChatRoomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-        val chatRoom: ChatRoomMessage? = null
         private val message: TextView = itemView.findViewById(R.id.receiverTextView)
         private val receiverImageView: ImageView = itemView.findViewById(R.id.receiverImageView)
         @SuppressLint("SetTextI18n")
@@ -115,11 +118,9 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
         private val status: TextView = itemView.findViewById(R.id.messageStatusTextView)
         internal fun bind(position: Int) {
             message.text = data[position].text
-            if (statuses[0].userId != myID) {
-                configureStatus(statuses[0], position)
-            } else {
-                configureStatus(statuses[1], position)
-            }
+            opponentStatuses.observe((context as AppCompatActivity), Observer {
+                configureStatus(it, position)
+            })
         }
 
         private fun configureStatus(messageStatus: MessageStatus, position: Int) {

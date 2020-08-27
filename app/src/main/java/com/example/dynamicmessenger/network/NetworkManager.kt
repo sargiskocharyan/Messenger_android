@@ -225,9 +225,8 @@ object SearchContactsApi {
 interface JsonPlaceHolderAddContactApi {
     @Headers(MyHeaders.accept)
     @POST(ResponseUrls.addContact)
-    //TODO: addContact
-    suspend fun addContactResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                                        @Body userID : AddUserContactTask) : Response<Void>
+    suspend fun addContact(@Header (MyHeaders.tokenAuthorization) header: String,
+                           @Body userID : AddUserContactTask) : Response<Void>
 }
 
 object AddContactApi {
@@ -259,7 +258,7 @@ object LogoutApi {
 interface JsonPlaceHolderChatsApi {
     @Headers(MyHeaders.accept)
     @GET("${ResponseUrls.chats}/")
-    suspend fun chatsResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String) :
+    suspend fun chatsMessages(@Header (MyHeaders.tokenAuthorization) header: String) :
             Response<AllChats>
 }
 
@@ -275,8 +274,8 @@ object ChatsApi {
 interface JsonPlaceHolderChatRoomApi {
     @Headers(MyHeaders.accept)
     @GET("${ResponseUrls.chats}/{id}")
-    suspend fun chatRoomResponseAsync(@Header (MyHeaders.tokenAuthorization) header: String,
-                                      @Path ("id") receiverId: String) :
+    suspend fun chatRoomMessages(@Header (MyHeaders.tokenAuthorization) header: String,
+                                 @Path ("id") receiverId: String) :
             Response<ChatRoom>
 }
 

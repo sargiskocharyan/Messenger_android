@@ -23,13 +23,17 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
     val userEnteredMessage = MutableLiveData<String>()
     val opponentTypingTextVisibility = MutableLiveData<Boolean>()
 
-    fun getMessagesFromNetwork(context: Context?, receiverID: String, closure: (List<ChatRoomMessage>, List<MessageStatus>) -> Unit) {
+    fun getMessagesFromNetwork(context: Context?, receiverID: String, closure: (List<ChatRoomMessage>?, List<MessageStatus>) -> Unit) {
         viewModelScope.launch {
             try {
-                val response = ChatRoomApi.retrofitService.chatRoomResponseAsync(SharedConfigs.token, receiverID)
+                val response = ChatRoomApi.retrofitService.chatRoomMessages(SharedConfigs.token, receiverID)
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        closure(it.array, it.statuses)
+                        if (it.array.isEmpty()) {
+                            closure(null, it.statuses)
+                        } else {
+                            closure(it.array, it.statuses)
+                        }
                     }
                 } else {
                     Toast.makeText(context, "User chat room else", Toast.LENGTH_SHORT).show()

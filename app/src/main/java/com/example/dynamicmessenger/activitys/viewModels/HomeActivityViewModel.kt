@@ -3,7 +3,9 @@ package com.example.dynamicmessenger.activitys.viewModels
 import android.app.Application
 import android.os.Handler
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import com.example.dynamicmessenger.common.MyTime
 import com.example.dynamicmessenger.common.SharedConfigs
@@ -12,6 +14,7 @@ import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.OnlineUsersTask
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.database.*
+import com.example.dynamicmessenger.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -31,28 +34,27 @@ class HomeActivityViewModel(application: Application) : AndroidViewModel(applica
     private fun repeat() { //TODO change name
         handler.postDelayed(Runnable {
             handler.postDelayed(runnable, MyTime.threeMinutes)
-            getOnlineUsers()
+            if (NetworkUtils.networkAvailable()) {
+                getOnlineUsers()
+            }
         }.also { runnable = it }, 0)
     }
 
-    private fun getOnlineUsers() {
+    fun getOnlineUsers() {
         viewModelScope.launch(Dispatchers.IO) {
-//            while (true) { //TODO set when user have internet connection
-                try {
-                    val list = mutableListOf<String>()
-                    val chat = chatsRepository.getUserAllChats
-                    chat?.forEach { list.add(it.id) }
-                    val task = OnlineUsersTask(list)
-                    val response = GetOnlineUsersApi.retrofitService.getOnlineUsers(SharedConfigs.token, task)
-                    if (response.isSuccessful) {
-                        SharedConfigs.onlineUsers.postValue(response.body()!!.usersOnline)
-                    }
-                } catch (e: Exception) {
-                    Log.i("+++", "online users exception $e")
+            try {
+                val list = mutableListOf<String>()
+                val chat = chatsRepository.getUserAllChats
+                chat?.forEach { list.add(it.id) }
+                val task = OnlineUsersTask(list)
+                val response = GetOnlineUsersApi.retrofitService.getOnlineUsers(SharedConfigs.token, task)
+                if (response.isSuccessful) {
+                    SharedConfigs.onlineUsers.postValue(response.body()!!.usersOnline)
                 }
-                Log.i("+++", "${SharedConfigs.onlineUsers.value}")
-//                delay(10000L)
-//            }
+            } catch (e: Exception) {
+                Log.i("+++", "online users exception $e")
+            }
+            Log.i("+++", "${SharedConfigs.onlineUsers.value}")
         }
     }
 

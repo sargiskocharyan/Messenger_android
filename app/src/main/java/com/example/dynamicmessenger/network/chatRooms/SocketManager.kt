@@ -5,6 +5,7 @@ import android.app.Activity
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.MutableLiveData
+import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs
@@ -57,10 +58,10 @@ object SocketManager {
 
     fun getSocketInstance(): Socket? {
         if (mSocket == null) {
-            val sslcontext = SSLContext.getInstance("TLS")
-            sslcontext.init(null, trustAllCerts, null)
+            val sslContext = SSLContext.getInstance("TLS")
+            sslContext.init(null, trustAllCerts, null)
             IO.setDefaultHostnameVerifier { _: String?, _: SSLSession? -> true }
-            IO.setDefaultSSLContext(sslcontext)
+            IO.setDefaultSSLContext(sslContext)
             val opts = IO.Options()
             opts.forceNew = true
             opts.reconnection = true
@@ -146,6 +147,14 @@ object SocketManager {
         chatRoomFragment?.opponentTyping(array)
     }
 
+    private fun onMessageReceived(array: Array<Any>) {
+        chatRoomFragment?.statusMessageReceived(array)
+    }
+
+    private fun onMessageRead(array: Array<Any>) {
+        chatRoomFragment?.statusMessageRead(array)
+    }
+
     //Messaging events
     fun sendMessage(receiverID: String, editText: MutableLiveData<String>) {
         mSocket?.emit("sendMessage" , editText.value , receiverID)
@@ -198,7 +207,11 @@ object SocketManager {
                     SharedConfigs.currentFragment.value == MyFragments.CHAT_ROOM -> {
                         refreshChatRoomFragment(chatRoom)
                         if (chatRoom.senderId != SharedConfigs.signedUser?._id) {
-                            chatRoom.senderId?.let { messageRead(it, chatRoom._id) }
+                            chatRoom.senderId?.let {
+                                if (it == HomeActivity.receiverID!!) {
+                                    messageRead(it, chatRoom._id)
+                                }
+                            }
                         }
                     }
                     SharedConfigs.currentFragment.value == MyFragments.CHATS -> refreshChatFragment()
@@ -215,6 +228,16 @@ object SocketManager {
 
         mSocket?.on("messageTyping") {
             opponentIsTyping(it)
+        }
+
+        mSocket?.on("messageReceived") {
+            Log.i("+++", "messageReceived")
+            onMessageReceived(it)
+        }
+
+        mSocket?.on("messageRead") {
+            Log.i("+++", "messageRead")
+            onMessageRead(it)
         }
     }
 

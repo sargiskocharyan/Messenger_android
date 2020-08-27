@@ -38,14 +38,7 @@ class OpponentInformationFragment : Fragment() {
         setHasOptionsMenu(true)
         onClickListeners()
         configurePage()
-
-        SharedConfigs.userRepository.getUserInformation(HomeActivity.receiverID).observe(viewLifecycleOwner, Observer {user ->
-            viewModel.getOpponentInformation(user)
-            HomeActivity.opponentUser = user
-            SharedConfigs.userRepository.getAvatar(user?.avatarURL).observe(viewLifecycleOwner, Observer {
-                binding.opponentProfileAvatarImageView.setImageBitmap(it)
-            })
-        })
+        observers()
 
         return binding.root
     }
@@ -81,11 +74,21 @@ class OpponentInformationFragment : Fragment() {
 
         binding.sendMessageImageView.setOnClickListener {
             HomeActivity.isAddContacts = null
-            (context as AppCompatActivity?)!!.supportFragmentManager
+            requireActivity().supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.fragmentContainer, ChatRoomFragment())
                 .addToBackStack(null)
                 .commit()
         }
+    }
+
+    private fun observers() {
+        SharedConfigs.userRepository.getUserInformation(HomeActivity.receiverID).observe(viewLifecycleOwner, Observer {user ->
+            viewModel.getOpponentInformation(user)
+            HomeActivity.opponentUser = user
+            SharedConfigs.userRepository.getAvatar(user?.avatarURL).observe(viewLifecycleOwner, Observer {
+                binding.opponentProfileAvatarImageView.setImageBitmap(it)
+            })
+        })
     }
 }

@@ -19,12 +19,13 @@ import java.util.*
 
 object SharedConfigs {
     private lateinit var sharedPrefs: SharedPreferences
-    lateinit var myContext: Context
     private lateinit var userDao: SignedUserDao
     private lateinit var userRep: SignedUserRepository
     private lateinit var tokenDao: UserTokenDao
     private lateinit var tokenRep: UserTokenRepository
+    lateinit var myContext: Context
     lateinit var deviceUUID: String
+    lateinit var userRepository: Repository
     var callingOpponentId: String? = null
     var callRoomName: String? = null
     var isCalling: Boolean = false //TODO
@@ -32,7 +33,7 @@ object SharedConfigs {
     var lastFragment: MyFragments? = null
     val currentFragment = MutableLiveData<MyFragments>()
     var onlineUsers = MutableLiveData<List<String>>()
-    lateinit var userRepository: Repository
+    var chatsBadgesCount: Int = 0
 
     fun init(context: Context) {
         this.myContext = context

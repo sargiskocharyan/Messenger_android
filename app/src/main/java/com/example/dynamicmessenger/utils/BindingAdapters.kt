@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
+import com.airbnb.lottie.LottieAnimationView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.AppLangKeys
 import com.google.android.material.textfield.TextInputLayout
@@ -201,5 +202,14 @@ fun setLastNameErrorText(textInputLayout: TextInputLayout, answer: Boolean) {
         textInputLayout.error = null
     } else {
         textInputLayout.error = textInputLayout.context.getString(R.string.lastname_must_contain_at_least_2_letters)
+    }
+}
+
+@BindingAdapter("setLottieAnimationGone")
+fun setLottieAnimationGone(animation: LottieAnimationView, answer: Boolean) {
+    if (answer) {
+        animation.visibility = View.VISIBLE
+    } else {
+        animation.visibility = View.GONE
     }
 }

@@ -5,9 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.*
@@ -45,12 +43,15 @@ class Repository private constructor(val context: Context): RepositoryInterface 
         }
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                val response = ChatsApi.retrofitService.chatsResponseAsync(SharedConfigs.token)
+                val response = ChatsApi.retrofitService.chatsMessages(SharedConfigs.token)
                 if (response.isSuccessful) {
                     response.body()?.let {allChats ->
                         allChats.array?.let {
                             userChatsRepository.insert(it)
                             userChats.postValue(it)
+                        }
+                        allChats.badge?.let {
+                            SharedConfigs.chatsBadgesCount = it
                         }
                     }
                 } else {

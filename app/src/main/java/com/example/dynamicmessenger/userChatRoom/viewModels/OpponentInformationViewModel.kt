@@ -1,18 +1,14 @@
 package com.example.dynamicmessenger.userChatRoom.viewModels
 
 import android.app.Application
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.AddContactApi
-import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.RemoveContactApi
 import com.example.dynamicmessenger.network.authorization.models.AddUserContactTask
 import com.example.dynamicmessenger.network.authorization.models.RemoveContactTask
@@ -68,7 +64,7 @@ class OpponentInformationViewModel(application: Application) : AndroidViewModel(
             try {
                 val task = AddUserContactTask(HomeActivity.receiverID!!)
                 val response =
-                    AddContactApi.retrofitService.addContactResponseAsync(SharedConfigs.token, task)
+                    AddContactApi.retrofitService.addContact(SharedConfigs.token, task)
                 if (response.isSuccessful) {
                     HomeActivity.isAddContacts = false
                     Toast.makeText(context, "User added in your contacts", Toast.LENGTH_SHORT).show()

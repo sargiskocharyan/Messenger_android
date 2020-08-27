@@ -4,10 +4,8 @@ package com.example.dynamicmessenger.userHome.fragments
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,8 +29,6 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.InputStream
-import java.lang.Exception
-import java.net.URL
 
 
 class UserInformationFragment : Fragment() {
@@ -44,20 +40,17 @@ class UserInformationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentUserInformationBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(UserInformationViewModel::class.java)
+        binding = FragmentUserInformationBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+        binding.darkModeSwitch.isChecked = SharedConfigs.getDarkMode()
 
-        val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
-        bottomNavBar.visibility = View.VISIBLE
         SharedConfigs.currentFragment.value = MyFragments.INFORMATION
         changeDarkMode()
         observers()
-        popupMenu(binding)
+        popupMenu()
         onClickListeners()
-
-        binding.darkModeSwitch.isChecked = SharedConfigs.getDarkMode()
 
         return binding.root
     }
@@ -157,23 +150,17 @@ class UserInformationFragment : Fragment() {
     }
 
 
-    private fun popupMenu(binding: FragmentUserInformationBinding) {
+    private fun popupMenu() {
         binding.languageEn.setOnClickListener {
-            SharedConfigs.changeAppLanguage(AppLangKeys.EN)
-            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
-            requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this).commit()
+            updateLanguage(AppLangKeys.EN)
         }
 
         binding.languageRu.setOnClickListener {
-            SharedConfigs.changeAppLanguage(AppLangKeys.RU)
-            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
-            requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this).commit()
+            updateLanguage(AppLangKeys.RU)
         }
 
         binding.languageAm.setOnClickListener {
-            SharedConfigs.changeAppLanguage(AppLangKeys.AM)
-            LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
-            requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this).commit()
+            updateLanguage(AppLangKeys.AM)
         }
     }
 
@@ -186,10 +173,16 @@ class UserInformationFragment : Fragment() {
     }
 
     private fun navigateToFragment(fragment: Fragment) {
-        activity?.supportFragmentManager
-            ?.beginTransaction()
-            ?.replace(R.id.fragmentContainer, fragment)
-            ?.addToBackStack(null)
-            ?.commit()
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun updateLanguage(language: AppLangKeys) {
+        SharedConfigs.changeAppLanguage(language)
+        LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
+        requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this).commit()
     }
 }

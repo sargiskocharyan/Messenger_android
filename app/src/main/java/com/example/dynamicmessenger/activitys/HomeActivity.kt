@@ -28,8 +28,8 @@ import com.example.dynamicmessenger.userHome.fragments.UserChatFragment
 import com.example.dynamicmessenger.userHome.fragments.UserInformationFragment
 import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.LocalizationUtil
+import com.example.dynamicmessenger.utils.NetworkUtils
 import com.example.dynamicmessenger.utils.notifications.RemoteNotificationManager
-import com.example.dynamicmessenger.utils.observeOnce
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.iid.FirebaseInstanceId
@@ -48,17 +48,21 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var viewModel: HomeActivityViewModel
     private lateinit var tokenDao: UserTokenDao
     private lateinit var tokenRep: UserTokenRepository
+    private lateinit var bottomNavBar: BottomNavigationView
 
     @SuppressLint("HardwareIds")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
-        val bottomNavBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        bottomNavBar = findViewById(R.id.bottomNavigationView)
         bottomNavBar.setOnNavigationItemSelectedListener(navListener)
         tokenCheck(this, SharedConfigs.token)
         viewModel = ViewModelProvider(this).get(HomeActivityViewModel::class.java)
         tokenDao = SignedUserDatabase.getUserDatabase(this)!!.userTokenDao()
         tokenRep = UserTokenRepository(tokenDao)
+        observers()
+        //TODO change badge for all icons
+        configureBadges()
 
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
@@ -79,45 +83,9 @@ class HomeActivity : AppCompatActivity() {
         SharedConfigs.deviceUUID = androidId
         RemoteNotificationManager.registerDeviceToken(androidId)
 
-
-        //TODO change badge for all icons
-
-        val badge = bottomNavBar.getOrCreateBadge(R.id.call)
-        when (val missedCallHistorySize = SharedConfigs.signedUser?.missedCallHistory?.size) {
-            0, null -> {
-                badge.isVisible = false
-                Log.i("+++", "missed Call History Size $missedCallHistorySize")
-            }
-            else -> {
-                badge.isVisible = true
-                badge.number = missedCallHistorySize
-                Log.i("+++", "missed Call History Size $missedCallHistorySize")
-            }
-        }
-
         SharedConfigs.appLang.value?.value?.let { LocalizationUtil.setApplicationLocale(this, it) }
-        SharedConfigs.currentFragment.observe(this, androidx.lifecycle.Observer {
-            when (it) {
-                MyFragments.CALLS,
-                MyFragments.CHATS,
-                MyFragments.CONTACTS,
-                MyFragments.INFORMATION -> {
-                    bottomNavBar.visibility = View.VISIBLE
-                }
-                else -> bottomNavBar.visibility = View.GONE
-            }
-            Log.i("+++", "current fragment = $it")
-        })
 
-        SharedConfigs.userRepository.getUserInformation(SharedConfigs.signedUser?._id).observeOnce(this, androidx.lifecycle.Observer { user ->
-            user?.let {
-                SharedConfigs.signedUser = ClassConverter.userToSignedUser(it).apply {
-                    deviceRegistered = SharedConfigs.signedUser?.deviceRegistered!!
-                }
-            }
-        })
-//        SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
-//        })
+
     }
 
     override fun attachBaseContext(base: Context?) {
@@ -174,9 +142,61 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-//    private fun getUserContacts() {
-//        SharedConfigs
-//    }
+    private fun configureBadges() {
+        val callsBadge = bottomNavBar.getOrCreateBadge(R.id.call)
+        val chatsBadge = bottomNavBar.getOrCreateBadge(R.id.chat)
+        when (val missedCallHistorySize = SharedConfigs.signedUser?.missedCallHistory?.size) {
+            0, null -> {
+                callsBadge.isVisible = false
+                Log.i("+++", "missed Call History Size $missedCallHistorySize")
+            }
+            else -> {
+                callsBadge.isVisible = true
+                callsBadge.number = missedCallHistorySize
+                Log.i("+++", "missed Call History Size $missedCallHistorySize")
+            }
+        }
+
+        when (SharedConfigs.chatsBadgesCount) {
+            0 -> {
+                chatsBadge.isVisible = false
+                chatsBadge.number = -1
+                Log.i("+++", "missed Chat History Size ${SharedConfigs.chatsBadgesCount}")
+            }
+            else -> {
+                chatsBadge.isVisible = true
+                chatsBadge.number = SharedConfigs.chatsBadgesCount
+                Log.i("+++", "missed Chat History Size ${SharedConfigs.chatsBadgesCount}")
+            }
+        }
+    }
+
+    private fun observers() {
+        NetworkUtils.getNetworkLiveData().observe(this , androidx.lifecycle.Observer {
+            if (it) viewModel.getOnlineUsers()
+        })
+
+        SharedConfigs.userRepository.getUserInformation(SharedConfigs.signedUser?._id).observe(this, androidx.lifecycle.Observer { user ->
+            user?.let {
+                SharedConfigs.signedUser = ClassConverter.userToSignedUser(it).apply {
+                    deviceRegistered = SharedConfigs.signedUser?.deviceRegistered!!
+                }
+            }
+        })
+
+        SharedConfigs.currentFragment.observe(this, androidx.lifecycle.Observer {
+            when (it) {
+                MyFragments.CALLS,
+                MyFragments.CHATS,
+                MyFragments.CONTACTS,
+                MyFragments.INFORMATION -> {
+                    bottomNavBar.visibility = View.VISIBLE
+                }
+                else -> bottomNavBar.visibility = View.GONE
+            }
+//            Log.i("+++", "current fragment = $it")
+        })
+    }
 
     companion object {
         var opponentUser: User? = null

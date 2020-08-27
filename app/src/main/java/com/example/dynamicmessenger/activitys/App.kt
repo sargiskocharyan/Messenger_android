@@ -36,6 +36,8 @@ class App: Application() {
         SocketManager.closeSocket()
     }
 
+
+
     private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val messageChannel = NotificationChannel(

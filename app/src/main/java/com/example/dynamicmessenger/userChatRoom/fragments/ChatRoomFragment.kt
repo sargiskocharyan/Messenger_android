@@ -23,6 +23,7 @@ import com.example.dynamicmessenger.network.authorization.models.MessageStatus
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
+import com.example.dynamicmessenger.utils.Utils
 
 
 class ChatRoomFragment : Fragment() {
@@ -132,11 +133,23 @@ class ChatRoomFragment : Fragment() {
 
     private fun updateRecyclerView(receiverID: String) {
         viewModel.getMessagesFromNetwork(requireContext(), receiverID) { list, statuses ->
-            adapter.submitList(list)
-            adapter.statuses.addAll(statuses)
-            val lastElementNumber = list.size - 1
-            if (list[lastElementNumber].senderId != SharedConfigs.signedUser?._id) {
-                list[lastElementNumber].senderId?.let { SocketManager.messageRead(it, list[lastElementNumber]._id) }
+            if (statuses[0].userId == SharedConfigs.signedUser?._id) {
+                adapter.myStatuses = statuses[0]
+                adapter.opponentStatuses.postValue(statuses[1])
+            } else {
+                adapter.myStatuses = statuses[1]
+                adapter.opponentStatuses.postValue(statuses[0])
+            }
+            list?.let { roomMessages ->
+                adapter.submitList(roomMessages)
+                val lastElementNumber = roomMessages.size - 1
+                if (roomMessages[lastElementNumber].senderId != SharedConfigs.signedUser?._id) {
+                    Utils.convertStringToDate(adapter.myStatuses.readMessageDate)?.let { date ->
+                        if (date < Utils.convertStringToDate(roomMessages[lastElementNumber].createdAt)) {
+                            roomMessages[lastElementNumber].senderId?.let { SocketManager.messageRead(it, roomMessages[lastElementNumber]._id) }
+                        }
+                    }
+                }
             }
             scrollToBottom()
         }
@@ -184,6 +197,22 @@ class ChatRoomFragment : Fragment() {
             viewModel.opponentTypingTextVisibility.postValue(true)
             countDownTimer.cancel()
             countDownTimer.start()
+        }
+    }
+
+    fun statusMessageReceived(array: Array<Any>) {
+        if (array[1] == HomeActivity.receiverID!!) {
+            adapter.opponentStatuses.postValue(adapter.opponentStatuses.value?.apply {
+                receivedMessageDate = array[0] as String
+            })
+        }
+    }
+
+    fun statusMessageRead(array: Array<Any>) {
+        if (array[1] == HomeActivity.receiverID!!) {
+            adapter.opponentStatuses.postValue(adapter.opponentStatuses.value?.apply {
+                readMessageDate = array[0] as String
+            })
         }
     }
 }

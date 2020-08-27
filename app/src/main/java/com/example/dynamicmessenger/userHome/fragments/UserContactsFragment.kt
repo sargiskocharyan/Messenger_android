@@ -21,23 +21,23 @@ import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
 
 
 class UserContactsFragment : Fragment() {
-    lateinit var viewModel: UserContactsViewModel
+    private lateinit var viewModel: UserContactsViewModel
     private lateinit var binding: FragmentUserContactsBinding
+    private lateinit var adapter: UserContactsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentUserContactsBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(UserContactsViewModel::class.java)
+        adapter = UserContactsAdapter(requireContext())
+        binding = FragmentUserContactsBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        val adapter = UserContactsAdapter(requireContext())
-        updateRecycleViewFromNetwork(adapter)//TODO ----------------------
         binding.root.setHasTransientState(true)
         binding.contactsRecyclerView.adapter = adapter
-        val linearLayoutManager = LinearLayoutManager(requireContext())
-        binding.contactsRecyclerView.layoutManager = linearLayoutManager
+        binding.contactsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        updateRecycleViewFromNetwork(adapter)
 
         SharedConfigs.currentFragment.value = MyFragments.CONTACTS
         HomeActivity.isAddContacts = false
@@ -52,8 +52,7 @@ class UserContactsFragment : Fragment() {
 
         //Toolbar
         setHasOptionsMenu(true)
-        val toolbar: Toolbar = binding.addUserContactsToolbar
-        configureTopNavBar(toolbar)
+        configureTopNavBar(binding.addUserContactsToolbar)
 
         return binding.root
     }

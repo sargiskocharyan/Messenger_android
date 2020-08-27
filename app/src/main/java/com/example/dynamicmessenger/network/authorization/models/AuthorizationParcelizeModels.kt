@@ -123,8 +123,8 @@ data class ChatRoom(val array: List<ChatRoomMessage>, val statuses: List<Message
 
 @Parcelize
 data class MessageStatus(
-    val receivedMessageDate: String,
-    val readMessageDate: String,
+    var receivedMessageDate: String,
+    var readMessageDate: String,
     val _id: String,
     val userId: String) : Parcelable
 
