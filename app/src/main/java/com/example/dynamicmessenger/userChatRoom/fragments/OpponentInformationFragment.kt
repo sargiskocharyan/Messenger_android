@@ -32,8 +32,6 @@ class OpponentInformationFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        SharedConfigs.currentFragment.value = MyFragments.OPPONENT_INFORMATION
-
         //Toolbar
         setHasOptionsMenu(true)
         onClickListeners()
@@ -41,6 +39,11 @@ class OpponentInformationFragment : Fragment() {
         observers()
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SharedConfigs.currentFragment.value = MyFragments.OPPONENT_INFORMATION
     }
 
     private fun configureTopNavBar(toolbar: Toolbar) {

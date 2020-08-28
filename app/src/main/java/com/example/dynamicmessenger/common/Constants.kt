@@ -103,6 +103,7 @@ enum class AppMode {
 }
 
 enum class MyFragments {
+    NOT_SELECTED,
     CALLS,
     CHATS,
     INFORMATION,

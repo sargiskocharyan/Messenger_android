@@ -44,8 +44,6 @@ class UserChatFragment : Fragment() {
         setHasOptionsMenu(true)
         configureTopNavBar(binding.userChatToolbar)
 
-        SharedConfigs.currentFragment.value = MyFragments.CHATS
-
         refreshRecyclerView(adapter)
         binding.userChatSwipeRefreshLayout.setOnRefreshListener {
             refreshRecyclerView(adapter)
@@ -65,6 +63,11 @@ class UserChatFragment : Fragment() {
         val inflater: MenuInflater = requireActivity().menuInflater
         inflater.inflate(R.menu.plus_top_bar, menu)
         super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SharedConfigs.currentFragment.value = MyFragments.CHATS
     }
 
     override fun onDestroy() {

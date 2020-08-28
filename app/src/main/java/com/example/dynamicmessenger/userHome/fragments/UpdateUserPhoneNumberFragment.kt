@@ -31,7 +31,6 @@ class UpdateUserPhoneNumberFragment : Fragment() {
         binding = FragmentUpdateUserPhoneNumberBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        SharedConfigs.currentFragment.value = MyFragments.UPDATE_PHONE_NUMBER
 
         //Toolbar
         setHasOptionsMenu(true)
@@ -41,6 +40,11 @@ class UpdateUserPhoneNumberFragment : Fragment() {
         onClickListeners()
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SharedConfigs.currentFragment.value = MyFragments.UPDATE_PHONE_NUMBER
     }
 
     private fun onClickListeners() {

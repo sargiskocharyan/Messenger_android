@@ -47,7 +47,6 @@ class UpdateUserInformationFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.updateUserViewModel = viewModel
 
-        SharedConfigs.currentFragment.value = MyFragments.UPDATE_INFORMATION
         datePicker = DatePickerHelper(requireContext(), true)
 
         //Toolbar
@@ -64,6 +63,12 @@ class UpdateUserInformationFragment : Fragment() {
 
         return binding.root
     }
+
+    override fun onResume() {
+        super.onResume()
+        SharedConfigs.currentFragment.value = MyFragments.UPDATE_INFORMATION
+    }
+
     private fun showDatePickerDialog() {
         val cal = Calendar.getInstance()
         val d = cal.get(Calendar.DAY_OF_MONTH)

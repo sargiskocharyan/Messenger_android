@@ -39,7 +39,6 @@ class UserContactsFragment : Fragment() {
         binding.contactsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         updateRecycleViewFromNetwork(adapter)
 
-        SharedConfigs.currentFragment.value = MyFragments.CONTACTS
         HomeActivity.isAddContacts = false
 //        viewModel.getSavedContacts().observe(viewLifecycleOwner, Observer {
 //            updateRecycleView(adapter, it)
@@ -55,6 +54,11 @@ class UserContactsFragment : Fragment() {
         configureTopNavBar(binding.addUserContactsToolbar)
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SharedConfigs.currentFragment.value = MyFragments.CONTACTS
     }
 
     //for show toolbar menu

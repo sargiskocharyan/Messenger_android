@@ -34,8 +34,6 @@ class CallInformationFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        SharedConfigs.currentFragment.value = MyFragments.CALL_INFORMATION
-
         //Toolbar
         setHasOptionsMenu(true)
         val toolbar: Toolbar = binding.callInformationToolBar
@@ -74,6 +72,11 @@ class CallInformationFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SharedConfigs.currentFragment.value = MyFragments.CALL_INFORMATION
     }
 
     private fun configureTopNavBar(toolbar: Toolbar) {

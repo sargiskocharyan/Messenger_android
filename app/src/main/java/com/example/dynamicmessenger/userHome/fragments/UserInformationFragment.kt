@@ -46,7 +46,6 @@ class UserInformationFragment : Fragment() {
         binding.viewModel = viewModel
         binding.darkModeSwitch.isChecked = SharedConfigs.getDarkMode()
 
-        SharedConfigs.currentFragment.value = MyFragments.INFORMATION
         changeDarkMode()
         observers()
         popupMenu()
@@ -78,6 +77,11 @@ class UserInformationFragment : Fragment() {
         SharedConfigs.userRepository.getAvatar(SharedConfigs.signedUser?.avatarURL).observe(viewLifecycleOwner, Observer {
             viewModel.avatarBitmap.value = it
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SharedConfigs.currentFragment.value = MyFragments.INFORMATION
     }
 
     private fun onClickListeners() {

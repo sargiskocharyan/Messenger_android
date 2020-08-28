@@ -43,8 +43,6 @@ class UserCallFragment : Fragment() {
         callsDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userCallsDao()
         adapter = UserCallsAdapter(requireContext(), viewModel)
 
-        SharedConfigs.currentFragment.value = MyFragments.CALLS
-
         binding.root.setHasTransientState(true)
         binding.callRecyclerView.adapter = adapter
         binding.lifecycleOwner = this
@@ -89,6 +87,11 @@ class UserCallFragment : Fragment() {
         configureTopNavBar(toolbar)
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SharedConfigs.currentFragment.value = MyFragments.CALLS
     }
 
     //for show toolbar menu

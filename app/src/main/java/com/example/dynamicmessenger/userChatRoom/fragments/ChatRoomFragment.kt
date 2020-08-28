@@ -48,7 +48,6 @@ class ChatRoomFragment : Fragment() {
         binding.chatRecyclerView.layoutManager = linearLayoutManager
         binding.root.setHasTransientState(true)
 
-        SharedConfigs.currentFragment.value = MyFragments.CHAT_ROOM
         //Toolbar
         setHasOptionsMenu(true)
         configureTopNavBar(binding.chatRoomToolbar)
@@ -70,6 +69,11 @@ class ChatRoomFragment : Fragment() {
         val inflater: MenuInflater = requireActivity().menuInflater
         inflater.inflate(R.menu.chat_top_bar, menu)
         super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SharedConfigs.currentFragment.value = MyFragments.CHAT_ROOM
     }
 
     override fun onDestroyView() {
@@ -165,11 +169,11 @@ class ChatRoomFragment : Fragment() {
             requireActivity().supportFragmentManager.popBackStack()
         }
         toolbar.setOnMenuItemClickListener {
-            activity?.supportFragmentManager
-                ?.beginTransaction()
-                ?.replace(R.id.fragmentContainer, OpponentInformationFragment())
-                ?.addToBackStack(null)
-                ?.commit()
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, OpponentInformationFragment())
+                .addToBackStack(null)
+                .commit()
             return@setOnMenuItemClickListener true
         }
     }

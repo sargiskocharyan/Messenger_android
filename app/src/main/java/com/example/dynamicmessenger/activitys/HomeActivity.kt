@@ -97,6 +97,11 @@ class HomeActivity : AppCompatActivity() {
         activityJob.cancel()
     }
 
+    override fun onStop() {
+        super.onStop()
+        SharedConfigs.currentFragment.value = MyFragments.NOT_SELECTED
+    }
+
     private val navListener: BottomNavigationView.OnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -186,6 +191,7 @@ class HomeActivity : AppCompatActivity() {
 
         SharedConfigs.currentFragment.observe(this, androidx.lifecycle.Observer {
             when (it) {
+                MyFragments.NOT_SELECTED,
                 MyFragments.CALLS,
                 MyFragments.CHATS,
                 MyFragments.CONTACTS,
@@ -194,7 +200,7 @@ class HomeActivity : AppCompatActivity() {
                 }
                 else -> bottomNavBar.visibility = View.GONE
             }
-//            Log.i("+++", "current fragment = $it")
+            Log.i("+++", "current fragment = $it")
         })
     }
 

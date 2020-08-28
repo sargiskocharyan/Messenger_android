@@ -148,8 +148,10 @@ class Repository private constructor(val context: Context): RepositoryInterface 
             try {
                 val response = ContactsApi.retrofitService.getUserContacts(SharedConfigs.token)
                 if (response.isSuccessful) {
-                    userContacts.postValue(response.body())
-                    response.body()?.let { savedUserRepository.insertList(it) }
+                    response.body()?.let {
+                        userContacts.postValue(it)
+                        savedUserRepository.insertList(it)
+                    }
                 } else {
                     userContacts.postValue(null)
                 }
@@ -175,7 +177,10 @@ class Repository private constructor(val context: Context): RepositoryInterface 
                     userCalls.postValue(response.body())
                     response.body()?.let {
                         userCallsRepository.insertList(it)
-                        readCallHistory.postValue(readCallHistory(it[it.size - 1]._id))
+                        if (!SharedConfigs.signedUser?.missedCallHistory.isNullOrEmpty()) {
+                            Log.i("+++", "readCallHistory ${it[it.size - 1]}")
+                            readCallHistory.postValue(readCallHistory(it[it.size - 1]._id))
+                        }
                     }
                 } else {
                     userCalls.postValue(null)
@@ -214,7 +219,7 @@ class Repository private constructor(val context: Context): RepositoryInterface 
             val response = ReadCallHistoryApi.retrofitService.readCallHistory(SharedConfigs.token, ReadCallHistoryTask(lastCallId))
             response.isSuccessful
         } catch (e: Exception) {
-            Log.i("+++exception", "userInformationViewModel getAvatar $e")
+            Log.i("+++exception", "readCallHistory $e")
             false
         }
     }

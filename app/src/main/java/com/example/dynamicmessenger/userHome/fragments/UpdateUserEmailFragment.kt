@@ -31,7 +31,6 @@ class UpdateUserEmailFragment : Fragment() {
         binding = FragmentUpdateUserEmailBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        SharedConfigs.currentFragment.value = MyFragments.UPDATE_EMAIL
 
         //Toolbar
         setHasOptionsMenu(true)
@@ -41,6 +40,11 @@ class UpdateUserEmailFragment : Fragment() {
 
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SharedConfigs.currentFragment.value = MyFragments.UPDATE_EMAIL
     }
 
     private fun onClickListeners() {

@@ -25,8 +25,6 @@ class UserImageFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        SharedConfigs.currentFragment.value = MyFragments.USER_IMAGE
-
         viewModel.getAvatar()
 
         binding.deleteAvatarImageView.setOnClickListener {
@@ -44,6 +42,11 @@ class UserImageFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SharedConfigs.currentFragment.value = MyFragments.USER_IMAGE
     }
 
 }

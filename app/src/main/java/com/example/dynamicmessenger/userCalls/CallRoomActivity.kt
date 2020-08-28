@@ -24,9 +24,11 @@ import com.example.dynamicmessenger.userCalls.webRtc.SignallingClient
 import com.example.dynamicmessenger.utils.notifications.RemoteNotificationManager
 import com.example.dynamicmessenger.utils.turnScreenOffAndKeyguardOn
 import com.example.dynamicmessenger.utils.turnScreenOnAndKeyguardOff
+import com.google.android.datatransport.runtime.ExecutionModule_ExecutorFactory.executor
 import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.*
+import java.nio.ByteBuffer
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -43,15 +45,21 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     private lateinit var surfaceTextureHelper: SurfaceTextureHelper
     private lateinit var localVideoView: SurfaceViewRenderer
     private lateinit var remoteVideoView: SurfaceViewRenderer
-    var localPeer: PeerConnection? = null
-    private var rootEglBase: EglBase? = null
-    private var gotUserMedia = false
-    private var peerIceServers: MutableList<PeerConnection.IceServer> = ArrayList()
+    private lateinit var audioManager: AudioManager
     private lateinit var binding: ActivityCallRoomBinding
     private lateinit var viewModel: CallRoomViewModel
     private lateinit var timer: CountDownTimer
+    private var rootEglBase: EglBase? = null
+    private var gotUserMedia = false
+    private var peerIceServers: MutableList<PeerConnection.IceServer> = ArrayList()
     private var stream: MediaStream? = null
-    private lateinit var audioManager: AudioManager
+    var localPeer: PeerConnection? = null
+
+
+    private val dcInit = DataChannel.Init().apply {
+        id = 1
+    }
+    private var dataChannel : DataChannel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +103,18 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         val notificationManager = NotificationManagerCompat.from(this)
         notificationManager.cancel(1155)
 
+        dataChannel?.registerObserver(DcObserver())
 
+    }
+private var number = 0
+    fun sendData(data: String = "namak namak namakel kstanam") {
+        val str = data + number.toString()
+        number++
+        val buffer = ByteBuffer.wrap(data.toByteArray())
+        Log.i("+++--", "send data $data")
+        Log.i("+++--", "dataChannel state  ${dataChannel?.state()}")
+
+        dataChannel?.send(DataChannel.Buffer(buffer, true))
     }
 
     override fun onRequestPermissionsResult(
@@ -163,7 +182,10 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         videoConstraints = MediaConstraints()
 
         if (videoCapturerAndroid != null) {
-            surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", rootEglBase?.eglBaseContext)
+            surfaceTextureHelper = SurfaceTextureHelper.create(
+                "CaptureThread",
+                rootEglBase?.eglBaseContext
+            )
             videoSource = peerConnectionFactory.createVideoSource(videoCapturerAndroid.isScreencast)
             videoCapturerAndroid.initialize(
                 surfaceTextureHelper,
@@ -243,8 +265,14 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                     super.onAddStream(mediaStream)
                     gotRemoteStream(mediaStream)
                 }
+
+                override fun onDataChannel(dataChannel: DataChannel) {
+                    super.onDataChannel(dataChannel)
+                    dataChannel.registerObserver(DcObserver())
+                }
             })
         addStreamToLocalPeer()
+        dataChannel = localPeer?.createDataChannel("1", dcInit)
     }
 
     private fun addStreamToLocalPeer() {
@@ -444,7 +472,14 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
             localPeer!!.close()
         }
         try {
+            stream!!.dispose()
             peerConnectionFactory.dispose()
+            videoSource.dispose()
+            localVideoTrack.dispose()
+            audioSource.dispose()
+            localAudioTrack.dispose()
+//            audioManager.
+
         } catch (e: Exception) {
             Log.i("+++++++", "$e")
         }
@@ -508,13 +543,28 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         stream!!.removeTrack(localVideoTrack)
         videoConstraints = MediaConstraints()
         if (videoCapturerAndroid != null) {
-            surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", rootEglBase?.eglBaseContext)
+            try {
+                videoSource.dispose()
+                surfaceTextureHelper.dispose()
+
+            } catch (e: Exception) {
+                Log.i("+++---", "changeCamera exception $e")
+            }
+            surfaceTextureHelper = SurfaceTextureHelper.create(
+                "CaptureThread",
+                rootEglBase?.eglBaseContext
+            )
             videoSource = peerConnectionFactory.createVideoSource(videoCapturerAndroid.isScreencast)
-            videoCapturerAndroid.initialize(surfaceTextureHelper, this, videoSource.capturerObserver)
+            videoCapturerAndroid.initialize(
+                surfaceTextureHelper,
+                this,
+                videoSource.capturerObserver
+            )
         }
         localVideoTrack.removeSink(localVideoView)
         localVideoTrack = peerConnectionFactory.createVideoTrack("100", videoSource)
-        videoCapturerAndroid?.startCapture(1024, 720, 30)
+        videoCapturerAndroid?.stopCapture()
+//        videoCapturerAndroid?.startCapture(1024, 720, 30)
         localVideoTrack.addSink(localVideoView)
         stream!!.addTrack(localVideoTrack)
         if (isBackCamera) {
@@ -563,10 +613,27 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
 
         binding.disableAudioCircleImageView.setOnClickListener {
+            sendData()
             if (viewModel.isEnabledVolume.value!!) {
                 viewModel.isEnabledVolume.value = false
+                try {
+//                    localVideoTrack.setEnabled(false)
+//                    stream!!.removeTrack(localVideoTrack)
+//                    localVideoView.clearImage()
+                } catch (e: Exception) {
+                    Log.i("+++---", "exception $e")
+                }
+//                remoteVideoView.pauseVideo()
             } else {
                 viewModel.isEnabledVolume.value = true
+                try {
+//                    localVideoTrack.setEnabled(true)
+//                    stream!!.addTrack(localVideoTrack)
+//                    localVideoView.clearImage()
+
+                } catch (e: Exception) {
+                    Log.i("+++---", "exception $e")
+                }
             }
         }
 
@@ -599,13 +666,17 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     private fun observers() {
-        SharedConfigs.userRepository.getUserInformation(SharedConfigs.callingOpponentId).observe(this, androidx.lifecycle.Observer { user ->
-            viewModel.opponentInformation.value = user
-            viewModel.opponentAvatarUrl.value = user?.avatarURL
-            SharedConfigs.userRepository.getAvatar(user?.avatarURL).observe(this, androidx.lifecycle.Observer {
-                viewModel.opponentAvatarBitmap.value = it
+        SharedConfigs.userRepository.getUserInformation(SharedConfigs.callingOpponentId).observe(
+            this,
+            androidx.lifecycle.Observer { user ->
+                viewModel.opponentInformation.value = user
+                viewModel.opponentAvatarUrl.value = user?.avatarURL
+                SharedConfigs.userRepository.getAvatar(user?.avatarURL).observe(
+                    this,
+                    androidx.lifecycle.Observer {
+                        viewModel.opponentAvatarBitmap.value = it
+                    })
             })
-        })
     }
 
     companion object {
