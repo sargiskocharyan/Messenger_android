@@ -43,7 +43,7 @@ data class VerifyPhoneNumberTask (val number: String, val code: String)
 
 data class ReadCallHistoryTask (val callId: String)
 
-data class CallNotification(val caller: String, val roomName: String, val username: String, val image: String, val name: String)
+data class CallNotification(val caller: String, val roomName: String, val type: String, val username: String, val image: String, val name: String)
 
 //data class StatusMessageReceived(val caller: String, val id: String)
 //

@@ -26,6 +26,7 @@ object SharedConfigs {
     lateinit var myContext: Context
     lateinit var deviceUUID: String
     lateinit var userRepository: Repository
+    lateinit var callType: String
     var callingOpponentId: String? = null
     var callRoomName: String? = null
     var isCalling: Boolean = false //TODO
@@ -33,7 +34,7 @@ object SharedConfigs {
     var lastFragment: MyFragments? = null
     val currentFragment = MutableLiveData<MyFragments>()
     var onlineUsers = MutableLiveData<List<String>>()
-    var chatsBadgesCount: Int = 0
+    var chatsBadgesCount = MutableLiveData<Int>(0)
 
     fun init(context: Context) {
         this.myContext = context

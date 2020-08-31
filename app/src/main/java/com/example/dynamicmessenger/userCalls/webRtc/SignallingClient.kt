@@ -138,9 +138,9 @@ class SignallingClient {
         if (array[0] == true) {
             roomName = array[1].toString()
             callback.onCallAccepted(array[1].toString())
-        } else {
+        } else if (array[0] == false) {
 //            roomName = array[1].toString()
-//            callback.onRemoteNotAccepted(array[2].toString())
+//            callback.onRemoteNotAccepted(array[1].toString())
         }
     }
 

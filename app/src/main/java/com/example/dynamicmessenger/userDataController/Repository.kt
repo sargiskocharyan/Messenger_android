@@ -51,7 +51,7 @@ class Repository private constructor(val context: Context): RepositoryInterface 
                             userChats.postValue(it)
                         }
                         allChats.badge?.let {
-                            SharedConfigs.chatsBadgesCount = it
+                            SharedConfigs.chatsBadgesCount.postValue(it)
                         }
                     }
                 } else {

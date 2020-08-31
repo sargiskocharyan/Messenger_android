@@ -30,6 +30,7 @@ import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.LocalizationUtil
 import com.example.dynamicmessenger.utils.NetworkUtils
 import com.example.dynamicmessenger.utils.notifications.RemoteNotificationManager
+import com.example.dynamicmessenger.utils.observeOnce
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.iid.FirebaseInstanceId
@@ -162,18 +163,21 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        when (SharedConfigs.chatsBadgesCount) {
-            0 -> {
-                chatsBadge.isVisible = false
-                chatsBadge.number = -1
-                Log.i("+++", "missed Chat History Size ${SharedConfigs.chatsBadgesCount}")
+        SharedConfigs.chatsBadgesCount.observe(this, androidx.lifecycle.Observer {
+            when (it) {
+                0 -> {
+                    chatsBadge.isVisible = false
+                    chatsBadge.number = -1
+                    Log.i("+++", "missed Chat History Size ${it}")
+                }
+                else -> {
+                    chatsBadge.isVisible = true
+                    chatsBadge.number = it
+                    Log.i("+++", "missed Chat History Size ${it}")
+                }
             }
-            else -> {
-                chatsBadge.isVisible = true
-                chatsBadge.number = SharedConfigs.chatsBadgesCount
-                Log.i("+++", "missed Chat History Size ${SharedConfigs.chatsBadgesCount}")
-            }
-        }
+        })
+
     }
 
     private fun observers() {
@@ -202,6 +206,8 @@ class HomeActivity : AppCompatActivity() {
             }
             Log.i("+++", "current fragment = $it")
         })
+
+        SharedConfigs.userRepository.getUserChats().observeOnce(this, androidx.lifecycle.Observer {})
     }
 
     companion object {

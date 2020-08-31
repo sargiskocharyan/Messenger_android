@@ -19,6 +19,7 @@
     <color name="transparent">#00000000</color>
     <color name="transparentik">#7A000000</color>
     <color name="greenOnline">#7DCC01</color>
+    <color name="greyTransparent">#80CCCCCC</color>
 <!--    <color name="appMain"-->
 <!--    <color name="DisabledButton">#787878</color>-->
 </resources>

@@ -73,6 +73,36 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="caller name" />
 
+        <TextView
+            android:id="@+id/opponentTurnOffMicrophone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:textSize="16sp"
+            android:text="opponent turn off microphone"
+            android:background="@drawable/background_for_buttons"
+            android:backgroundTint="@color/greyTransparent"
+            android:textStyle="bold"
+            android:padding="4dp"
+            app:setTextViewVisible="@{viewModel.opponentTurnOffMicrophoneVisibility}"
+            app:layout_constraintBottom_toTopOf="@+id/hangUpCallCardView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/dataMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_for_buttons"
+            android:backgroundTint="@color/greyTransparent"
+            android:padding="4dp"
+            android:text="@{viewModel.receivedText}"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/opponentTurnOffMicrophone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
         <ImageView
             android:id="@+id/hangUpCallCardView"
             android:layout_width="60dp"

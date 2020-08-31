@@ -216,6 +216,7 @@ object SocketManager {
                     }
                     SharedConfigs.currentFragment.value == MyFragments.CHATS -> refreshChatFragment()
                     message.senderId != SharedConfigs.signedUser?._id ?: true -> {
+                        SharedConfigs.chatsBadgesCount.postValue(SharedConfigs.chatsBadgesCount.value?.plus(1))
                         message.senderUsername?.let { senderName ->
                             NotificationMessages.setNotificationMessage(senderName, message.text!!, SharedConfigs.myContext, manager)
                         }
@@ -272,11 +273,13 @@ object SocketManager {
             if (!SharedConfigs.isCallingInProgress) {
                 try {
                     val data = it[0] as JSONObject
+                    Log.i("++++", "on call $data")
                     val gson = Gson()
                     val gsonMessage = gson.fromJson(data.toString(), CallNotification::class.java)
                     SharedConfigs.callingOpponentId = gsonMessage.caller
                     SharedConfigs.callRoomName = gsonMessage.roomName
                     SharedConfigs.isCalling = true
+                    SharedConfigs.callType = gsonMessage.type
 //                    NotificationMessages.setCallNotification(this, managers)
                     NotificationMessages.setNewCallNotification(SharedConfigs.myContext, manager)
                 } catch (e: Exception) {

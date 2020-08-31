@@ -35,6 +35,7 @@ class UserInformationViewModel(application: Application) : AndroidViewModel(appl
 
     val appLanguage = MutableLiveData<AppLangKeys>(AppLangKeys.EN)
     val avatarBitmap = MutableLiveData<Bitmap>()
+    val userNotificationCount = MutableLiveData<String>()
 
     init {
         setUserProperty()

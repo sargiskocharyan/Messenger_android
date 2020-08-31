@@ -9,10 +9,13 @@ class CallRoomViewModel : ViewModel() {
     val opponentInformation = MutableLiveData<User>()
     val opponentAvatarUrl = MutableLiveData<String>()
     val opponentAvatarBitmap = MutableLiveData<Bitmap>()
+    val opponentTurnOffMicrophoneVisibility = MutableLiveData<Boolean>(false)
+    val opponentCameraIsFront = MutableLiveData<Boolean>(true)
     val isEnabledMicrophone = MutableLiveData<Boolean>(true)
     val isEnabledVolume = MutableLiveData<Boolean>(true)
     val isEnableSwitchCamera = MutableLiveData<Boolean>(false)
     val isFrontCamera = MutableLiveData<Boolean>(true)
+    val receivedText= MutableLiveData<String>()
 
 
 

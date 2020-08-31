@@ -81,7 +81,6 @@ class UserChatFragment : Fragment() {
                 val list = it.sortedWith(compareBy { chat -> chat.message }).reversed()
                 adapter.submitList(list)
                 scrollToTop(binding)
-                updateChatsBadge()
             } else {
                 Toast.makeText(requireContext(), "try again", Toast.LENGTH_SHORT).show()
             }
@@ -114,23 +113,5 @@ class UserChatFragment : Fragment() {
 
     private fun scrollToTop(binding: FragmentUserChatBinding) {
         binding.chatsRecyclerView.scrollToPosition(0)
-    }
-
-    //TODO Configure
-    private fun updateChatsBadge() {
-        val bottomNavBar: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
-        val chatsBadge = bottomNavBar.getOrCreateBadge(R.id.chat)
-        when (SharedConfigs.chatsBadgesCount) {
-            0 -> {
-                chatsBadge.isVisible = false
-                chatsBadge.number = -1
-                Log.i("+++", "missed Chat History Size ${SharedConfigs.chatsBadgesCount}")
-            }
-            else -> {
-                chatsBadge.isVisible = true
-                chatsBadge.number = SharedConfigs.chatsBadgesCount
-                Log.i("+++", "missed Chat History Size ${SharedConfigs.chatsBadgesCount}")
-            }
-        }
     }
 }

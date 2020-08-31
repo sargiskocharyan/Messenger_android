@@ -15,16 +15,17 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.common.DataChanelMessages
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.ActivityCallRoomBinding
 import com.example.dynamicmessenger.userCalls.viewModels.CallRoomViewModel
 import com.example.dynamicmessenger.userCalls.webRtc.CustomPeerConnectionObserver
 import com.example.dynamicmessenger.userCalls.webRtc.CustomSdpObserver
+import com.example.dynamicmessenger.userCalls.webRtc.DcObserver
 import com.example.dynamicmessenger.userCalls.webRtc.SignallingClient
 import com.example.dynamicmessenger.utils.notifications.RemoteNotificationManager
 import com.example.dynamicmessenger.utils.turnScreenOffAndKeyguardOn
 import com.example.dynamicmessenger.utils.turnScreenOnAndKeyguardOff
-import com.google.android.datatransport.runtime.ExecutionModule_ExecutorFactory.executor
 import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.*
@@ -57,6 +58,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 
 
     private val dcInit = DataChannel.Init().apply {
+//        negotiated = true
+//        ordered = true
         id = 1
     }
     private var dataChannel : DataChannel? = null
@@ -103,18 +106,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         val notificationManager = NotificationManagerCompat.from(this)
         notificationManager.cancel(1155)
 
-        dataChannel?.registerObserver(DcObserver())
-
-    }
-private var number = 0
-    fun sendData(data: String = "namak namak namakel kstanam") {
-        val str = data + number.toString()
-        number++
-        val buffer = ByteBuffer.wrap(data.toByteArray())
-        Log.i("+++--", "send data $data")
-        Log.i("+++--", "dataChannel state  ${dataChannel?.state()}")
-
-        dataChannel?.send(DataChannel.Buffer(buffer, true))
     }
 
     override fun onRequestPermissionsResult(
@@ -228,7 +219,7 @@ private var number = 0
         rtcConfig.rtcpMuxPolicy = PeerConnection.RtcpMuxPolicy.REQUIRE
         rtcConfig.continualGatheringPolicy =
             PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
-        rtcConfig.keyType = PeerConnection.KeyType.ECDSA
+        rtcConfig.keyType = PeerConnection.KeyType.RSA
         localPeer = peerConnectionFactory.createPeerConnection(
             rtcConfig,
             object : CustomPeerConnectionObserver("localPeerCreation") {
@@ -268,7 +259,7 @@ private var number = 0
 
                 override fun onDataChannel(dataChannel: DataChannel) {
                     super.onDataChannel(dataChannel)
-                    dataChannel.registerObserver(DcObserver())
+                    dataChannel.registerObserver(DcObserver(viewModel))
                 }
             })
         addStreamToLocalPeer()
@@ -280,6 +271,7 @@ private var number = 0
         stream = peerConnectionFactory.createLocalMediaStream("102")
         stream!!.addTrack(localAudioTrack)
         stream!!.addTrack(localVideoTrack)
+        remoteVideoView.isEnabled = false
         localPeer!!.addStream(stream)
     }
 
@@ -564,7 +556,7 @@ private var number = 0
         localVideoTrack.removeSink(localVideoView)
         localVideoTrack = peerConnectionFactory.createVideoTrack("100", videoSource)
         videoCapturerAndroid?.stopCapture()
-//        videoCapturerAndroid?.startCapture(1024, 720, 30)
+        videoCapturerAndroid?.startCapture(1024, 720, 30)
         localVideoTrack.addSink(localVideoView)
         stream!!.addTrack(localVideoTrack)
         if (isBackCamera) {
@@ -606,14 +598,16 @@ private var number = 0
             if (viewModel.isEnabledMicrophone.value!!) {
                 viewModel.isEnabledMicrophone.value = false
                 localAudioTrack.setEnabled(false)
+                sendData(DataChanelMessages.turnOffMicrophone)
             } else {
                 viewModel.isEnabledMicrophone.value = true
                 localAudioTrack.setEnabled(true)
+                sendData(DataChanelMessages.turnOnMicrophone)
             }
         }
 
         binding.disableAudioCircleImageView.setOnClickListener {
-            sendData()
+//            sendData()
             if (viewModel.isEnabledVolume.value!!) {
                 viewModel.isEnabledVolume.value = false
                 try {
@@ -648,7 +642,13 @@ private var number = 0
         }
 
         binding.hangUpCallCardView.setOnClickListener {
-            SignallingClient.getInstance()!!.leaveRoom()
+                Log.d("SignallingClient", "SignallingClient.getInstance()!!.isCallingNotProgress.value!! ${SignallingClient.getInstance()!!.isCallingNotProgress.value!!}")
+//            if (SignallingClient.getInstance()!!.isCallingNotProgress.value!!) {
+//                Log.d("SignallingClient", "accept call on click")
+//                SignallingClient.getInstance()!!.emitCallAccepted(false)
+//            } else {
+                SignallingClient.getInstance()!!.leaveRoom()
+//            }
             onRemoteHangUp()
 //            hangup()
         }
@@ -658,8 +658,10 @@ private var number = 0
                 viewModel.isFrontCamera.value = false
 //                localVideoTrack.dispose()
                 changeCamera(createBackCameraCapturer(Camera1Enumerator(false)), true)
+                sendData(DataChanelMessages.turnCameraToBack)
             } else {
                 viewModel.isFrontCamera.value = true
+                sendData(DataChanelMessages.turnCameraToFront)
                 changeCamera(createCameraCapturer(Camera1Enumerator(false)), false)
             }
         }
@@ -677,6 +679,22 @@ private var number = 0
                         viewModel.opponentAvatarBitmap.value = it
                     })
             })
+
+        viewModel.opponentCameraIsFront.observe(this, androidx.lifecycle.Observer {
+            if (it) {
+                remoteVideoView.setMirror(true)
+            } else {
+                remoteVideoView.setMirror(false)
+            }
+        })
+    }
+
+    private fun sendData(data: String) {
+        val buffer = ByteBuffer.wrap(data.toByteArray())
+//        Log.i("+++--", "send data $data")
+//        Log.i("+++--", "dataChannel state  ${dataChannel?.state()}")
+
+        dataChannel?.send(DataChannel.Buffer(buffer, true))
     }
 
     companion object {

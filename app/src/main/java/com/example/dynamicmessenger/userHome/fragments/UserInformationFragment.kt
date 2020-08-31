@@ -50,6 +50,7 @@ class UserInformationFragment : Fragment() {
         observers()
         popupMenu()
         onClickListeners()
+        notificationCount()
 
         return binding.root
     }
@@ -188,5 +189,14 @@ class UserInformationFragment : Fragment() {
         SharedConfigs.changeAppLanguage(language)
         LocalizationUtil.setApplicationLocale(requireContext(), SharedConfigs.appLang.value!!.value)
         requireActivity().supportFragmentManager.beginTransaction().detach(this).attach(this).commit()
+    }
+
+    private fun notificationCount() {
+        (SharedConfigs.chatsBadgesCount.value?.plus((SharedConfigs.signedUser?.missedCallHistory?.size ?: 0))).let {
+            if (it != 0) {
+                viewModel.userNotificationCount.value = it.toString()
+            }
+        }
+//        viewModel.userNotificationCount.value = (SharedConfigs.chatsBadgesCount + (SharedConfigs.signedUser?.missedCallHistory?.size ?: 0)).toString()
     }
 }
