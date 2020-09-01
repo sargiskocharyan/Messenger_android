@@ -30,24 +30,40 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <org.webrtc.SurfaceViewRenderer
-            android:id="@+id/localView"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/localViewConstraintLayout"
             android:layout_width="100dp"
             android:layout_height="130dp"
             android:layout_margin="30dp"
             android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0">
 
-        <ImageView
-            android:id="@+id/switchCamera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:src="@drawable/ic_baseline_flip_camera_ios_24"
-            app:setImageVisibility="@{viewModel.isEnableSwitchCamera}"
-            app:layout_constraintBottom_toBottomOf="@+id/localView"
-            app:layout_constraintStart_toStartOf="@+id/localView" />
+            <org.webrtc.SurfaceViewRenderer
+                android:id="@+id/localView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/switchCamera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:src="@drawable/ic_baseline_flip_camera_ios_24"
+                app:layout_constraintBottom_toBottomOf="@+id/localView"
+                app:layout_constraintStart_toStartOf="@+id/localView"
+                app:setImageVisibility="@{viewModel.isEnableSwitchCamera}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/callerCircleImageView"
@@ -162,6 +178,21 @@
             app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView"
             app:setViewVisible="@{!signalingClient.isCallingNotProgress}"
             app:setVolumeImage="@{viewModel.isEnabledVolume}" />
+
+        <ImageView
+            android:id="@+id/disableCameraCircleImageView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/background_for_buttons"
+            android:backgroundTint="@color/holoBlueDark"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_volume_up_24"
+            app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
+            app:layout_constraintEnd_toEndOf="@+id/localViewConstraintLayout"
+            app:layout_constraintStart_toStartOf="@+id/localViewConstraintLayout"
+            app:layout_constraintTop_toBottomOf="@+id/localViewConstraintLayout"
+            app:setViewVisible="@{!signalingClient.isCallingNotProgress}"
+            app:setVolumeImage="@{viewModel.isCameraEnabled}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

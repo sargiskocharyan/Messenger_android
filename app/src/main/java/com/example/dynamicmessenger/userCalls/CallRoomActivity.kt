@@ -50,7 +50,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     private lateinit var binding: ActivityCallRoomBinding
     private lateinit var viewModel: CallRoomViewModel
     private lateinit var timer: CountDownTimer
-    private var rootEglBase: EglBase? = null
+    private lateinit var rootEglBase: EglBase
     private var gotUserMedia = false
     private var peerIceServers: MutableList<PeerConnection.IceServer> = ArrayList()
     private var stream: MediaStream? = null
@@ -60,6 +60,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     private val dcInit = DataChannel.Init().apply {
 //        negotiated = true
 //        ordered = true
+        this.maxRetransmitTimeMs = -1
+        this.maxRetransmits = -1
         id = 1
     }
     private var dataChannel : DataChannel? = null
@@ -127,11 +129,11 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     private fun initVideos() {
-        val rootEglBase: EglBase = EglBase.create()
-        localVideoView.init(rootEglBase.eglBaseContext, null)
+        rootEglBase = EglBase.create()
         remoteVideoView.init(rootEglBase.eglBaseContext, null)
-        localVideoView.setZOrderMediaOverlay(true)
+        localVideoView.init(rootEglBase.eglBaseContext, null)
         remoteVideoView.setZOrderMediaOverlay(true)
+        localVideoView.setZOrderMediaOverlay(true)
     }
 
     private fun getIceServers() {
@@ -302,8 +304,9 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
             try {
                 viewModel.isEnableSwitchCamera.postValue(true)
                 remoteVideoView.visibility = View.VISIBLE
-                localVideoView.visibility = View.VISIBLE
                 videoTrack.addSink(remoteVideoView)
+                localVideoView.visibility = View.VISIBLE
+                binding.localViewConstraintLayout.visibility = View.VISIBLE
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -461,15 +464,20 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         super.onDestroy()
 //        SignallingClient.getInstance()!!.close()
         if (localPeer != null) {
+            //localPeer!!.stopRtcEventLog()
             localPeer!!.close()
         }
         try {
-            stream!!.dispose()
+//            stream!!.dispose()
             peerConnectionFactory.dispose()
-            videoSource.dispose()
-            localVideoTrack.dispose()
-            audioSource.dispose()
-            localAudioTrack.dispose()
+//            videoSource.dispose()
+
+            localVideoView.release()
+            remoteVideoView.release()
+
+//            localVideoTrack.dispose()
+//            audioSource.dispose()
+//            localAudioTrack.dispose()
 //            audioManager.
 
         } catch (e: Exception) {
@@ -486,6 +494,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 //        stream?.dispose()
 //        stream = null
         surfaceTextureHelper.dispose()
+//            surfaceTextureHelper = null
 //            surfaceTextureHelper = null
 //        }
 
@@ -665,6 +674,33 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                 changeCamera(createCameraCapturer(Camera1Enumerator(false)), false)
             }
         }
+
+        binding.disableCameraCircleImageView.setOnClickListener {
+            if (viewModel.isCameraEnabled.value!!) {
+                try {
+                    localVideoTrack.setEnabled(false)
+                    stream!!.removeTrack(localVideoTrack)
+                    localVideoView.clearImage()
+                    sendData(DataChanelMessages.turnCameraOff)
+                    viewModel.isCameraEnabled.value = false
+                    binding.localViewConstraintLayout.visibility = View.INVISIBLE
+                } catch (e: Exception) {
+                    Log.i("+++---", "exception $e")
+                }
+            } else {
+                try {
+                    localVideoTrack.setEnabled(true)
+                    stream!!.addTrack(localVideoTrack)
+                    localVideoView.clearImage()
+                    sendData(DataChanelMessages.turnCameraOn)
+                    viewModel.isCameraEnabled.value = true
+                    binding.localViewConstraintLayout.visibility = View.VISIBLE
+                } catch (e: Exception) {
+                    Log.i("+++---", "exception $e")
+                }
+            }
+        }
+//        Logging.
     }
 
     private fun observers() {
@@ -687,14 +723,23 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                 remoteVideoView.setMirror(false)
             }
         })
+
+        viewModel.opponentCameraIsEnabled.observe(this, androidx.lifecycle.Observer {
+            if (it) {
+                remoteVideoView.visibility = View.VISIBLE
+            } else {
+                remoteVideoView.visibility = View.INVISIBLE
+            }
+        })
     }
 
     private fun sendData(data: String) {
         val buffer = ByteBuffer.wrap(data.toByteArray())
-//        Log.i("+++--", "send data $data")
-//        Log.i("+++--", "dataChannel state  ${dataChannel?.state()}")
-
+        Log.i("+++--", "send data $data")
+        Log.i("+++--", "dataChannel state  ${dataChannel?.state()}")
+        Log.i("+++--", "dataChannel?.bufferedAmount() before ${dataChannel?.bufferedAmount()}")
         dataChannel?.send(DataChannel.Buffer(buffer, true))
+        Log.i("+++--", "dataChannel?.bufferedAmount() after ${dataChannel?.bufferedAmount()}")
     }
 
     companion object {

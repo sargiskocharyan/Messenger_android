@@ -1,16 +1,14 @@
 package com.example.dynamicmessenger.userCalls.webRtc
 
-import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import com.example.dynamicmessenger.common.DataChanelMessages
-import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.userCalls.viewModels.CallRoomViewModel
 import org.webrtc.DataChannel
 import java.nio.ByteBuffer
 
 class DcObserver(val viewModel: CallRoomViewModel) : DataChannel.Observer {
     override fun onMessage(buffer: DataChannel.Buffer) {
+        Log.i("+++--", "on Data buffer $buffer")
         val data: ByteBuffer = buffer.data
         val bytes = ByteArray(data.remaining())
         data.get(bytes)
@@ -26,14 +24,18 @@ class DcObserver(val viewModel: CallRoomViewModel) : DataChannel.Observer {
                 viewModel.opponentCameraIsFront.postValue(false)
             DataChanelMessages.turnCameraToFront ->
                 viewModel.opponentCameraIsFront.postValue(true)
+            DataChanelMessages.turnCameraOn ->
+                viewModel.opponentCameraIsEnabled.postValue(true)
+            DataChanelMessages.turnCameraOff ->
+                viewModel.opponentCameraIsEnabled.postValue(false)
         }
 
 //        executor.execute { events.onReceivedData(command) }
     }
 
     override fun onBufferedAmountChange(p0: Long) {
-        Log.i("+++--", "on DataChannel message :: onBufferedAmountChange")
-        TODO("Not yet implemented")
+        Log.i("+++--", "on DataChannel message :: onBufferedAmountChange $p0")
+
     }
 
     override fun onStateChange() {

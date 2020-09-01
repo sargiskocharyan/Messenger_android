@@ -80,6 +80,8 @@ object DataChanelMessages {
     const val turnOnMicrophone = "turn on microphone"
     const val turnCameraToFront = "turn camera to front"
     const val turnCameraToBack = "turn camera to back"
+    const val turnCameraOff = "turn camera off"
+    const val turnCameraOn = "turn camera on"
     const val opponentLeaveCall = "opponent leave call"
 }
 
