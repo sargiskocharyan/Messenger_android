@@ -24,6 +24,7 @@ import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
 import com.example.dynamicmessenger.utils.Utils
+import com.example.dynamicmessenger.utils.toDate
 
 
 class ChatRoomFragment : Fragment() {
@@ -148,8 +149,8 @@ class ChatRoomFragment : Fragment() {
                 adapter.submitList(roomMessages)
                 val lastElementNumber = roomMessages.size - 1
                 if (roomMessages[lastElementNumber].senderId != SharedConfigs.signedUser?._id) {
-                    Utils.convertStringToDate(adapter.myStatuses.readMessageDate)?.let { date ->
-                        if (date < Utils.convertStringToDate(roomMessages[lastElementNumber].createdAt)) {
+                    adapter.myStatuses.readMessageDate.toDate()?.let { date ->
+                        if (date < roomMessages[lastElementNumber].createdAt.toDate()) {
                             roomMessages[lastElementNumber].senderId?.let { SocketManager.messageRead(it, roomMessages[lastElementNumber]._id) }
                         }
                     }

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -48,7 +49,7 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
     }
 
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "ResourceAsColor")
     override fun onBindViewHolder(holder: UserChatsViewHolder, position: Int) {
         val item = data[position]
         val chatTime = item.message?.createdAt ?: item.chatCreateDay
@@ -73,6 +74,11 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
         } else  {
             holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
         }
+        if (item.unreadMessageExists == true) {
+            holder.chatsItemViewConstraintLayout.setBackgroundResource(R.color.greyTransparent)
+        } else {
+            holder.chatsItemViewConstraintLayout.setBackgroundResource(R.color.toolBarColor)
+        }
         SharedConfigs.onlineUsers?.let {onlineUsers ->
             onlineUsers.observe((context as AppCompatActivity), Observer {
                 if (it.contains(holder.chat!!.id)) {
@@ -93,6 +99,7 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
         val messageTime: TextView = itemView.findViewById(R.id.messageTime)
         val chatUserImageView: ImageView = itemView.findViewById(R.id.chatUserImageView)
         val chatUserOnlineStatus: ImageView = itemView.findViewById(R.id.chatUserOnlineStatus)
+        val chatsItemViewConstraintLayout: ConstraintLayout = itemView.findViewById(R.id.chatsItemViewConstraintLayout)
         init {
             itemView.setOnClickListener {
                 HomeActivity.receiverID = chat!!.id
@@ -115,7 +122,11 @@ class UserChatDiffUtilCallback(private val oldList: List<Chat>, private val newL
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].message?.createdAt == newList[newItemPosition].message?.createdAt
+        return if (oldList[oldItemPosition].message?.createdAt == newList[newItemPosition].message?.createdAt) {
+            oldList[oldItemPosition].unreadMessageExists == newList[newItemPosition].unreadMessageExists
+        } else {
+            false
+        }
     }
 
 }

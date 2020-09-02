@@ -47,7 +47,7 @@
                 android:id="@+id/localView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="invisible"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -71,128 +71,129 @@
             android:layout_height="150dp"
             android:layout_marginBottom="20dp"
             app:setViewVisible="@{signalingClient.isCallingNotProgress}"
-            app:setCircleImageBitmap="@{viewModel.opponentAvatarBitmap}"
-            app:layout_constraintBottom_toTopOf="@+id/callerNameTextView"
-            app:layout_constraintEnd_toEndOf="@+id/activityCallRoomConstraintLayout"
-            app:layout_constraintStart_toStartOf="@+id/activityCallRoomConstraintLayout" />
+           app:setCircleImageBitmap="@{viewModel.opponentAvatarBitmap}"
+           app:layout_constraintBottom_toTopOf="@+id/callerNameTextView"
+           app:layout_constraintEnd_toEndOf="@+id/activityCallRoomConstraintLayout"
+           app:layout_constraintStart_toStartOf="@+id/activityCallRoomConstraintLayout" />
+        <!--   app:setViewVisible="@{signalingClient.isCallingNotProgress || !viewModel.opponentCameraIsEnabled}-->"
 
-        <TextView
-            android:id="@+id/callerNameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:text="@{viewModel.opponentInformation.username}"
-            app:setTextViewVisible="@{signalingClient.isCallingNotProgress}"
-            app:layout_constraintBottom_toBottomOf="@+id/activityCallRoomConstraintLayout"
-            app:layout_constraintEnd_toEndOf="@+id/callerCircleImageView"
-            app:layout_constraintStart_toStartOf="@+id/callerCircleImageView"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="caller name" />
+       <TextView
+           android:id="@+id/callerNameTextView"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:textSize="24sp"
+           android:text="@{viewModel.opponentInformation.username}"
+           app:setTextViewVisible="@{signalingClient.isCallingNotProgress}"
+           app:layout_constraintBottom_toBottomOf="@+id/activityCallRoomConstraintLayout"
+           app:layout_constraintEnd_toEndOf="@+id/callerCircleImageView"
+           app:layout_constraintStart_toStartOf="@+id/callerCircleImageView"
+           app:layout_constraintTop_toTopOf="parent"
+           tools:text="caller name" />
 
-        <TextView
-            android:id="@+id/opponentTurnOffMicrophone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:textSize="16sp"
-            android:text="opponent turn off microphone"
-            android:background="@drawable/background_for_buttons"
-            android:backgroundTint="@color/greyTransparent"
-            android:textStyle="bold"
-            android:padding="4dp"
-            app:setTextViewVisible="@{viewModel.opponentTurnOffMicrophoneVisibility}"
-            app:layout_constraintBottom_toTopOf="@+id/hangUpCallCardView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+       <TextView
+           android:id="@+id/opponentTurnOffMicrophone"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_marginBottom="16dp"
+           android:textSize="16sp"
+           android:text="opponent turn off microphone"
+           android:background="@drawable/background_for_buttons"
+           android:backgroundTint="@color/greyTransparent"
+           android:textStyle="bold"
+           android:padding="4dp"
+           app:setTextViewVisible="@{viewModel.opponentTurnOffMicrophoneVisibility}"
+           app:layout_constraintBottom_toTopOf="@+id/hangUpCallCardView"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/dataMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/background_for_buttons"
-            android:backgroundTint="@color/greyTransparent"
-            android:padding="4dp"
-            android:text="@{viewModel.receivedText}"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/opponentTurnOffMicrophone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+       <TextView
+           android:id="@+id/dataMessage"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:background="@drawable/background_for_buttons"
+           android:backgroundTint="@color/greyTransparent"
+           android:padding="4dp"
+           android:text="@{viewModel.receivedText}"
+           android:textSize="20sp"
+           android:textStyle="bold"
+           app:layout_constraintBottom_toTopOf="@+id/opponentTurnOffMicrophone"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="parent"/>
 
-        <ImageView
-            android:id="@+id/hangUpCallCardView"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginBottom="40dp"
-            android:backgroundTint="@android:color/holo_red_light"
-            android:background="@drawable/background_for_buttons"
-            android:padding="10dp"
-            android:src="@drawable/ic_baseline_call_end_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/acceptCallCardView"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent">
-        </ImageView>
+       <ImageView
+           android:id="@+id/hangUpCallCardView"
+           android:layout_width="60dp"
+           android:layout_height="60dp"
+           android:layout_marginBottom="40dp"
+           android:backgroundTint="@android:color/holo_red_light"
+           android:background="@drawable/background_for_buttons"
+           android:padding="10dp"
+           android:src="@drawable/ic_baseline_call_end_24"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toStartOf="@+id/acceptCallCardView"
+           app:layout_constraintHorizontal_bias="0.5"
+           app:layout_constraintStart_toStartOf="parent">
+       </ImageView>
 
-        <ImageView
-            android:id="@+id/acceptCallCardView"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:backgroundTint="@android:color/holo_green_light"
-            android:background="@drawable/background_for_buttons"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/hangUpCallCardView"
-            app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView"
-            android:padding="10dp"
-            android:src="@drawable/ic_baseline_call_24"
-            app:setCardViewVisible="@{signalingClient.isCallingNotProgress}">
-        </ImageView>
+       <ImageView
+           android:id="@+id/acceptCallCardView"
+           android:layout_width="60dp"
+           android:layout_height="60dp"
+           android:backgroundTint="@android:color/holo_green_light"
+           android:background="@drawable/background_for_buttons"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintHorizontal_bias="0.5"
+           app:layout_constraintStart_toEndOf="@+id/hangUpCallCardView"
+           app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView"
+           android:padding="10dp"
+           android:src="@drawable/ic_baseline_call_24"
+           app:setCardViewVisible="@{signalingClient.isCallingNotProgress}">
+       </ImageView>
 
-        <ImageView
-            android:id="@+id/disableMicrophoneCircleImageView"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:padding="10dp"
-            android:src="@drawable/ic_baseline_mic_on_24"
-            android:backgroundTint="@color/white"
-            android:background="@drawable/background_for_buttons"
-            app:setViewVisible="@{!signalingClient.isCallingNotProgress}"
-            app:setMicrophoneImage="@{viewModel.isEnabledMicrophone}"
-            app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
-            app:layout_constraintEnd_toStartOf="@+id/hangUpCallCardView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView" />
+       <ImageView
+           android:id="@+id/disableMicrophoneCircleImageView"
+           android:layout_width="60dp"
+           android:layout_height="60dp"
+           android:padding="10dp"
+           android:src="@drawable/ic_baseline_mic_on_24"
+           android:backgroundTint="@color/white"
+           android:background="@drawable/background_for_buttons"
+           app:setViewVisible="@{!signalingClient.isCallingNotProgress}"
+           app:setMicrophoneImage="@{viewModel.isEnabledMicrophone}"
+           app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
+           app:layout_constraintEnd_toStartOf="@+id/hangUpCallCardView"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView" />
 
-        <ImageView
-            android:id="@+id/disableAudioCircleImageView"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:padding="10dp"
-            android:background="@drawable/background_for_buttons"
-            android:backgroundTint="@color/white"
-            android:src="@drawable/ic_baseline_volume_up_24"
-            app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/hangUpCallCardView"
-            app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView"
-            app:setViewVisible="@{!signalingClient.isCallingNotProgress}"
-            app:setVolumeImage="@{viewModel.isEnabledVolume}" />
+       <ImageView
+           android:id="@+id/disableAudioCircleImageView"
+           android:layout_width="60dp"
+           android:layout_height="60dp"
+           android:padding="10dp"
+           android:background="@drawable/background_for_buttons"
+           android:backgroundTint="@color/white"
+           android:src="@drawable/ic_baseline_volume_up_24"
+           app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toEndOf="@+id/hangUpCallCardView"
+           app:layout_constraintTop_toTopOf="@+id/hangUpCallCardView"
+           app:setViewVisible="@{!signalingClient.isCallingNotProgress}"
+           app:setVolumeImage="@{viewModel.isEnabledVolume}" />
 
-        <ImageView
-            android:id="@+id/disableCameraCircleImageView"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@drawable/background_for_buttons"
-            android:backgroundTint="@color/holoBlueDark"
-            android:padding="10dp"
-            android:src="@drawable/ic_baseline_volume_up_24"
-            app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
-            app:layout_constraintEnd_toEndOf="@+id/localViewConstraintLayout"
-            app:layout_constraintStart_toStartOf="@+id/localViewConstraintLayout"
-            app:layout_constraintTop_toBottomOf="@+id/localViewConstraintLayout"
-            app:setViewVisible="@{!signalingClient.isCallingNotProgress}"
-            app:setVolumeImage="@{viewModel.isCameraEnabled}" />
+       <ImageView
+           android:id="@+id/disableCameraCircleImageView"
+           android:layout_width="60dp"
+           android:layout_height="60dp"
+           android:background="@drawable/background_for_buttons"
+           android:backgroundTint="@color/holoBlueDark"
+           android:padding="10dp"
+           android:src="@drawable/ic_baseline_volume_up_24"
+           app:layout_constraintBottom_toBottomOf="@+id/hangUpCallCardView"
+           app:layout_constraintEnd_toEndOf="@+id/localViewConstraintLayout"
+           app:layout_constraintStart_toStartOf="@+id/localViewConstraintLayout"
+           app:layout_constraintTop_toBottomOf="@+id/localViewConstraintLayout"
+           app:setViewVisible="@{!signalingClient.isCallingNotProgress}"
+           app:setVolumeImage="@{viewModel.isCameraEnabled}" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -100,6 +100,12 @@ interface UserChatsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(chats: List<Chat>)
 
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun update(chats: Chat)
+
+    @Query("SELECT * FROM chat WHERE id = :id")
+    fun getChatById(id: String): Chat?
+
     @Query("DELETE FROM chat")
     suspend fun deleteAll()
 }

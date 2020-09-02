@@ -23,6 +23,7 @@ import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userHome.viewModels.UserCallViewModel
 import com.example.dynamicmessenger.utils.Utils
 import com.example.dynamicmessenger.utils.observeOnceWithoutOwner
+import com.example.dynamicmessenger.utils.toDate
 
 class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) : RecyclerView.Adapter<UserCallsAdapter.UserCallsViewHolder>() {
     private var data = mutableListOf<UserCalls>()
@@ -72,8 +73,8 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
             }
         }
 
-        val callStartTime = Utils.convertStringToDate(item.callStartTime)
-        val callEndTime = Utils.convertStringToDate(item.callEndTime)
+        val callStartTime = item.callStartTime.toDate()
+        val callEndTime = item.callEndTime.toDate()
         if (callStartTime != null && callEndTime != null) {
             val duration = callEndTime.time - callStartTime.time
             holder.callDuration.text = Utils.getCallDurationInSeconds(duration)

@@ -165,7 +165,7 @@ object SocketManager {
         mSocket?.emit("messageTyping" , receiverID)
     }
 
-    private fun messageReceived(receiverID: String, messageId: String) {
+    fun messageReceived(receiverID: String, messageId: String) {
         mSocket?.emit("messageReceived" , receiverID, messageId)
     }
 

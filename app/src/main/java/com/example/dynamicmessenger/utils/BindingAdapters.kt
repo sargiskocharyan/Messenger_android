@@ -1,18 +1,17 @@
 package com.example.dynamicmessenger.utils
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.*
-import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
 import com.airbnb.lottie.LottieAnimationView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.AppLangKeys
 import com.google.android.material.textfield.TextInputLayout
 import de.hdodenhof.circleimageview.CircleImageView
+
 
 //@BindingAdapter("languageIMG")
 //fun setLanguageIG(image: ImageView, resource: Int) {
@@ -184,8 +183,10 @@ fun setCodeErrorText(textInputLayout: TextInputLayout, answer: Boolean) {
 fun setUsernameErrorText(textInputLayout: TextInputLayout, answer: Boolean?) {
     when (answer) {
         true -> textInputLayout.error = null
-        false -> textInputLayout.error = textInputLayout.context.getString(R.string.the_username_must_contain_at_least_4_letters)
-        null -> textInputLayout.error = textInputLayout.context.getString(R.string.this_username_is_taken)
+        false -> textInputLayout.error =
+            textInputLayout.context.getString(R.string.the_username_must_contain_at_least_4_letters)
+        null -> textInputLayout.error =
+            textInputLayout.context.getString(R.string.this_username_is_taken)
     }
 }
 

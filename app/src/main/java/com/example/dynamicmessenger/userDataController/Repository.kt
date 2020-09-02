@@ -68,6 +68,16 @@ class Repository private constructor(val context: Context): RepositoryInterface 
         return userChats
     }
 
+    fun updateChatReadStatus(id: String) {
+        val chat = userChatsRepository.getChatById(id)
+        GlobalScope.launch(Dispatchers.IO) {
+            chat?.let {
+                it.unreadMessageExists = false
+                userChatsRepository.update(it)
+            }
+        }
+    }
+
     //Avatar
     fun getAvatar(avatarURL: String?): LiveData<Bitmap?> {
         val userAvatarBitmap = MutableLiveData<Bitmap?>()

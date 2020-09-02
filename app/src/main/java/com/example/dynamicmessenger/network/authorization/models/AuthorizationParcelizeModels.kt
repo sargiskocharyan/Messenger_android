@@ -58,6 +58,8 @@ data class Chat(
     @Embedded
     val message: Message?,
     val recipientAvatarURL: String?,
+    var unreadMessageExists: Boolean?,
+    val statuses: List<MessageStatus>,
     val chatCreateDay: String) : Parcelable
 
 @Parcelize
@@ -68,7 +70,7 @@ data class AllChats(
 @Parcelize
 data class Message(
     val _id: String,
-    val senderId: String?,
+    val senderId: String,
     @Embedded
     val call: Call?,
     val type: String,
@@ -102,6 +104,7 @@ data class Sender(
 
 @Parcelize
 data class Call(
+    @ColumnInfo(name = "callStatus")
     val status: String?,
     val callSuggestTime: String?,
     @ColumnInfo(name = "callType")
@@ -125,7 +128,9 @@ data class ChatRoom(val array: List<ChatRoomMessage>, val statuses: List<Message
 data class MessageStatus(
     var receivedMessageDate: String,
     var readMessageDate: String,
+    @ColumnInfo(name = "messageStatusId")
     val _id: String,
+    @ColumnInfo(name = "messageStatusUserId")
     val userId: String) : Parcelable
 
 @Parcelize

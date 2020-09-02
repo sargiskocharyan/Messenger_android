@@ -19,6 +19,7 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.network.authorization.models.ChatRoomMessage
 import com.example.dynamicmessenger.network.authorization.models.MessageStatus
 import com.example.dynamicmessenger.utils.Utils
+import com.example.dynamicmessenger.utils.toDate
 
 class ChatRoomAdapter(val context: Context, private val myID: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
@@ -124,9 +125,9 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
         }
 
         private fun configureStatus(messageStatus: MessageStatus, position: Int) {
-            val readMessageDate = Utils.convertStringToDate(messageStatus.readMessageDate)
-            val receivedMessageDate = Utils.convertStringToDate(messageStatus.receivedMessageDate)
-            val messageDate = Utils.convertStringToDate(data[position].createdAt)
+            val readMessageDate = messageStatus.readMessageDate.toDate()
+            val receivedMessageDate = messageStatus.receivedMessageDate.toDate()
+            val messageDate = data[position].createdAt.toDate()
             messageDate?.let {
                 if (it <= readMessageDate) {
                     status.text = "Seen"

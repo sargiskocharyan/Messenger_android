@@ -3,6 +3,7 @@ package com.example.dynamicmessenger.userDataController.database
 import android.content.Context
 import androidx.room.*
 import com.example.dynamicmessenger.network.authorization.models.Chat
+import com.example.dynamicmessenger.network.authorization.models.MessageStatus
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.google.gson.Gson
 
@@ -71,5 +72,25 @@ class Converters {
         val gson = Gson()
         val type = object : TypeToken<List<String?>?>() {}.type
         return gson.fromJson<List<String>>(string, type)
+    }
+
+    @TypeConverter
+    fun fromMessageStatusList(string: List<MessageStatus?>?): String? {
+        if (string == null) {
+            return null
+        }
+        val gson = Gson()
+        val type = object : TypeToken<List<MessageStatus?>?>() {}.type
+        return gson.toJson(string, type)
+    }
+
+    @TypeConverter
+    fun toMessageStatusList(string: String?): List<MessageStatus>? {
+        if (string == null) {
+            return null
+        }
+        val gson = Gson()
+        val type = object : TypeToken<List<MessageStatus>?>() {}.type
+        return gson.fromJson<List<MessageStatus>>(string, type)
     }
 }

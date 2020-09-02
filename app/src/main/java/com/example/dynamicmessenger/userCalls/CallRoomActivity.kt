@@ -29,6 +29,9 @@ import com.example.dynamicmessenger.utils.turnScreenOnAndKeyguardOff
 import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.*
+import org.webrtc.voiceengine.WebRtcAudioManager
+import org.webrtc.voiceengine.WebRtcAudioTrack
+import org.webrtc.voiceengine.WebRtcAudioUtils
 import java.nio.ByteBuffer
 import java.util.*
 import kotlin.math.roundToInt
@@ -54,9 +57,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     private var gotUserMedia = false
     private var peerIceServers: MutableList<PeerConnection.IceServer> = ArrayList()
     private var stream: MediaStream? = null
-    var localPeer: PeerConnection? = null
-
-
+    private var localPeer: PeerConnection? = null
+    private var dataChannel : DataChannel? = null
     private val dcInit = DataChannel.Init().apply {
 //        negotiated = true
 //        ordered = true
@@ -64,7 +66,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         this.maxRetransmits = -1
         id = 1
     }
-    private var dataChannel : DataChannel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,8 +85,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         onClickListeners()
 
         audioManager = this.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        audioManager.isSpeakerphoneOn = true
-        audioManager.mode = AudioManager.MODE_NORMAL
 
         timer = object : CountDownTimer(30000, 2000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -195,6 +194,13 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         localVideoTrack.addSink(localVideoView)
         localVideoView.setMirror(true)
         remoteVideoView.setMirror(true)
+        viewModel.opponentCameraIsFront.observe(this, androidx.lifecycle.Observer {
+            if (it) {
+                remoteVideoView.setMirror(true)
+            } else {
+                remoteVideoView.setMirror(false)
+            }
+        })
         gotUserMedia = true
         if (SignallingClient.getInstance()!!.isInitiator) {
             onTryToStart()
@@ -616,24 +622,31 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
 
         binding.disableAudioCircleImageView.setOnClickListener {
-//            sendData()
             if (viewModel.isEnabledVolume.value!!) {
                 viewModel.isEnabledVolume.value = false
                 try {
-//                    localVideoTrack.setEnabled(false)
-//                    stream!!.removeTrack(localVideoTrack)
-//                    localVideoView.clearImage()
+//                    audioManager.isSpeakerphoneOn = true
+//                    audioManager.mode = AudioManager.MODE_NORMAL
+                    volumeControlStream = AudioManager.STREAM_VOICE_CALL
+                    audioManager.mode = AudioManager.MODE_IN_CALL
+//                    audioManager.
+                    Log.i("+++---", "localAudioTrack.state() ${localAudioTrack.state()}")
+
+
                 } catch (e: Exception) {
                     Log.i("+++---", "exception $e")
                 }
-//                remoteVideoView.pauseVideo()
             } else {
                 viewModel.isEnabledVolume.value = true
                 try {
-//                    localVideoTrack.setEnabled(true)
-//                    stream!!.addTrack(localVideoTrack)
-//                    localVideoView.clearImage()
+                    Log.i("+++---", "localAudioTrack.state() ${localAudioTrack.state()}")
 
+//                    audioManager.isSpeakerphoneOn = false
+//                    audioManager.mode = AudioManager.MODE
+
+//                    volumeControlStream = AudioManager.MODE_IN_COMMUNICATION
+                    audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
+//                    audioManager.setStreamVolume()
                 } catch (e: Exception) {
                     Log.i("+++---", "exception $e")
                 }
@@ -716,30 +729,35 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                     })
             })
 
-        viewModel.opponentCameraIsFront.observe(this, androidx.lifecycle.Observer {
-            if (it) {
-                remoteVideoView.setMirror(true)
-            } else {
-                remoteVideoView.setMirror(false)
-            }
-        })
+//        viewModel.opponentCameraIsFront.observe(this, androidx.lifecycle.Observer {
+//            if (it) {
+//                remoteVideoView.setMirror(true)
+//            } else {
+//                remoteVideoView.setMirror(false)
+//            }
+//        })
 
         viewModel.opponentCameraIsEnabled.observe(this, androidx.lifecycle.Observer {
             if (it) {
                 remoteVideoView.visibility = View.VISIBLE
+                binding.callerCircleImageView.visibility = View.GONE
+                binding.callerNameTextView.visibility = View.GONE
+                if (viewModel.isCameraEnabled.value!!) {
+                    localVideoView.visibility = View.GONE
+                    localVideoView.visibility = View.VISIBLE
+                }
             } else {
-                remoteVideoView.visibility = View.INVISIBLE
+                remoteVideoView.visibility = View.GONE
+                binding.callerCircleImageView.visibility = View.VISIBLE
+                binding.callerNameTextView.visibility = View.VISIBLE
             }
         })
     }
-
     private fun sendData(data: String) {
         val buffer = ByteBuffer.wrap(data.toByteArray())
         Log.i("+++--", "send data $data")
         Log.i("+++--", "dataChannel state  ${dataChannel?.state()}")
-        Log.i("+++--", "dataChannel?.bufferedAmount() before ${dataChannel?.bufferedAmount()}")
         dataChannel?.send(DataChannel.Buffer(buffer, true))
-        Log.i("+++--", "dataChannel?.bufferedAmount() after ${dataChannel?.bufferedAmount()}")
     }
 
     companion object {

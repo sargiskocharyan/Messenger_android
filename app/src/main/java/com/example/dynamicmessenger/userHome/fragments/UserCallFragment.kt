@@ -52,6 +52,7 @@ class UserCallFragment : Fragment() {
         SharedConfigs.userRepository.getUserCalls().first.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 adapter.submitList(it.reversed())
+                scrollToTop()
             }
         })
 
@@ -109,14 +110,18 @@ class UserCallFragment : Fragment() {
         toolbar.setOnMenuItemClickListener {
             val selectedFragment = UserContactsFragment()
             SharedConfigs.lastFragment = MyFragments.CALLS
-            activity?.supportFragmentManager
-                ?.beginTransaction()
-                ?.replace(R.id.fragmentContainer, selectedFragment)
-                ?.addToBackStack(null)
-                ?.commit()
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, selectedFragment)
+                .addToBackStack(null)
+                .commit()
 
             return@setOnMenuItemClickListener true
         }
+    }
+
+    private fun scrollToTop() {
+        binding.callRecyclerView.scrollToPosition(0)
     }
 
 //    override fun onResume() {

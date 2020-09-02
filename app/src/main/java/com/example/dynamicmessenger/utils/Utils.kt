@@ -57,21 +57,6 @@ object Utils {
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun convertStringToDate(time: String?): Date? {
-        var timeInDate: Date? = null
-        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        format.timeZone = TimeZone.getTimeZone("UTC")
-        if (time != null) {
-            try {
-                timeInDate = format.parse(time)!!
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-        return timeInDate
-    }
-
-    @SuppressLint("SimpleDateFormat")
     fun convertLongToTimeForCall(time: Long): String {
         val date = Date(time)
         val currentDate: Date = Calendar.getInstance().time
@@ -94,7 +79,7 @@ object Utils {
 
     @SuppressLint("SimpleDateFormat")
     fun convertDateToHour(dateString: String): String {
-        return convertStringToDate(dateString)?.let { convertDateToHour(it) } ?: ""
+        return dateString.toDate()?.let { convertDateToHour(it) } ?: ""
     }
 
     fun getCallDurationInSeconds(time: Long): String {

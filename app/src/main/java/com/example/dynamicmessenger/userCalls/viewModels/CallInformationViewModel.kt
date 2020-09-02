@@ -9,6 +9,7 @@ import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.utils.Utils
+import com.example.dynamicmessenger.utils.toDate
 
 class CallInformationViewModel(application: Application) : AndroidViewModel(application) {
     val callInformation = MutableLiveData<UserCalls>()
@@ -32,14 +33,14 @@ class CallInformationViewModel(application: Application) : AndroidViewModel(appl
     }
 
     fun configureCallInformation(userCalls: UserCalls) {
-        val callStartTime = Utils.convertStringToDate(userCalls.callStartTime)
-        val callEndTime = Utils.convertStringToDate(userCalls.callEndTime)
+        val callStartTime = userCalls.callStartTime.toDate()
+        val callEndTime = userCalls.callEndTime.toDate()
         if (callEndTime != null && callStartTime != null) {
             callDuration.value = Utils.getCallDurationInSeconds(callEndTime.time - callStartTime.time)
 //            getCallDurationInSeconds(callEndTime.time - callStartTime.time)
         }
         callTimeHour.value = userCalls.callSuggestTime?.let { Utils.convertDateToHour(it) }
-        callTimeDay.value = Utils.convertStringToDate(userCalls.callSuggestTime)?.time?.let { Utils.convertLongToTimeForCall(it) }
+        callTimeDay.value = userCalls.callSuggestTime.toDate()?.time?.let { Utils.convertLongToTimeForCall(it) }
         callState.value = userCalls.status
 
     }

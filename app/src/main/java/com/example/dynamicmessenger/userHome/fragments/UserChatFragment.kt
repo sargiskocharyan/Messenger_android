@@ -17,10 +17,12 @@ import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
+import com.example.dynamicmessenger.network.authorization.models.Chat
+import com.example.dynamicmessenger.network.authorization.models.MessageStatus
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userHome.adapters.UserChatsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserChatViewModel
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.dynamicmessenger.utils.toDate
 
 
 class UserChatFragment : Fragment() {
@@ -80,7 +82,16 @@ class UserChatFragment : Fragment() {
             if (it != null) {
                 val list = it.sortedWith(compareBy { chat -> chat.message }).reversed()
                 adapter.submitList(list)
-                scrollToTop(binding)
+                scrollToTop()
+                list.forEach { chat ->
+                    chat.statuses.let { messageStatus ->
+                        if (messageStatus[0].userId == SharedConfigs.signedUser?._id ?: false) {
+                            sendReceiveMessage(chat, messageStatus[0])
+                        } else {
+                            sendReceiveMessage(chat, messageStatus[1])
+                        }
+                    }
+                }
             } else {
                 Toast.makeText(requireContext(), "try again", Toast.LENGTH_SHORT).show()
             }
@@ -101,17 +112,32 @@ class UserChatFragment : Fragment() {
         toolbar.setOnMenuItemClickListener {
             val selectedFragment = UserContactsFragment()
             SharedConfigs.lastFragment = MyFragments.CHATS
-            activity?.supportFragmentManager
-                ?.beginTransaction()
-                ?.replace(R.id.fragmentContainer, selectedFragment)
-                ?.addToBackStack(null)
-                ?.commit()
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, selectedFragment)
+                .addToBackStack(null)
+                .commit()
 
             return@setOnMenuItemClickListener true
         }
     }
 
-    private fun scrollToTop(binding: FragmentUserChatBinding) {
+    private fun scrollToTop() {
         binding.chatsRecyclerView.scrollToPosition(0)
+    }
+
+    private fun sendReceiveMessage(chat: Chat, status: MessageStatus) {
+        status.receivedMessageDate.toDate()?.let { receivedMessageDate ->
+            chat.message?.createdAt.toDate()?.let { createdAt ->
+                if (receivedMessageDate < createdAt) {
+                    chat.message?.let { message ->
+                        if (message.senderId != SharedConfigs.signedUser?._id) {
+                            SocketManager.messageReceived(message.senderId, message._id)
+                            Log.i("+++", "message received ${message}")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
