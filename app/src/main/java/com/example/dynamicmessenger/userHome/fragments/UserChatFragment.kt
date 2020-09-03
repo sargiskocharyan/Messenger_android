@@ -100,7 +100,9 @@ class UserChatFragment : Fragment() {
     }
 
     fun updateRecyclerView() {
-        getUserChats(adapter)
+        requireActivity().runOnUiThread {
+            getUserChats(adapter)
+        }
     }
 
     private fun refreshRecyclerView(adapter: UserChatsAdapter) {

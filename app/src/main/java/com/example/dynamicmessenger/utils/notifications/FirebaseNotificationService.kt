@@ -28,7 +28,10 @@ class FirebaseNotificationService: FirebaseMessagingService() {
             |messageType ${p0.messageType}
             |rawData ${p0.rawData}
             |priority ${p0.priority}
-            |${p0.priority}
+            |notification!!.title ${p0.notification?.title} 
+            |notification!!.body ${p0.notification?.body}
+            |notification!!.imageUrl ${p0.notification?.imageUrl}
+            |notification!!.clickAction ${p0.notification?.clickAction}
         """.trimMargin())
         val managers = NotificationManagerCompat.from(this)
         if (p0.data["roomName"] != null) {

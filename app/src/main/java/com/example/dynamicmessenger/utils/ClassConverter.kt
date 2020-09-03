@@ -2,8 +2,14 @@ package com.example.dynamicmessenger.utils
 
 import com.example.dynamicmessenger.network.authorization.models.ChangePhoneNumberOrEmailProperty
 import com.example.dynamicmessenger.network.authorization.models.LoginProperty
+import com.example.dynamicmessenger.network.authorization.models.Message
 import com.example.dynamicmessenger.network.authorization.models.User
+import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userDataController.database.SignedUser
+import com.example.dynamicmessenger.userDataController.database.UserCalls
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
+import org.json.JSONObject
 
 object ClassConverter {
     fun loginPropertyToSignedUser(loginProperty: LoginProperty): SignedUser {
@@ -53,4 +59,35 @@ object ClassConverter {
             changePhoneNumberOrEmailProperty.user.missedCallHistory
         )
     }
+
+    fun jsonToUserCalls(json: JSONObject): UserCalls {
+        val call = Gson().fromJson(json.getString("call").toString(), PushNotificationCall::class.java)
+        return UserCalls(
+            json.getString("type"),
+            call.status,
+            emptyList(),
+            json.getString("_id"),
+            call.callSuggestTime,
+            call.caller,
+            json.getString("reciever"),
+            call.message,
+            json.getString("createdAt"),
+            json.getString("updatedAt"),
+            null,
+            null
+        )
+    }
 }
+
+data class PushNotificationCall(
+    val callSuggestTime: String?,
+    val caller: String?,
+    val createdAt: String?,
+    val id: String?,
+    val message: String?,
+    val participants: List<String>?,
+    val receiver: String?,
+    val status: String?,
+    val type: String?,
+    val updatedAt: String?
+)

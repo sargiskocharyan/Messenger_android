@@ -39,7 +39,7 @@ class Repository private constructor(val context: Context): RepositoryInterface 
         swipeRefreshLayout?.isRefreshing = true
         val userChats = MutableLiveData<List<Chat>?>()
         if (userChatsRepository.getAllChats() != null) {
-            userChats.value = userChatsRepository.getAllChats()
+            userChats.postValue(userChatsRepository.getAllChats())
         }
         GlobalScope.launch(Dispatchers.IO) {
             try {
@@ -138,10 +138,7 @@ class Repository private constructor(val context: Context): RepositoryInterface 
     }
 
     fun getUserInformationFromDB(userId: String?): User? {
-        if (userId != null) {
-            return (savedUserRepository.getUserById(userId))
-        }
-        return null
+        return userId?.let { savedUserRepository.getUserById(it) }
     }
 
 
@@ -231,6 +228,13 @@ class Repository private constructor(val context: Context): RepositoryInterface 
         } catch (e: Exception) {
             Log.i("+++exception", "readCallHistory $e")
             false
+        }
+    }
+
+    fun addNewCall(newCall: UserCalls) {
+        GlobalScope.launch(Dispatchers.IO) {
+            userCallsRepository.insert(newCall)
+            this.cancel()
         }
     }
 

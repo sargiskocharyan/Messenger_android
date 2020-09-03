@@ -1,5 +1,11 @@
 package com.example.dynamicmessenger.network.authorization.models
 
+import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.android.parcel.Parcelize
+
 data class EmailExistTask(val email: String)
 
 data class RegistrationTask(val email: String, val code: String)
@@ -44,6 +50,20 @@ data class VerifyPhoneNumberTask (val number: String, val code: String)
 data class ReadCallHistoryTask (val callId: String)
 
 data class CallNotification(val caller: String, val roomName: String, val type: String, val username: String, val image: String, val name: String)
+
+data class CallNotificationForSocket(
+    val call: Call?,
+    val createdAt: String?,
+    val id: String?,
+    val owner: String?,
+    val reciever: String?,
+    val senderId: String?,
+    val senderLastname: String?,
+    val senderName: String?,
+    val senderUsername: String?,
+    val type: String?,
+    val updatedAt: String?
+)
 
 //data class StatusMessageReceived(val caller: String, val id: String)
 //

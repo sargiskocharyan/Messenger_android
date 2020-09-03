@@ -55,15 +55,23 @@ class App: Application() {
                 "Calls",
                 NotificationManager.IMPORTANCE_HIGH
             )
-
             callChannel.enableLights(true)
             callChannel.lightColor = Color.RED
             callChannel.enableVibration(true)
 
+            val missedCallChannel = NotificationChannel(
+                ChanelConstants.MISSED_CALL_CHANNEL_ID,
+                "Missed calls",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            missedCallChannel.enableLights(true)
+            missedCallChannel.lightColor = Color.RED
+            missedCallChannel.enableVibration(true)
 
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(messageChannel)
             manager.createNotificationChannel(callChannel)
+            manager.createNotificationChannel(missedCallChannel)
         }
     }
 

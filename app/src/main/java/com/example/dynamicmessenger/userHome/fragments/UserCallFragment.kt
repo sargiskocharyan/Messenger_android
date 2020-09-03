@@ -16,6 +16,7 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUserCallBinding
+import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userDataController.database.UserCallsDao
@@ -38,16 +39,16 @@ class UserCallFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentUserCallBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this).get(UserCallViewModel::class.java)
+        binding = FragmentUserCallBinding.inflate(layoutInflater)
         callsDao = SignedUserDatabase.getUserDatabase(requireContext())!!.userCallsDao()
         adapter = UserCallsAdapter(requireContext(), viewModel)
 
         binding.root.setHasTransientState(true)
         binding.callRecyclerView.adapter = adapter
         binding.lifecycleOwner = this
-        val linearLayoutManager = LinearLayoutManager(requireContext())
-        binding.callRecyclerView.layoutManager = linearLayoutManager
+        binding.callRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
 
         SharedConfigs.userRepository.getUserCalls().first.observe(viewLifecycleOwner, Observer {
             if (it != null) {
@@ -87,8 +88,8 @@ class UserCallFragment : Fragment() {
 
         //toolbar
         setHasOptionsMenu(true)
-        val toolbar: Toolbar = binding.userChatToolbar
-        configureTopNavBar(toolbar)
+        configureTopNavBar(binding.userChatToolbar)
+        SocketManager.addCallFragment(this)
 
         return binding.root
     }
@@ -96,6 +97,11 @@ class UserCallFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         SharedConfigs.currentFragment.value = MyFragments.CALLS
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        SocketManager.removeCallFragment()
     }
 
     //for show toolbar menu
@@ -124,13 +130,10 @@ class UserCallFragment : Fragment() {
         binding.callRecyclerView.scrollToPosition(0)
     }
 
-//    override fun onResume() {
-//        val userCalls: LiveData<List<UserCalls>> = callsRepository.getUserCalls
-//        if (userCalls.value != null) {
-//            Log.i("+++","on resume if")
-////            adapter.submitList(userCalls.value!!)
-//            adapter.setAdapterData(userCalls.value!!)
-//        }
-//        super.onResume()
-//    }
+    fun receivedNewCall(userCall: UserCalls) {
+        requireActivity().runOnUiThread {
+            adapter.receiverNewMessage(userCall)
+            scrollToTop()
+        }
+    }
 }

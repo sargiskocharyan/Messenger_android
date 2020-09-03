@@ -34,6 +34,14 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
         notifyDataSetChanged()
     }
 
+    fun receiverNewMessage(userCalls: UserCalls) {
+        val list = mutableListOf(userCalls)
+        list.addAll(data)
+//        data.add(0, userCalls)
+        SharedConfigs.userRepository.addNewCall(userCalls)
+        submitList(list)
+    }
+
     fun submitList(newList: List<UserCalls>) {
         val userChatDiffUtilCallback = UserCallsDiffUtilCallback(data, newList)
         val authorDiffResult = DiffUtil.calculateDiff(userChatDiffUtilCallback)

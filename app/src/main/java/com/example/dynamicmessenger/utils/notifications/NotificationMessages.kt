@@ -1,12 +1,10 @@
 package com.example.dynamicmessenger.utils.notifications
 
-import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
 import android.widget.RemoteViews
@@ -15,7 +13,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.ChanelConstants
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.network.authorization.models.CallNotificationForSocket
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import java.net.URL
 
@@ -31,13 +29,27 @@ class NotificationMessages {
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setColor(Color.BLUE)
 //                .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
                 .setGroup(messageTitle)
     //            .setContentIntent(pendingIntent)
                 .build()
             manager.notify(6578, builder)
+        }
+
+        fun setMissedCallNotification(message: CallNotificationForSocket, context: Context, manager: NotificationManagerCompat) {
+            val builder = NotificationCompat.Builder(context, ChanelConstants.MESSAGE_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_baseline_call_24)
+                .setSubText("New message")
+                .setContentTitle(message.senderUsername)
+                .setContentText("You have ${message.call?.status} call from ${message.senderUsername}")
+                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setOnlyAlertOnce(true)
+//                .setGroup(messageTitle)
+                .build()
+            manager.notify(2345, builder)
         }
 
         fun setCallNotification(context: Context, manager: NotificationManagerCompat) {

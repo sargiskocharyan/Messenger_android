@@ -242,11 +242,15 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                         SignallingClient.getInstance()!!.leaveRoom()
                     }
                     if (iceConnectionState == PeerConnection.IceConnectionState.CONNECTED) {
+                        viewModel.opponentReconnecting.postValue(false)
                         if (!SignallingClient.getInstance()!!.callStarted) {
                             SignallingClient.getInstance()!!.callStarted()
                         } else {
                             SignallingClient.getInstance()!!.reconnectToCall()
                         }
+                    }
+                    if (iceConnectionState == PeerConnection.IceConnectionState.DISCONNECTED) {
+                        viewModel.opponentReconnecting.postValue(true)
                     }
 //                    if (iceConnectionState == PeerConnection.IceConnectionState.) {
 //                        SignallingClient.getInstance()!!.callStarted()
