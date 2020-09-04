@@ -17,6 +17,7 @@ class CallInformationViewModel(application: Application) : AndroidViewModel(appl
     val callTimeHour = MutableLiveData<String>()
     val callDuration = MutableLiveData<String>()
     val callState = MutableLiveData<String>()
+    val callType = MutableLiveData<String>()
     val opponentAvatarBitmap = MutableLiveData<Bitmap>()
     val opponentInformation = MutableLiveData<User>()
 
@@ -42,6 +43,7 @@ class CallInformationViewModel(application: Application) : AndroidViewModel(appl
         callTimeHour.value = userCalls.callSuggestTime?.let { Utils.convertDateToHour(it) }
         callTimeDay.value = userCalls.callSuggestTime.toDate()?.time?.let { Utils.convertLongToTimeForCall(it) }
         callState.value = userCalls.status
+        callType.value = userCalls.type
 
     }
 }

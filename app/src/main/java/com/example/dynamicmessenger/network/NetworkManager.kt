@@ -273,9 +273,10 @@ object ChatsApi {
 //Chat room
 interface JsonPlaceHolderChatRoomApi {
     @Headers(MyHeaders.accept)
-    @GET("${ResponseUrls.chats}/{id}")
+    @POST("${ResponseUrls.chats}/{id}")
     suspend fun chatRoomMessages(@Header (MyHeaders.tokenAuthorization) header: String,
-                                 @Path ("id") receiverId: String) :
+                                 @Path ("id") receiverId: String,
+                                 @Body dateUntil : DateUntil) :
             Response<ChatRoom>
 }
 

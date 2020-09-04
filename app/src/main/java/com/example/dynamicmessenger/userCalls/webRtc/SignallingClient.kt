@@ -244,7 +244,7 @@ class SignallingClient {
 
     fun callOpponent() {
         Log.d("SignallingClient", "call call")
-        mSocket.emit("call", SharedConfigs.callingOpponentId, "video", Ack {
+        mSocket.emit("call", SharedConfigs.callingOpponentId, SharedConfigs.callType, Ack {
             roomName = it[0] as String?
         })
     }

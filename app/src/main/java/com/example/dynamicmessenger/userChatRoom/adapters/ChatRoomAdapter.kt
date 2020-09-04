@@ -48,6 +48,11 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
         data.addAll(newList)
     }
 
+    fun configureListWithOldMessages(newList: MutableList<ChatRoomMessage>) {
+        newList.addAll(data)
+        submitList(newList)
+    }
+
 
     override fun getItemCount(): Int {
         return data.size

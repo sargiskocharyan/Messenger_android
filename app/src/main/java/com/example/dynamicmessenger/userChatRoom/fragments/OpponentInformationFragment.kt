@@ -71,6 +71,7 @@ class OpponentInformationFragment : Fragment() {
         binding.callOpponentImageView.setOnClickListener {
             val opponentUser = HomeActivity.opponentUser!!
             SharedConfigs.callingOpponentId = opponentUser._id
+            SharedConfigs.callType = "video"
             val intent = Intent(activity, CallRoomActivity::class.java)
             startActivity(intent)
         }

@@ -32,6 +32,8 @@ class ChatRoomFragment : Fragment() {
     private lateinit var binding: FragmentChatRoomBinding
     private lateinit var adapter: ChatRoomAdapter
     private var scrollUpWhenKeyboardOpened = true
+    private var isAllMessagesDownloaded = false
+    private var downloadOldMessages = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,6 +50,7 @@ class ChatRoomFragment : Fragment() {
         binding.chatRecyclerView.adapter = adapter
         binding.chatRecyclerView.layoutManager = linearLayoutManager
         binding.root.setHasTransientState(true)
+//        binding.chatRecyclerView.
 
         //Toolbar
         setHasOptionsMenu(true)
@@ -105,6 +108,10 @@ class ChatRoomFragment : Fragment() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 scrollUpWhenKeyboardOpened = linearLayoutManager.findLastVisibleItemPosition() > adapter.itemCount - 3
+                if ((linearLayoutManager.findFirstVisibleItemPosition() == 0) && (downloadOldMessages)) {
+                    downloadOldMessages = false
+                    getOldMessages(receiverID)
+                }
             }
         })
 
@@ -160,6 +167,31 @@ class ChatRoomFragment : Fragment() {
         }
     }
 
+    private fun getOldMessages(receiverID: String) {
+        if (!isAllMessagesDownloaded) {
+            viewModel.chatRoomProgressBar.postValue(true)
+            val lastMessageDate = adapter.data[0].createdAt
+            viewModel.getMessagesFromNetwork(requireContext(), receiverID, lastMessageDate) { list, statuses ->
+                Log.i("+++", "isAllMessagesDownloaded $isAllMessagesDownloaded")
+                if (statuses[0].userId == SharedConfigs.signedUser?._id) {
+                    adapter.myStatuses = statuses[0]
+                    adapter.opponentStatuses.postValue(statuses[1])
+                } else {
+                    adapter.myStatuses = statuses[1]
+                    adapter.opponentStatuses.postValue(statuses[0])
+                }
+                if (list.isNullOrEmpty()) {
+                    isAllMessagesDownloaded = true
+                } else {
+                    adapter.configureListWithOldMessages(list.toMutableList())
+                }
+                downloadOldMessages = true
+                viewModel.chatRoomProgressBar.postValue(false)
+            }
+        }
+
+    }
+
     private fun scrollToBottom() {
         binding.chatRecyclerView.scrollToPosition(adapter.itemCount - 1)
     }
@@ -180,12 +212,14 @@ class ChatRoomFragment : Fragment() {
     }
 
     fun receiveMessage(newMessage: ChatRoomMessage) {
-        if (HomeActivity.receiverID!! == newMessage.senderId || HomeActivity.receiverID!! == newMessage.reciever) {
-            val newData = adapter.data.toMutableList()
-            newData += newMessage
-            adapter.submitList(newData)
-            if (scrollUpWhenKeyboardOpened) {
-                scrollToBottom()
+        requireActivity().runOnUiThread {
+            if (HomeActivity.receiverID!! == newMessage.senderId || HomeActivity.receiverID!! == newMessage.reciever) {
+                val newData = adapter.data.toMutableList()
+                newData += newMessage
+                adapter.submitList(newData)
+                if (scrollUpWhenKeyboardOpened) {
+                    scrollToBottom()
+                }
             }
         }
     }

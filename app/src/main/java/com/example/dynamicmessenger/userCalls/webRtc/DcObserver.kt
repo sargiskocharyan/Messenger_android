@@ -28,6 +28,8 @@ class DcObserver(val viewModel: CallRoomViewModel) : DataChannel.Observer {
                 viewModel.opponentCameraIsEnabled.postValue(true)
             DataChanelMessages.turnCameraOff ->
                 viewModel.opponentCameraIsEnabled.postValue(false)
+            DataChanelMessages.opponentLeaveCall ->
+                viewModel.opponentLeaveCall.postValue(true)
         }
 
 //        executor.execute { events.onReceivedData(command) }

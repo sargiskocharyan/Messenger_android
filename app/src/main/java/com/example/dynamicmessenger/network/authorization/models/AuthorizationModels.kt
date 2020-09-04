@@ -25,6 +25,8 @@ data class SearchTask (val term: String)
 
 data class AddUserContactTask (val contactId: String)
 
+data class DateUntil (val dateUntil: String?)
+
 data class OnlineUsersTask (val usersArray: List<String>)
 
 data class RemoveContactTask (val userId: String)

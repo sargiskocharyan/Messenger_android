@@ -62,9 +62,11 @@ class Repository private constructor(val context: Context): RepositoryInterface 
                 Log.i("++++", "get chats catch ${e}")
                 userChats.postValue(null)
             }
+            withContext(Dispatchers.Main) {
+                swipeRefreshLayout?.isRefreshing = false
+            }
             this.cancel()
         }
-//        swipeRefreshLayout?.isRefreshing = false
         return userChats
     }
 

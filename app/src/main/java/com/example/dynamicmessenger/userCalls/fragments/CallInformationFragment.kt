@@ -36,9 +36,26 @@ class CallInformationFragment : Fragment() {
 
         //Toolbar
         setHasOptionsMenu(true)
-        val toolbar: Toolbar = binding.callInformationToolBar
-        configureTopNavBar(toolbar)
+        configureTopNavBar(binding.callInformationToolBar)
+        observers()
+        onClickListeners()
 
+        return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SharedConfigs.currentFragment.value = MyFragments.CALL_INFORMATION
+    }
+
+    private fun configureTopNavBar(toolbar: Toolbar) {
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+    }
+
+    private fun observers() {
         viewModel.callInformation.observe(viewLifecycleOwner, Observer { userCalls ->
             if (userCalls != null) {
                 val opponentId = HomeActivity.receiverID
@@ -54,35 +71,31 @@ class CallInformationFragment : Fragment() {
             }
 //            Log.i("+++", "opponent Id ${userCalls.participants}")
         })
+    }
 
-
+    private fun onClickListeners() {
         binding.callInformationMessageImageView.setOnClickListener {
             HomeActivity.isAddContacts = null
-            (context as AppCompatActivity?)!!.supportFragmentManager
+            requireActivity().supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.fragmentContainer, ChatRoomFragment())
                 .addToBackStack(null)
                 .commit()
         }
 
+        binding.callInformationCallImageView.setOnClickListener {
+            navigateToCallRoomActivity("audio")
+        }
+
         binding.callInformationVideoCallImageView.setOnClickListener {
-            SharedConfigs.callingOpponentId = HomeActivity.opponentUser!!._id
-            val intent = Intent(activity, CallRoomActivity::class.java)
-            startActivity(intent)
+            navigateToCallRoomActivity("video")
         }
-
-        return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        SharedConfigs.currentFragment.value = MyFragments.CALL_INFORMATION
-    }
-
-    private fun configureTopNavBar(toolbar: Toolbar) {
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
-        }
+    private fun navigateToCallRoomActivity(callType: String) {
+        SharedConfigs.callingOpponentId = HomeActivity.opponentUser!!._id
+        SharedConfigs.callType = callType
+        val intent = Intent(activity, CallRoomActivity::class.java)
+        startActivity(intent)
     }
 }

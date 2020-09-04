@@ -65,10 +65,11 @@
             tools:text="name" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/callInformationCallTypeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:text="@{viewModel.callType}"
             app:layout_constraintEnd_toEndOf="@+id/callInformationNameTextView"
             app:layout_constraintStart_toStartOf="@+id/callInformationNameTextView"
             app:layout_constraintTop_toBottomOf="@+id/callInformationNameTextView"
@@ -85,7 +86,7 @@
             app:layout_constraintEnd_toStartOf="@+id/callInformationCallImageView"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/callInformationMessageImageView"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/callInformationCallTypeTextView" />
 
         <ImageView
             android:id="@+id/callInformationMessageImageView"

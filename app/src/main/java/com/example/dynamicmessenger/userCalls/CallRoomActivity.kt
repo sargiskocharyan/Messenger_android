@@ -317,6 +317,10 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                 videoTrack.addSink(remoteVideoView)
                 localVideoView.visibility = View.VISIBLE
                 binding.localViewConstraintLayout.visibility = View.VISIBLE
+                if (SharedConfigs.callType != "video") {
+                    cameraOff()
+                    viewModel.opponentCameraIsEnabled.postValue(false)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -674,6 +678,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 //                SignallingClient.getInstance()!!.emitCallAccepted(false)
 //            } else {
                 SignallingClient.getInstance()!!.leaveRoom()
+                sendData(DataChanelMessages.opponentLeaveCall)
 //            }
             onRemoteHangUp()
 //            hangup()
@@ -693,29 +698,16 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
 
         binding.disableCameraCircleImageView.setOnClickListener {
-            if (viewModel.isCameraEnabled.value!!) {
-                try {
-                    localVideoTrack.setEnabled(false)
-                    stream!!.removeTrack(localVideoTrack)
-                    localVideoView.clearImage()
-                    sendData(DataChanelMessages.turnCameraOff)
-                    viewModel.isCameraEnabled.value = false
-                    binding.localViewConstraintLayout.visibility = View.INVISIBLE
-                } catch (e: Exception) {
-                    Log.i("+++---", "exception $e")
+            try {
+                if (viewModel.isCameraEnabled.value!!) {
+                    cameraOff()
+                } else {
+                    cameraOn()
                 }
-            } else {
-                try {
-                    localVideoTrack.setEnabled(true)
-                    stream!!.addTrack(localVideoTrack)
-                    localVideoView.clearImage()
-                    sendData(DataChanelMessages.turnCameraOn)
-                    viewModel.isCameraEnabled.value = true
-                    binding.localViewConstraintLayout.visibility = View.VISIBLE
-                } catch (e: Exception) {
-                    Log.i("+++---", "exception $e")
-                }
+            } catch (e: Exception) {
+                Log.i("+++---", "exception $e")
             }
+
         }
 //        Logging.
     }
@@ -756,12 +748,36 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                 binding.callerNameTextView.visibility = View.VISIBLE
             }
         })
+
+        viewModel.opponentLeaveCall.observe(this , androidx.lifecycle.Observer {
+            if (it) {
+//                onRemoteHangUp()
+            }
+        })
     }
     private fun sendData(data: String) {
         val buffer = ByteBuffer.wrap(data.toByteArray())
         Log.i("+++--", "send data $data")
         Log.i("+++--", "dataChannel state  ${dataChannel?.state()}")
         dataChannel?.send(DataChannel.Buffer(buffer, true))
+    }
+
+    private fun cameraOff() {
+        localVideoTrack.setEnabled(false)
+        stream!!.removeTrack(localVideoTrack)
+        localVideoView.clearImage()
+        sendData(DataChanelMessages.turnCameraOff)
+        viewModel.isCameraEnabled.value = false
+        binding.localViewConstraintLayout.visibility = View.INVISIBLE
+    }
+
+    private fun cameraOn() {
+        localVideoTrack.setEnabled(true)
+        stream!!.addTrack(localVideoTrack)
+        localVideoView.clearImage()
+        sendData(DataChanelMessages.turnCameraOn)
+        viewModel.isCameraEnabled.value = true
+        binding.localViewConstraintLayout.visibility = View.VISIBLE
     }
 
     companion object {
