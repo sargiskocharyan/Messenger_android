@@ -1,26 +1,37 @@
 package com.example.dynamicmessenger.utils.notifications
 
+import android.R.id.message
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.media.RingtoneManager
 import android.net.Uri
+import android.util.Log
 import android.widget.RemoteViews
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.Observer
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.ChanelConstants
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.models.CallNotificationForSocket
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
+import com.example.dynamicmessenger.utils.observeOnce
+import com.example.dynamicmessenger.utils.observeOnceWithoutOwner
 import java.net.URL
 
 
 class NotificationMessages {
     companion object {
-        fun setNotificationMessage(messageTitle: String, message: String, context: Context, manager: NotificationManagerCompat) {
+        fun setNotificationMessage(
+            messageTitle: String,
+            message: String,
+            context: Context,
+            manager: NotificationManagerCompat
+        ) {
             val builder = NotificationCompat.Builder(context, ChanelConstants.MESSAGE_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_message_24)
                 .setSubText("New message")
@@ -34,10 +45,14 @@ class NotificationMessages {
                 .setGroup(messageTitle)
     //            .setContentIntent(pendingIntent)
                 .build()
-            manager.notify(6578, builder)
+            manager.notify(ChanelConstants.MESSAGE_MANAGER_ID, builder)
         }
 
-        fun setMissedCallNotification(message: CallNotificationForSocket, context: Context, manager: NotificationManagerCompat) {
+        fun setMissedCallNotification(
+            message: CallNotificationForSocket,
+            context: Context,
+            manager: NotificationManagerCompat
+        ) {
             val builder = NotificationCompat.Builder(context, ChanelConstants.MESSAGE_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_call_24)
                 .setSubText("New message")
@@ -49,16 +64,54 @@ class NotificationMessages {
                 .setOnlyAlertOnce(true)
 //                .setGroup(messageTitle)
                 .build()
-            manager.notify(2345, builder)
+            manager.notify(ChanelConstants.MISSED_CALL_MANAGER_ID, builder)
+        }
+
+        fun setContactRequestNotification(contactId: String, context: Context, manager: NotificationManagerCompat, imageUrl: String?) {
+            val broadcastIntent = Intent(context, RequestNotificationReceiver::class.java)
+            broadcastIntent.putExtra("contactId", contactId)
+            val actionIntent = PendingIntent.getBroadcast(
+                context,
+                0,
+                broadcastIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            var image: Bitmap? = null
+            try {
+                image = BitmapFactory.decodeStream(URL(imageUrl).openConnection().getInputStream())
+                SharedConfigs.userRepository.getUserInformation(contactId) {
+                    val builder =  NotificationCompat.Builder(context, ChanelConstants.CONTACT_REQUEST_CHANNEL_ID)
+                        .setContentTitle("Friend request")
+                        .setContentText(it?.username ?: "")
+                        .setSmallIcon(R.drawable.ic_addcontact)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setCategory(NotificationCompat.CATEGORY_EVENT)
+//                .setContentIntent(contentIntent)
+                        .setAutoCancel(true)
+                        .setLargeIcon(image)
+                        .addAction(R.drawable.ic_baseline_add_24, "Accept", actionIntent)
+                        .build()
+                    manager.notify(ChanelConstants.CONTACT_REQUEST_MANAGER_ID, builder)
+                }
+            } catch (e : Exception) {
+                Log.i("+++" , "setContactRequestNotification exception $e")
+            }
+
+
         }
 
         fun setCallNotification(context: Context, manager: NotificationManagerCompat) {
             val intent = Intent(context, CallRoomActivity::class.java)
-            val pendingIntent = PendingIntent.getActivity(context, 1 , intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val pendingIntent = PendingIntent.getActivity(
+                context,
+                1,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
             val collapsedView = RemoteViews(context.packageName, R.layout.notification_call)
             collapsedView.setOnClickPendingIntent(R.id.notificationCallAcceptButton, pendingIntent)
 
-            SharedConfigs.userRepository.getUserInformationFromDB(SharedConfigs.callingOpponentId)?.let {user ->
+            SharedConfigs.userRepository.getUserInformationFromDB(SharedConfigs.callingOpponentId)?.let { user ->
                 collapsedView.setTextViewText(R.id.notificationCallName, user.username)
                 try {
                     val url = URL(user.avatarURL)
@@ -94,11 +147,16 @@ class NotificationMessages {
             val intent = Intent(context, CallRoomActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             }
-            val pendingIntent = PendingIntent.getActivity(context, 1155, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            val pendingIntent = PendingIntent.getActivity(
+                context,
+                ChanelConstants.CALL_MANAGER_ID,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
             val collapsedView = RemoteViews(context.packageName, R.layout.notification_call)
             collapsedView.setOnClickPendingIntent(R.id.notificationCallAcceptButton, pendingIntent)
 
-            SharedConfigs.userRepository.getUserInformationFromDB(SharedConfigs.callingOpponentId)?.let {user ->
+            SharedConfigs.userRepository.getUserInformationFromDB(SharedConfigs.callingOpponentId)?.let { user ->
                 collapsedView.setTextViewText(R.id.notificationCallName, user.username)
                 try {
                     val url = URL(user.avatarURL)
@@ -125,7 +183,7 @@ class NotificationMessages {
                 .setVibrate(ChanelConstants.callVibratePattern)
                 .setFullScreenIntent(pendingIntent, true)
 
-            manager.notify(1155, builder.build())
+            manager.notify(ChanelConstants.CALL_MANAGER_ID, builder.build())
         }
     }
 }

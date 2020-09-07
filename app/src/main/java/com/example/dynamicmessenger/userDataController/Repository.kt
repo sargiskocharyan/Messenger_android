@@ -9,10 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.*
-import com.example.dynamicmessenger.network.authorization.models.Chat
-import com.example.dynamicmessenger.network.authorization.models.DeleteUserCallTask
-import com.example.dynamicmessenger.network.authorization.models.ReadCallHistoryTask
-import com.example.dynamicmessenger.network.authorization.models.User
+import com.example.dynamicmessenger.network.authorization.models.*
 import com.example.dynamicmessenger.userDataController.database.DiskCache
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserCalls
@@ -143,6 +140,25 @@ class Repository private constructor(val context: Context): RepositoryInterface 
         return userId?.let { savedUserRepository.getUserById(it) }
     }
 
+    fun getUserInformation(userId: String?, user: (User?) -> Unit) {
+        if (userId != null) {
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    val response = GetUserInfoByIdApi.retrofitService.getUserInfoById(SharedConfigs.token, userId)
+                    if (response.isSuccessful) {
+                        user(response.body())
+                        response.body()?.let { savedUserRepository.insert(it) }
+                    } else {
+                        user(null)
+                    }
+                } catch (e: Exception) {
+                    user(null)
+                }
+                this.cancel()
+            }
+        }
+    }
+
 
     //Contacts
     fun getUserContacts(): LiveData<List<User>?> {
@@ -170,6 +186,23 @@ class Repository private constructor(val context: Context): RepositoryInterface 
             this.cancel()
         }
         return userContacts
+    }
+
+    fun acceptContactRequest(contactId: String) {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val response = ConfirmContactRequestApi.retrofitService.confirmContactRequest(SharedConfigs.token, AcceptContactRequestTask(contactId, true))
+                Log.i("+++", "acceptContactRequest $response")
+                if (response.isSuccessful) {
+
+                } else {
+
+                }
+            } catch (e: Exception) {
+                Log.i("+++", "acceptContactRequest exception $e")
+            }
+            this.cancel()
+        }
     }
 
     //Calls

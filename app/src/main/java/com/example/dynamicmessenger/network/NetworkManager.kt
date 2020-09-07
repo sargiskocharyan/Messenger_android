@@ -26,8 +26,8 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 import javax.security.cert.CertificateException
 
-//private const val BASE_URL = ResponseUrls.herokuIP
-private const val BASE_URL = ResponseUrls.ErosServerIP
+private const val BASE_URL = ResponseUrls.herokuIP
+//private const val BASE_URL = ResponseUrls.ErosServerIP
 
 private var cacheSize: Long = 10 * 1024 * 1024 // 10 MB
 
@@ -586,6 +586,23 @@ object ReadCallHistoryApi {
     val retrofitService : JsonPlaceHolderReadCallHistoryApi by lazy {
         retrofit.create(
             JsonPlaceHolderReadCallHistoryApi::class.java
+        )
+    }
+}
+
+//Confirm Contact Request
+interface JsonPlaceHolderConfirmContactRequestApi {
+    @Headers(MyHeaders.accept)
+    @POST(ResponseUrls.confirmContactRequest)
+    suspend fun confirmContactRequest(@Header (MyHeaders.tokenAuthorization) header: String,
+                                      @Body acceptContactRequestTask: AcceptContactRequestTask) :
+            Response<Void>
+}
+
+object ConfirmContactRequestApi {
+    val retrofitService : JsonPlaceHolderConfirmContactRequestApi by lazy {
+        retrofit.create(
+            JsonPlaceHolderConfirmContactRequestApi::class.java
         )
     }
 }

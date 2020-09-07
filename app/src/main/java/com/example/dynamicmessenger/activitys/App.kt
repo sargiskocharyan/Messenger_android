@@ -44,34 +44,48 @@ class App: Application() {
                 ChanelConstants.MESSAGE_CHANNEL_ID,
                 "Messages",
                 NotificationManager.IMPORTANCE_HIGH
-            )
-            messageChannel.description = "New message"
-            messageChannel.enableLights(true)
-            messageChannel.lightColor = Color.BLUE
-            messageChannel.enableVibration(true)
+            ).apply {
+                description = "New message"
+                enableLights(true)
+                lightColor = Color.BLUE
+                enableVibration(true)
+            }
 
             val callChannel = NotificationChannel(
                 ChanelConstants.CALL_CHANNEL_ID,
                 "Calls",
                 NotificationManager.IMPORTANCE_HIGH
-            )
-            callChannel.enableLights(true)
-            callChannel.lightColor = Color.RED
-            callChannel.enableVibration(true)
+            ).apply {
+                enableLights(true)
+                lightColor = Color.RED
+                enableVibration(true)
+            }
 
             val missedCallChannel = NotificationChannel(
                 ChanelConstants.MISSED_CALL_CHANNEL_ID,
                 "Missed calls",
                 NotificationManager.IMPORTANCE_HIGH
-            )
-            missedCallChannel.enableLights(true)
-            missedCallChannel.lightColor = Color.RED
-            missedCallChannel.enableVibration(true)
+            ).apply {
+                enableLights(true)
+                lightColor = Color.RED
+                enableVibration(true)
+            }
+
+            val contactRequestChannel = NotificationChannel(
+                ChanelConstants.CONTACT_REQUEST_CHANNEL_ID,
+                "Contact request",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                enableLights(true)
+                lightColor = Color.BLUE
+                enableVibration(true)
+            }
 
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(messageChannel)
             manager.createNotificationChannel(callChannel)
             manager.createNotificationChannel(missedCallChannel)
+            manager.createNotificationChannel(contactRequestChannel)
         }
     }
 

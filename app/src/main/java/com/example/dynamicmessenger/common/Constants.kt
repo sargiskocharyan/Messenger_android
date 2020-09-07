@@ -35,6 +35,7 @@ object ResponseUrls {
     const val updatePhoneNumber = "updatephonenumber"
     const val verifyPhoneNumber = "verifyphonenumber"
     const val readCallHistory = "readcallhistory"
+    const val confirmContactRequest = "confirmContactRequest"
 
 //        users/me/avatar
 //        users/5ee76c90bfa0980017a39013/avatar
@@ -50,7 +51,12 @@ object ChanelConstants {
     const val MESSAGE_CHANNEL_ID = "message_channel_id"
     const val CALL_CHANNEL_ID = "call_channel_id"
     const val MISSED_CALL_CHANNEL_ID = "missed_call_channel_id"
+    const val CONTACT_REQUEST_CHANNEL_ID = "contact_request_channel_id"
     val callVibratePattern = longArrayOf(500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500)
+    const val CALL_MANAGER_ID = 1155
+    const val MESSAGE_MANAGER_ID = 6578
+    const val MISSED_CALL_MANAGER_ID = 2345
+    const val CONTACT_REQUEST_MANAGER_ID = 3578
 //    const val
 }
 

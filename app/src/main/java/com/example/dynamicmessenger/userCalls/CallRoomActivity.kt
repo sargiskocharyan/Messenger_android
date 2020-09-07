@@ -15,6 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
+import com.example.dynamicmessenger.common.ChanelConstants
 import com.example.dynamicmessenger.common.DataChanelMessages
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.ActivityCallRoomBinding
@@ -105,7 +106,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 
         turnScreenOnAndKeyguardOff()
         val notificationManager = NotificationManagerCompat.from(this)
-        notificationManager.cancel(1155)
+        notificationManager.cancel(ChanelConstants.CALL_MANAGER_ID)
 
     }
 
@@ -276,6 +277,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
             })
         addStreamToLocalPeer()
         dataChannel = localPeer?.createDataChannel("1", dcInit)
+        dataChannel?.registerObserver(DcObserver(viewModel))
     }
 
     private fun addStreamToLocalPeer() {

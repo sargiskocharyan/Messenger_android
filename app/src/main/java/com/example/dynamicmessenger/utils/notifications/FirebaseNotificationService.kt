@@ -28,15 +28,21 @@ class FirebaseNotificationService: FirebaseMessagingService() {
             |notification!!.clickAction ${p0.notification?.clickAction}
         """.trimMargin())
         val managers = NotificationManagerCompat.from(this)
-        if (p0.data["roomName"] != null) {
-            SharedConfigs.callingOpponentId = p0.data["id"].toString()
-            SharedConfigs.callRoomName = p0.data["roomName"].toString()
-            SharedConfigs.isCalling = true
-//            NotificationMessages.setCallNotification(this, managers)
-            NotificationMessages.setNewCallNotification(this, managers)
-//            this.scheduleNotification(true)
-        } else if (p0.notification != null) {
-            NotificationMessages.setNotificationMessage(p0.notification!!.title ?: "", p0.notification!!.body ?: "", this, managers)
+        when {
+            p0.data["roomName"] != null -> {
+                SharedConfigs.callingOpponentId = p0.data["id"].toString()
+                SharedConfigs.callRoomName = p0.data["roomName"].toString()
+                SharedConfigs.isCalling = true
+    //            NotificationMessages.setCallNotification(this, managers)
+                NotificationMessages.setNewCallNotification(this, managers)
+    //            this.scheduleNotification(true)
+            }
+            p0.data["type"] == "contactRequest" -> {
+                NotificationMessages.setContactRequestNotification(p0.data["userId"]!!, this, managers, p0.data["image"])
+            }
+            p0.notification != null -> {
+                NotificationMessages.setNotificationMessage(p0.notification!!.title ?: "", p0.notification!!.body ?: "", this, managers)
+            }
         }
     }
 
