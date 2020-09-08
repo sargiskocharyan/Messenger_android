@@ -20,6 +20,8 @@ import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUserInformationBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.router.Router
+import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UserInformationViewModel
 import com.example.dynamicmessenger.utils.LocalizationUtil
@@ -178,11 +180,7 @@ class UserInformationFragment : Fragment() {
     }
 
     private fun navigateToFragment(fragment: Fragment) {
-        requireActivity().supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragmentContainer, fragment)
-            .addToBackStack(null)
-            .commit()
+        Router.navigateToFragment(requireActivity(), fragment)
     }
 
     private fun updateLanguage(language: AppLangKeys) {

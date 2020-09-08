@@ -16,6 +16,7 @@ import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentCallInformationBinding
+import com.example.dynamicmessenger.router.Router
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userCalls.viewModels.CallInformationViewModel
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
@@ -76,11 +77,7 @@ class CallInformationFragment : Fragment() {
     private fun onClickListeners() {
         binding.callInformationMessageImageView.setOnClickListener {
             HomeActivity.isAddContacts = null
-            requireActivity().supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragmentContainer, ChatRoomFragment())
-                .addToBackStack(null)
-                .commit()
+            Router.navigateToFragment(requireActivity(), ChatRoomFragment())
         }
 
         binding.callInformationCallImageView.setOnClickListener {

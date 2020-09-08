@@ -67,7 +67,7 @@ class NotificationMessages {
             manager.notify(ChanelConstants.MISSED_CALL_MANAGER_ID, builder)
         }
 
-        fun setContactRequestNotification(contactId: String, context: Context, manager: NotificationManagerCompat, imageUrl: String?) {
+        fun setContactRequestNotification(contactId: String, imageUrl: String?, username: String?, context: Context, manager: NotificationManagerCompat) {
             val broadcastIntent = Intent(context, RequestNotificationReceiver::class.java)
             broadcastIntent.putExtra("contactId", contactId)
             val actionIntent = PendingIntent.getBroadcast(
@@ -76,23 +76,21 @@ class NotificationMessages {
                 broadcastIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
-            var image: Bitmap? = null
+            val image: Bitmap?
             try {
                 image = BitmapFactory.decodeStream(URL(imageUrl).openConnection().getInputStream())
-                SharedConfigs.userRepository.getUserInformation(contactId) {
-                    val builder =  NotificationCompat.Builder(context, ChanelConstants.CONTACT_REQUEST_CHANNEL_ID)
-                        .setContentTitle("Friend request")
-                        .setContentText(it?.username ?: "")
-                        .setSmallIcon(R.drawable.ic_addcontact)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setCategory(NotificationCompat.CATEGORY_EVENT)
+                val builder =  NotificationCompat.Builder(context, ChanelConstants.CONTACT_REQUEST_CHANNEL_ID)
+                    .setContentTitle("Friend request")
+                    .setContentText(username ?: "")
+                    .setSmallIcon(R.drawable.ic_addcontact)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setCategory(NotificationCompat.CATEGORY_EVENT)
 //                .setContentIntent(contentIntent)
-                        .setAutoCancel(true)
-                        .setLargeIcon(image)
-                        .addAction(R.drawable.ic_baseline_add_24, "Accept", actionIntent)
-                        .build()
-                    manager.notify(ChanelConstants.CONTACT_REQUEST_MANAGER_ID, builder)
-                }
+                    .setAutoCancel(true)
+                    .setLargeIcon(image)
+                    .addAction(R.drawable.ic_baseline_add_24, "Accept", actionIntent)
+                    .build()
+                manager.notify(ChanelConstants.CONTACT_REQUEST_MANAGER_ID, builder)
             } catch (e : Exception) {
                 Log.i("+++" , "setContactRequestNotification exception $e")
             }

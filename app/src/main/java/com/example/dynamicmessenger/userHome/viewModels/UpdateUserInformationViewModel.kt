@@ -20,6 +20,7 @@ import com.example.dynamicmessenger.network.authorization.models.UsernameExistsT
 import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.DatePickerHelper
 import com.example.dynamicmessenger.utils.MyAlertMessage
+import com.example.dynamicmessenger.utils.toDate
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -47,6 +48,17 @@ class UpdateUserInformationViewModel(application: Application) : AndroidViewMode
 
     private val _userEnteredDate = MutableLiveData<String>()
     val userEnteredDate = MutableLiveData<String>()
+
+    init {
+        SharedConfigs.signedUser?.birthday.toDate()?.let {
+//            userEnteredDate.value = "${it.month}/${it.day}/${it.year}"
+//            userEnteredDate.value = "${it.toString()}"
+            val dayStr = if (it.day < 10) "0${it.day}" else "${it.day}"
+            val mon = it.month + 1
+            val monthStr = if (mon < 10) "0${mon}" else "$mon"
+            userEnteredDate.value = "$monthStr/$dayStr/${it.year}"
+        }
+    }
 
     fun changeIsValidParameters() {
         isValidParameters.value = isEmailValid.value ?: false && isUsernameValid.value ?: false && isNameValid.value ?: false && isLastNameValid.value ?: false

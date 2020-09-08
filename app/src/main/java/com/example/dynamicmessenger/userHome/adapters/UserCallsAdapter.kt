@@ -17,8 +17,10 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.models.User
+import com.example.dynamicmessenger.router.Router
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userCalls.fragments.CallInformationFragment
+import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
 import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userHome.viewModels.UserCallViewModel
 import com.example.dynamicmessenger.utils.Utils
@@ -118,11 +120,12 @@ class UserCallsAdapter(val context: Context, val viewModel: UserCallViewModel) :
             HomeActivity.receiverID = opponentId
             HomeActivity.callId = item._id
             Log.i("+++", "receiverID ${HomeActivity.receiverID}")
-            (context as AppCompatActivity?)!!.supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragmentContainer, CallInformationFragment())
-                .addToBackStack(null)
-                .commit()
+            Router.navigateToFragment((context as AppCompatActivity), CallInformationFragment())
+//            (context as AppCompatActivity?)!!.supportFragmentManager
+//                .beginTransaction()
+//                .replace(R.id.fragmentContainer, CallInformationFragment())
+//                .addToBackStack(null)
+//                .commit()
         }
 
     }

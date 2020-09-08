@@ -26,7 +26,7 @@ object SharedConfigs {
     lateinit var myContext: Context
     lateinit var deviceUUID: String
     lateinit var userRepository: Repository
-    lateinit var callType: String
+    var callType: String = "audio"
     var callingOpponentId: String? = null
     var callRoomName: String? = null
     var isCalling: Boolean = false //TODO

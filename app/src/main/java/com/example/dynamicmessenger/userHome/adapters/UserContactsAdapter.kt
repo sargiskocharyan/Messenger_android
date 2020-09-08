@@ -15,6 +15,7 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.models.User
+import com.example.dynamicmessenger.router.Router
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
 import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
@@ -76,11 +77,7 @@ class UserContactsAdapter(val context: Context): RecyclerView.Adapter<UserContac
                     SharedConfigs.userRepository.getUserInformation(userContact!!._id).observe((context as AppCompatActivity), Observer {
                         HomeActivity.opponentUser = it
                     })
-                    context.supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.fragmentContainer , ChatRoomFragment())
-                        .addToBackStack(null)
-                        .commit()
+                    Router.navigateToFragment(context, ChatRoomFragment())
                     return@setOnClickListener
                 }
 
@@ -96,11 +93,7 @@ class UserContactsAdapter(val context: Context): RecyclerView.Adapter<UserContac
         }
 
         private fun nextPage() {
-            (context as AppCompatActivity?)!!.supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragmentContainer , OpponentInformationFragment())
-                .addToBackStack(null)
-                .commit()
+            Router.navigateToFragment((context as AppCompatActivity), OpponentInformationFragment())
         }
     }
 

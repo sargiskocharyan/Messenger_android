@@ -16,7 +16,9 @@ import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.authorization.models.Chat
+import com.example.dynamicmessenger.router.Router
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
+import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
 import com.example.dynamicmessenger.utils.Utils
 import com.example.dynamicmessenger.utils.observeOnceWithoutOwner
 
@@ -103,11 +105,12 @@ class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAda
         init {
             itemView.setOnClickListener {
                 HomeActivity.receiverID = chat!!.id
-                (context as AppCompatActivity?)!!.supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.fragmentContainer , ChatRoomFragment())
-                    .addToBackStack(null)
-                    .commit()
+                Router.navigateToFragment((context as AppCompatActivity), ChatRoomFragment())
+//                (context as AppCompatActivity?)!!.supportFragmentManager
+//                    .beginTransaction()
+//                    .replace(R.id.fragmentContainer , ChatRoomFragment())
+//                    .addToBackStack(null)
+//                    .commit()
             }
         }
     }

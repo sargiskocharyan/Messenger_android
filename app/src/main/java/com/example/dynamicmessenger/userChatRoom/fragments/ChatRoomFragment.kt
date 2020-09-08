@@ -21,6 +21,7 @@ import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
 import com.example.dynamicmessenger.network.authorization.models.ChatRoomMessage
 import com.example.dynamicmessenger.network.authorization.models.MessageStatus
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.router.Router
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
 import com.example.dynamicmessenger.utils.Utils
@@ -202,11 +203,7 @@ class ChatRoomFragment : Fragment() {
             requireActivity().supportFragmentManager.popBackStack()
         }
         toolbar.setOnMenuItemClickListener {
-            requireActivity().supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragmentContainer, OpponentInformationFragment())
-                .addToBackStack(null)
-                .commit()
+            Router.navigateToFragment(requireActivity(), OpponentInformationFragment())
             return@setOnMenuItemClickListener true
         }
     }

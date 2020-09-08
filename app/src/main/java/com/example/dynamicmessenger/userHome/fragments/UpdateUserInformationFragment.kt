@@ -25,6 +25,8 @@ import com.example.dynamicmessenger.dialogs.DeactivateUserDialog
 import com.example.dynamicmessenger.dialogs.DeleteUserDialog
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.router.Router
+import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userHome.viewModels.UpdateUserInformationViewModel
 import com.example.dynamicmessenger.utils.DatePickerHelper
@@ -58,6 +60,8 @@ class UpdateUserInformationFragment : Fragment() {
         val adapter = ArrayAdapter.createFromResource(requireContext(), R.array.genders, android.R.layout.simple_spinner_item)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         (binding.genderTextField.editText as? AutoCompleteTextView)?.setAdapter(adapter)
+//        binding.genderTextField.editText?.text?.append(SharedConfigs.signedUser?.gender ?: "")
+        binding.genderTextField.editText?.text?.insert(0, SharedConfigs.signedUser?.gender ?: "")
 
         onClickListeners()
 
@@ -100,8 +104,8 @@ class UpdateUserInformationFragment : Fragment() {
         binding.continueButton.setOnClickListener {
             var name = viewModel.userEnteredName.value
             var lastName = viewModel.userEnteredLastName.value
-            if (viewModel.userEnteredName.value?.isEmpty()!!) { name = null }
-            if (viewModel.userEnteredLastName.value?.isEmpty()!!) { lastName = null }
+            if (viewModel.userEnteredName.value?.isEmpty()!!) { name = "" }
+            if (viewModel.userEnteredLastName.value?.isEmpty()!!) { lastName = "" }
             val selectedGender = when (viewModel.userEnteredGender.value) {
                 resources.getString(R.string.male) -> "male"
                 else -> "female"
@@ -112,12 +116,7 @@ class UpdateUserInformationFragment : Fragment() {
             val updateUserTask = UpdateUserTask(name, lastName, username, userBio, gender = selectedGender, birthday = birthDate)
             viewModel.updateUserNetwork(updateUserTask, context){closure ->
                 if (closure) {
-                    val selectedFragment = UserInformationFragment()
-                    activity?.supportFragmentManager
-                        ?.beginTransaction()
-                        ?.replace(R.id.fragmentContainer, selectedFragment)
-                        ?.addToBackStack(null)
-                        ?.commit()
+                    Router.navigateToFragment(requireActivity(), UserInformationFragment())
                 }
             }
         }

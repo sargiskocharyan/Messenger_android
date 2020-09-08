@@ -33,12 +33,13 @@ class FirebaseNotificationService: FirebaseMessagingService() {
                 SharedConfigs.callingOpponentId = p0.data["id"].toString()
                 SharedConfigs.callRoomName = p0.data["roomName"].toString()
                 SharedConfigs.isCalling = true
+                SharedConfigs.callType = p0.data["type"].toString()
     //            NotificationMessages.setCallNotification(this, managers)
                 NotificationMessages.setNewCallNotification(this, managers)
     //            this.scheduleNotification(true)
             }
             p0.data["type"] == "contactRequest" -> {
-                NotificationMessages.setContactRequestNotification(p0.data["userId"]!!, this, managers, p0.data["image"])
+                NotificationMessages.setContactRequestNotification(p0.data["userId"]!!, p0.data["image"], p0.data["username"], this, managers)
             }
             p0.notification != null -> {
                 NotificationMessages.setNotificationMessage(p0.notification!!.title ?: "", p0.notification!!.body ?: "", this, managers)

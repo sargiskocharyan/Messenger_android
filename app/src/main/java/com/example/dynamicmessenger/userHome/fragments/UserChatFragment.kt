@@ -20,6 +20,8 @@ import com.example.dynamicmessenger.databinding.FragmentUserChatBinding
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.MessageStatus
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.router.Router
+import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
 import com.example.dynamicmessenger.userHome.adapters.UserChatsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserChatViewModel
 import com.example.dynamicmessenger.utils.toDate
@@ -112,14 +114,8 @@ class UserChatFragment : Fragment() {
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         toolbar.setOnMenuItemClickListener {
-            val selectedFragment = UserContactsFragment()
             SharedConfigs.lastFragment = MyFragments.CHATS
-            requireActivity().supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragmentContainer, selectedFragment)
-                .addToBackStack(null)
-                .commit()
-
+            Router.navigateToFragment(requireActivity(), UserContactsFragment())
             return@setOnMenuItemClickListener true
         }
     }

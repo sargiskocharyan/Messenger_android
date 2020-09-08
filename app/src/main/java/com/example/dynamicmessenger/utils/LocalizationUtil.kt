@@ -8,10 +8,15 @@ import java.util.*
 
 
 object LocalizationUtil {
-    fun setApplicationLocale(context: Context,locale: String) {
+    fun setApplicationLocale(context: Context, locale: String) {
         val resources: Resources = context.resources
         val dm: DisplayMetrics = resources.displayMetrics
         val config: Configuration = resources.configuration
+
+        val uiMode = config.uiMode
+        config.setTo(context.resources.configuration)
+        config.uiMode = uiMode
+
         config.setLocale(Locale(locale))
         resources.updateConfiguration(config, dm)
     }

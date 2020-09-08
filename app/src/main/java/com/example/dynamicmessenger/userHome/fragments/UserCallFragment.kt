@@ -17,6 +17,7 @@ import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUserCallBinding
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.router.Router
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
 import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userDataController.database.UserCallsDao
@@ -114,14 +115,8 @@ class UserCallFragment : Fragment() {
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         toolbar.setOnMenuItemClickListener {
-            val selectedFragment = UserContactsFragment()
             SharedConfigs.lastFragment = MyFragments.CALLS
-            requireActivity().supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragmentContainer, selectedFragment)
-                .addToBackStack(null)
-                .commit()
-
+            Router.navigateToFragment(requireActivity(), UserContactsFragment())
             return@setOnMenuItemClickListener true
         }
     }
