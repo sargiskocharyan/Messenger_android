@@ -129,6 +129,7 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
             })
         }
 
+        @SuppressLint("SetTextI18n")
         private fun configureStatus(messageStatus: MessageStatus, position: Int) {
             val readMessageDate = messageStatus.readMessageDate.toDate()
             val receivedMessageDate = messageStatus.receivedMessageDate.toDate()
@@ -138,7 +139,7 @@ class ChatRoomAdapter(val context: Context, private val myID: String) : Recycler
                     status.text = "Seen"
                 } else {
                     if (it <= receivedMessageDate) {
-                        status.text = "Reached"
+                        status.text = "Delivered"
                     } else {
                         status.text = "Sent"
                     }

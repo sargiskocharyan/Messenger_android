@@ -1,6 +1,8 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
 import android.graphics.Rect
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -35,6 +37,7 @@ class ChatRoomFragment : Fragment() {
     private var scrollUpWhenKeyboardOpened = true
     private var isAllMessagesDownloaded = false
     private var downloadOldMessages = true
+    private var soundPool: SoundPool? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,12 +61,17 @@ class ChatRoomFragment : Fragment() {
         configureTopNavBar(binding.chatRoomToolbar)
         observers(receiverID, linearLayoutManager)
         updateRecyclerView(receiverID)
+        configureSoundPool()
 
         //socket
         SocketManager.addChatRoomFragment(this)
+        val sendMessageMusic = soundPool!!.load(requireContext(), R.raw.message_sent, 1)
 
         binding.sendMessageButton.setOnClickListener {
-            SocketManager.sendMessage(receiverID, viewModel.userEnteredMessage)
+            if (viewModel.userEnteredMessage.value?.isEmpty() == false) {
+                SocketManager.sendMessage(receiverID, viewModel.userEnteredMessage)
+                soundPool!!.play(sendMessageMusic, 1F, 1F, 0, 0, 1F)
+            }
         }
 
         return binding.root
@@ -84,6 +92,8 @@ class ChatRoomFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         SocketManager.removeChatRoomFragment()
+        soundPool?.release()
+        soundPool = null
 //        HomeActivity.isAddContacts = false
     }
 
@@ -228,6 +238,18 @@ class ChatRoomFragment : Fragment() {
             viewModel.opponentTypingTextVisibility.postValue(false)
         }
     }
+
+    private fun configureSoundPool() {
+        val audioAttributes: AudioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(6)
+            .setAudioAttributes(audioAttributes)
+            .build()
+    }
+
     fun opponentTyping(array: Array<Any>) {
         if (HomeActivity.receiverID!! == array[0]) {
             viewModel.opponentTypingTextVisibility.postValue(true)

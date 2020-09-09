@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.MutableLiveData
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.common.ChanelConstants
 import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs
@@ -297,6 +298,14 @@ object SocketManager {
         mSocket?.on("callEnded") {
             onCallEnded()
             Log.d("SignallingClientAcc", "Home activity call Ended ")
+        }
+
+        mSocket?.on("callSessionEnded") {
+            NotificationManagerCompat.from(SharedConfigs.myContext).cancel(ChanelConstants.CALL_MANAGER_ID)
+            try {
+                onCallEnded()
+            } catch (e: Exception) {}
+            Log.d("+++call Session ended", "Home activity call Ended ")
         }
 
         mSocket?.on("call") {

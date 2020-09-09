@@ -18,15 +18,15 @@ import java.security.NoSuchAlgorithmException
 import java.util.*
 
 class SignallingClient {
-    private var roomName: String? = SharedConfigs.callRoomName
     private lateinit var mSocket: Socket
+    private lateinit var callback: SignalingInterface
+    private var roomName: String? = SharedConfigs.callRoomName
     var isChannelReady = false
     var isInitiator = false
     val isCallingNotProgress = MutableLiveData<Boolean>(true)
     val isCalling = MutableLiveData<Boolean>(true)
     var isStarted = false
     var callStarted = false
-    private lateinit var callback: SignalingInterface
 
     fun init(signalingInterface: SignalingInterface) {
         callback = signalingInterface

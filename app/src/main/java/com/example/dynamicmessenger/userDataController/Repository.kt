@@ -36,7 +36,7 @@ class Repository private constructor(val context: Context): RepositoryInterface 
         swipeRefreshLayout?.isRefreshing = true
         val userChats = MutableLiveData<List<Chat>?>()
         if (userChatsRepository.getAllChats() != null) {
-            userChats.postValue(userChatsRepository.getAllChats())
+            userChats.value = (userChatsRepository.getAllChats())
         }
         GlobalScope.launch(Dispatchers.IO) {
             try {
@@ -44,8 +44,8 @@ class Repository private constructor(val context: Context): RepositoryInterface 
                 if (response.isSuccessful) {
                     response.body()?.let {allChats ->
                         allChats.array?.let {
-                            userChatsRepository.insert(it)
                             userChats.postValue(it)
+                            userChatsRepository.insert(it)
                         }
                         allChats.badge?.let {
                             SharedConfigs.chatsBadgesCount.postValue(it)

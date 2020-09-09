@@ -2,7 +2,9 @@ package com.example.dynamicmessenger.userCalls
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
 import android.media.AudioManager
+import android.media.SoundPool
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.DisplayMetrics
@@ -30,9 +32,6 @@ import com.example.dynamicmessenger.utils.turnScreenOnAndKeyguardOff
 import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.*
-import org.webrtc.voiceengine.WebRtcAudioManager
-import org.webrtc.voiceengine.WebRtcAudioTrack
-import org.webrtc.voiceengine.WebRtcAudioUtils
 import java.nio.ByteBuffer
 import java.util.*
 import kotlin.math.roundToInt
@@ -59,12 +58,12 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     private var peerIceServers: MutableList<PeerConnection.IceServer> = ArrayList()
     private var stream: MediaStream? = null
     private var localPeer: PeerConnection? = null
-    private var dataChannel : DataChannel? = null
+    private var dataChannel: DataChannel? = null
+    private var soundPool: SoundPool? = null
+    private var ringBackStreamId = 0
     private val dcInit = DataChannel.Init().apply {
-//        negotiated = true
-//        ordered = true
-        this.maxRetransmitTimeMs = -1
-        this.maxRetransmits = -1
+        maxRetransmitTimeMs = -1
+        maxRetransmits = -1
         id = 1
     }
 
@@ -76,16 +75,17 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         binding.signalingClient = SignallingClient.getInstance()
         binding.lifecycleOwner = this
         SharedConfigs.isCallingInProgress = true
+        audioManager = this.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         if (!RemoteNotificationManager.checkPermissions(this)) {
             RemoteNotificationManager.requestPermissions(this)
         } else {
             start()
         }
+
+        configureSoundPool()
         observers()
         onClickListeners()
-
-        audioManager = this.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
         timer = object : CountDownTimer(30000, 2000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -187,7 +187,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
             )
         }
         localVideoTrack = peerConnectionFactory.createVideoTrack("100", videoSource)
-
+//        audioManager.isSpeakerphoneOn = true
         audioSource = peerConnectionFactory.createAudioSource(audioConstraints)
         localAudioTrack = peerConnectionFactory.createAudioTrack("101", audioSource)
         videoCapturerAndroid?.startCapture(1024, 720, 30)
@@ -244,6 +244,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                     }
                     if (iceConnectionState == PeerConnection.IceConnectionState.CONNECTED) {
                         viewModel.opponentReconnecting.postValue(false)
+                        soundPool!!.stop(ringBackStreamId)
                         if (!SignallingClient.getInstance()!!.callStarted) {
                             SignallingClient.getInstance()!!.callStarted()
                         } else {
@@ -322,6 +323,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                 if (SharedConfigs.callType != "video") {
                     cameraOff()
                     viewModel.opponentCameraIsEnabled.postValue(false)
+                    viewModel.isEnabledVolume.postValue(false)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -347,6 +349,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
             doOffer()
         }
     }
+
     override fun onOfferReceived(data: JSONObject?) {
         runOnUiThread {
             if (!SignallingClient.getInstance()!!.isInitiator && !SignallingClient.getInstance()!!.isStarted) {
@@ -490,7 +493,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 
             localVideoView.release()
             remoteVideoView.release()
-
+            soundPool?.release()
+            soundPool = null
 //            localVideoTrack.dispose()
 //            audioSource.dispose()
 //            localAudioTrack.dispose()
@@ -619,6 +623,8 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     private fun onClickListeners() {
+        val sound1 = soundPool!!.load(this, R.raw.call_sound_blackberry, 1)
+        val ringBack = soundPool!!.load(this, R.raw.ringback, 1)
         binding.disableMicrophoneCircleImageView.setOnClickListener {
             if (viewModel.isEnabledMicrophone.value!!) {
                 viewModel.isEnabledMicrophone.value = false
@@ -632,35 +638,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
 
         binding.disableAudioCircleImageView.setOnClickListener {
-            if (viewModel.isEnabledVolume.value!!) {
-                viewModel.isEnabledVolume.value = false
-                try {
-//                    audioManager.isSpeakerphoneOn = true
-//                    audioManager.mode = AudioManager.MODE_NORMAL
-                    volumeControlStream = AudioManager.STREAM_VOICE_CALL
-                    audioManager.mode = AudioManager.MODE_IN_CALL
-//                    audioManager.
-                    Log.i("+++---", "localAudioTrack.state() ${localAudioTrack.state()}")
-
-
-                } catch (e: Exception) {
-                    Log.i("+++---", "exception $e")
-                }
-            } else {
-                viewModel.isEnabledVolume.value = true
-                try {
-                    Log.i("+++---", "localAudioTrack.state() ${localAudioTrack.state()}")
-
-//                    audioManager.isSpeakerphoneOn = false
-//                    audioManager.mode = AudioManager.MODE
-
-//                    volumeControlStream = AudioManager.MODE_IN_COMMUNICATION
-                    audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
-//                    audioManager.setStreamVolume()
-                } catch (e: Exception) {
-                    Log.i("+++---", "exception $e")
-                }
-            }
+            viewModel.isEnabledVolume.value = !viewModel.isEnabledVolume.value!!
         }
 
         binding.acceptCallCardView.setOnClickListener {
@@ -668,19 +646,23 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                 Log.d("SignallingClient", "accept call on click")
                 SignallingClient.getInstance()!!.emitCallAccepted(true)
             } else {
+                ringBackStreamId = soundPool!!.play(ringBack, 1F, 1F, 0, -1, 1F)
                 SignallingClient.getInstance()!!.callOpponent()
             }
             SignallingClient.getInstance()!!.isCallingNotProgress.value = false
         }
 
         binding.hangUpCallCardView.setOnClickListener {
-                Log.d("SignallingClient", "SignallingClient.getInstance()!!.isCallingNotProgress.value!! ${SignallingClient.getInstance()!!.isCallingNotProgress.value!!}")
+            Log.d(
+                "SignallingClient",
+                "SignallingClient.getInstance()!!.isCallingNotProgress.value!! ${SignallingClient.getInstance()!!.isCallingNotProgress.value!!}"
+            )
 //            if (SignallingClient.getInstance()!!.isCallingNotProgress.value!!) {
 //                Log.d("SignallingClient", "accept call on click")
 //                SignallingClient.getInstance()!!.emitCallAccepted(false)
 //            } else {
-                SignallingClient.getInstance()!!.leaveRoom()
-                sendData(DataChanelMessages.opponentLeaveCall)
+            SignallingClient.getInstance()!!.leaveRoom()
+            sendData(DataChanelMessages.opponentLeaveCall)
 //            }
             onRemoteHangUp()
 //            hangup()
@@ -751,12 +733,22 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
             }
         })
 
-        viewModel.opponentLeaveCall.observe(this , androidx.lifecycle.Observer {
+        viewModel.opponentLeaveCall.observe(this, androidx.lifecycle.Observer {
             if (it) {
 //                onRemoteHangUp()
             }
         })
+
+        viewModel.isEnabledVolume.observe(this , androidx.lifecycle.Observer{
+            try {
+                Log.i("+++---", "localAudioTrack.state() ${localAudioTrack.state()}")
+                audioManager.isSpeakerphoneOn = it
+            } catch (e: Exception) {
+                Log.i("+++---", "exception $e")
+            }
+        })
     }
+
     private fun sendData(data: String) {
         val buffer = ByteBuffer.wrap(data.toByteArray())
         Log.i("+++--", "send data $data")
@@ -780,6 +772,17 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         sendData(DataChanelMessages.turnCameraOn)
         viewModel.isCameraEnabled.value = true
         binding.localViewConstraintLayout.visibility = View.VISIBLE
+    }
+
+    private fun configureSoundPool() {
+        val audioAttributes: AudioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(6)
+            .setAudioAttributes(audioAttributes)
+            .build()
     }
 
     companion object {
