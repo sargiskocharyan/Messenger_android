@@ -11,14 +11,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.common.MyFragments
+import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentUserContactsBinding
 import com.example.dynamicmessenger.dialogs.ContactsSearchDialog
 import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userHome.adapters.UserContactsAdapter
 import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 
 
 class UserContactsFragment : Fragment() {
@@ -33,17 +32,18 @@ class UserContactsFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(UserContactsViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        val adapter = UserContactsAdapter(requireContext(), viewModel)
-        updateRecycleViewFromNetwork(adapter)
+        val adapter = UserContactsAdapter(requireContext())
+        updateRecycleViewFromNetwork(adapter)//TODO ----------------------
         binding.root.setHasTransientState(true)
         binding.contactsRecyclerView.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(requireContext())
         binding.contactsRecyclerView.layoutManager = linearLayoutManager
 
+        SharedConfigs.currentFragment.value = MyFragments.CONTACTS
         HomeActivity.isAddContacts = false
-        viewModel.getSavedContacts().observe(viewLifecycleOwner, Observer {
-            updateRecycleView(adapter, it)
-        })
+//        viewModel.getSavedContacts().observe(viewLifecycleOwner, Observer {
+//            updateRecycleView(adapter, it)
+//        })
         viewModel.searchResult.observe(viewLifecycleOwner, Observer {
             viewModel.getSearchedContacts(it) {name ->
                 updateRecycleView(adapter, name)
@@ -66,10 +66,15 @@ class UserContactsFragment : Fragment() {
     }
 
     private fun updateRecycleViewFromNetwork(adapter: UserContactsAdapter) {
-        viewModel.getUserContactsFromNetwork(requireContext()) {
-            adapter.setAdapterDataNotify(it)
-            viewModel.saveContacts(it)
-        }
+        SharedConfigs.userRepository.getUserContacts().observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                adapter.setAdapterDataNotify(it)
+                viewModel.saveContacts(it)
+            }
+        })
+//        viewModel.getUserContactsFromNetwork(requireContext()) {
+//            adapter.setAdapterDataNotify(it)
+//        }
     }
 
     private fun updateRecycleView(adapter: UserContactsAdapter, data: List<User>) {
@@ -79,7 +84,6 @@ class UserContactsFragment : Fragment() {
 
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.elevation = 10.0F
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }

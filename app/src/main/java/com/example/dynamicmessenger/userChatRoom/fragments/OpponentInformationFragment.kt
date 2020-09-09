@@ -1,6 +1,5 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,14 +8,15 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentOpponentInformationBinding
 import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userChatRoom.viewModels.OpponentInformationViewModel
-import com.example.dynamicmessenger.userDataController.database.UserCalls
 
 class OpponentInformationFragment : Fragment() {
 
@@ -32,53 +32,33 @@ class OpponentInformationFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        SharedConfigs.currentFragment.value = MyFragments.OPPONENT_INFORMATION
+
         //Toolbar
         setHasOptionsMenu(true)
-        val toolbar: Toolbar = binding.opponentInformationToolbar
-        configureTopNavBar(toolbar)
-
-        viewModel.getAvatar {
-            binding.opponentProfileAvatarImageView.setImageBitmap(it)
-        }
-
-        binding.addToContactsImageView.setOnClickListener {
-            viewModel.addUserToContacts()
-        }
-
-        binding.callOpponentImageView.setOnClickListener {
-            val opponentUser = HomeActivity.opponentUser!!
-            val currentDate = System.currentTimeMillis()
-            val userCalls = UserCalls(opponentUser._id, opponentUser.name , opponentUser.lastname, opponentUser.username, opponentUser.avatarURL, currentDate, 1)
-            SharedConfigs.callingOpponentId = opponentUser._id
-            viewModel.saveCall(userCalls)
-            val intent = Intent(activity, CallRoomActivity::class.java)
-            startActivity(intent)
-            (activity as Activity?)!!.overridePendingTransition(1, 1)
-        }
-
-        binding.sendMessageImageView.setOnClickListener {
-            HomeActivity.isAddContacts = null
-            (context as AppCompatActivity?)!!.supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragmentContainer, ChatRoomFragment())
-                .addToBackStack(null)
-                .commit()
-        }
-
+        onClickListeners()
         configurePage()
+
+        SharedConfigs.userRepository.getUserInformation(HomeActivity.receiverID).observe(viewLifecycleOwner, Observer {user ->
+            viewModel.getOpponentInformation(user)
+            HomeActivity.opponentUser = user
+            SharedConfigs.userRepository.getAvatar(user?.avatarURL).observe(viewLifecycleOwner, Observer {
+                binding.opponentProfileAvatarImageView.setImageBitmap(it)
+            })
+        })
 
         return binding.root
     }
 
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.elevation = 10.0F
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
     private fun configurePage() {
+        configureTopNavBar(binding.opponentInformationToolbar)
         val opponentUser = HomeActivity.opponentUser
         //TODO:binding
         binding.opponentInfoBirthDateTextView.text = opponentUser?.birthday?.substring(0, 10)
@@ -88,6 +68,24 @@ class OpponentInformationFragment : Fragment() {
         } else if (HomeActivity.isAddContacts == null) {
 //            binding.addToContactsImageView.visibility = View.GONE
             binding.sendMessageImageView.visibility = View.GONE
+        }
+    }
+
+    private fun onClickListeners() {
+        binding.callOpponentImageView.setOnClickListener {
+            val opponentUser = HomeActivity.opponentUser!!
+            SharedConfigs.callingOpponentId = opponentUser._id
+            val intent = Intent(activity, CallRoomActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.sendMessageImageView.setOnClickListener {
+            HomeActivity.isAddContacts = null
+            (context as AppCompatActivity?)!!.supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, ChatRoomFragment())
+                .addToBackStack(null)
+                .commit()
         }
     }
 }

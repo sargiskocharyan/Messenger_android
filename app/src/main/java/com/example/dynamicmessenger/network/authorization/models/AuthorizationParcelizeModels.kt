@@ -15,7 +15,13 @@ import java.text.SimpleDateFormat
 data class MailExistProperty(val mailExist: Boolean, val code: String) : Parcelable
 
 @Parcelize
+data class PhoneNumberExistProperty(val phonenumberExists: Boolean, val code: String) : Parcelable
+
+@Parcelize
 data class LoginProperty(val token: String, val tokenExpire: String, val user: User) : Parcelable
+
+@Parcelize
+data class ChangePhoneNumberOrEmailProperty(val user: User) : Parcelable
 
 @Parcelize
 @Entity(tableName = "user")
@@ -31,26 +37,9 @@ data class User (
     val address: String?,
     val birthday: String?,
     val info: String?,
-    val avatarURL: String?
-//    ,
-//    val university: University?
+    val avatarURL: String?,
+    var missedCallHistory: List<String?>?
 ) : Parcelable
-
-@Parcelize
-data class University(
-    @PrimaryKey
-    @ColumnInfo(name = "universityId") val _id: String,
-    @ColumnInfo(name = "universityName") val name: String,
-    @ColumnInfo(name = "universityNameRU") val nameRU: String,
-    @ColumnInfo(name = "universityNameEN") val nameEN: String) : Parcelable {
-    override fun toString(): String {
-        return when (SharedConfigs.appLang.value) {
-            AppLangKeys.AM ->  name
-            AppLangKeys.RU ->  nameRU
-            else -> nameEN
-        }
-    }
-}
 
 @Parcelize
 data class UserTokenProperty(val tokenExists: Boolean?, val Error: String?) : Parcelable
@@ -72,15 +61,21 @@ data class Chat(
     val chatCreateDay: String) : Parcelable
 
 @Parcelize
+data class AllChats(
+    val array: List<Chat>?,
+    var badge: Int?) : Parcelable
+
+@Parcelize
 data class Message(
-    @Embedded
-    val sender: Sender,
+    val _id: String,
+    val senderId: String?,
     @Embedded
     val call: Call?,
     val type: String,
     val text: String?,
     var createdAt: String,
-    val reciever: String) : Parcelable, Comparable<Message> {
+    val reciever: String,
+    val senderUsername: String?) : Parcelable, Comparable<Message> {
     @SuppressLint("SimpleDateFormat")
     override fun compareTo(other: Message): Int {
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -93,6 +88,9 @@ data class Message(
         }
         return 1
     }
+//    "senderUsername":"dacuke",
+//    "senderName":"David",
+//    "senderLastname":"Melikyan"
 
 }
 
@@ -104,15 +102,16 @@ data class Sender(
 
 @Parcelize
 data class Call(
-    val Status: String?,
+    val status: String?,
     val callSuggestTime: String?,
     @ColumnInfo(name = "callType")
     val type: String?,
     val duration: Double?) : Parcelable
 
 @Parcelize
-data class ChatRoom(
-    val sender: Sender,
+data class ChatRoomMessage(
+    val _id: String,
+    val senderId: String?,
     val call: Call?,
     val type: String,
     val text: String?,
@@ -120,22 +119,17 @@ data class ChatRoom(
     val createdAt: String) : Parcelable
 
 @Parcelize
-data class UniversityProperty(val _id: String, val name: String, val nameRU: String , val nameEN: String) : Parcelable {
-    override fun toString(): String {
-        return when (SharedConfigs.appLang.value) {
-            AppLangKeys.AM ->  name
-            AppLangKeys.RU ->  nameRU
-            else -> nameEN
-        }
-    }
-}
+data class ChatRoom(val array: List<ChatRoomMessage>, val statuses: List<MessageStatus>) : Parcelable
 
 @Parcelize
-data class UniversityPropertyList(val list: List<UniversityProperty>) : Parcelable {
-    override fun toString(): String {
-        return list.toString()
-    }
-}
+data class MessageStatus(
+    val receivedMessageDate: String,
+    val readMessageDate: String,
+    val _id: String,
+    val userId: String) : Parcelable
 
 @Parcelize
 data class OnlineUsers(val usersOnline: List<String>) : Parcelable
+
+@Parcelize
+data class UsernameExists(val usernameExists: Boolean) : Parcelable

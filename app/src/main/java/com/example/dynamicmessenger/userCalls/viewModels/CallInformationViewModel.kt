@@ -1,106 +1,46 @@
 package com.example.dynamicmessenger.userCalls.viewModels
 
-import android.annotation.SuppressLint
 import android.app.Application
-import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.example.dynamicmessenger.network.LoadAvatarApi
-import com.example.dynamicmessenger.userDataController.database.DiskCache
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.common.SharedConfigs
+import com.example.dynamicmessenger.network.authorization.models.User
 import com.example.dynamicmessenger.userDataController.database.UserCalls
-import com.example.dynamicmessenger.userDataController.database.UserCallsRepository
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.dynamicmessenger.utils.Utils
 
 class CallInformationViewModel(application: Application) : AndroidViewModel(application) {
-    private val diskLruCache = DiskCache.getInstance(application)
-    private val callsDao = SignedUserDatabase.getUserDatabase(application)!!.userCallsDao()
-    private val callsRepository = UserCallsRepository(callsDao)
     val callInformation = MutableLiveData<UserCalls>()
     val callTimeDay = MutableLiveData<String>()
     val callTimeHour = MutableLiveData<String>()
     val callDuration = MutableLiveData<String>()
     val callState = MutableLiveData<String>()
     val opponentAvatarBitmap = MutableLiveData<Bitmap>()
+    val opponentInformation = MutableLiveData<User>()
 
-    fun getAvatar(receiverURL: String?) {
-        viewModelScope.launch {
-            if (receiverURL != null) {
-                try {
-                    if (diskLruCache.get(receiverURL) != null) {
-                        opponentAvatarBitmap.value = diskLruCache.get(receiverURL)!!
-                    } else {
-                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(receiverURL)
-                        if (response.isSuccessful) {
-                            val inputStream = response.body()!!.byteStream()
-                            val bitmap = BitmapFactory.decodeStream(inputStream)
-                            opponentAvatarBitmap.value = bitmap
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.i("+++exception", e.toString())
-                }
-            }
-        }
+    init {
+        callInformation.value = HomeActivity.callId?.let { SharedConfigs.userRepository.getUserCallById(it) }
     }
 
-    fun saveCall(userCalls: UserCalls) {
-        viewModelScope.launch {
-            callsRepository.insert(userCalls)
-        }
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    private fun convertLongToTime(time: Long) {
-        val date = Date(time)
-        val currentDate: Date = Calendar.getInstance().time
-        val newFormat = SimpleDateFormat("HH:mm")
-        callTimeHour.value = newFormat.format(date)
-        if ((currentDate.day == date.day) && (currentDate.month == date.month) && (currentDate.year == date.year)) {
-            callTimeDay.value = "Today"//TODO change string
-        } else if ((currentDate.day == date.day + 1) && (currentDate.month == date.month) && (currentDate.year == date.year)) {
-            callTimeDay.value = "Yesterday"
-        } else {
-            val newFormat = SimpleDateFormat("MMMM-dd")
-            callTimeDay.value = newFormat.format(date)
-        }
-    }
-
-    private fun getCallDurationInSeconds(time: Long) {
-        val hours = time / (1000 * 60 * 60) % 24
-        val minutes = time / (1000 * 60) % 60
-        val seconds = (time / 1000) % 60
-
-        return if (minutes == 0L && hours == 0L) {
-            callDuration.value = "${seconds}s"
-        } else if (hours == 0L) {
-            callDuration.value = "${minutes}m ${seconds}s"
-        } else {
-            callDuration.value ="${hours}h ${minutes}m ${seconds}s"
-        }
-    }
-
-    private fun getCallingState(state: Int) {
+    private fun getCallingState(state: String) {
         when (state) {
-            1 -> callState.value = "Outgoing" //TODO change string
-            2 -> callState.value = "Incoming"
+            "missed" -> callState.value = "missed" //TODO change string
+            "ongoing" -> callState.value = "ongoing"
+            "accepted" -> callState.value = "accepted"
         }
     }
 
-    fun callInformationByTime(time: Long) {
-        callInformation.value = callsRepository.getCallByTime(time)
-        getAvatar(callInformation.value?.avatarURL)
-        callInformation.value?.let {
-            getCallDurationInSeconds(it.duration)
-            getCallingState(it.callingState)
-            convertLongToTime(it.time)
+    fun configureCallInformation(userCalls: UserCalls) {
+        val callStartTime = Utils.convertStringToDate(userCalls.callStartTime)
+        val callEndTime = Utils.convertStringToDate(userCalls.callEndTime)
+        if (callEndTime != null && callStartTime != null) {
+            callDuration.value = Utils.getCallDurationInSeconds(callEndTime.time - callStartTime.time)
+//            getCallDurationInSeconds(callEndTime.time - callStartTime.time)
         }
-        Log.i("+++", "call duration ${callDuration.value}")
+        callTimeHour.value = userCalls.callSuggestTime?.let { Utils.convertDateToHour(it) }
+        callTimeDay.value = Utils.convertStringToDate(userCalls.callSuggestTime)?.time?.let { Utils.convertLongToTimeForCall(it) }
+        callState.value = userCalls.status
+
     }
 }

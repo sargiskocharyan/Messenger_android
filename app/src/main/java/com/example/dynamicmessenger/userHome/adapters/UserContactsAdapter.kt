@@ -1,33 +1,27 @@
 package com.example.dynamicmessenger.userHome.adapters
 
 import android.content.Context
-import android.util.Log
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.AddContactApi
-import com.example.dynamicmessenger.network.GetUserInfoByIdApi
-import com.example.dynamicmessenger.network.authorization.models.AddUserContactTask
-import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.User
+import com.example.dynamicmessenger.userCalls.CallRoomActivity
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
 import com.example.dynamicmessenger.userChatRoom.fragments.OpponentInformationFragment
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import com.example.dynamicmessenger.userHome.viewModels.UserContactsViewModel
-import kotlinx.coroutines.launch
+import com.example.dynamicmessenger.utils.observeOnceWithoutOwner
 import com.example.dynamicmessenger.common.MyFragments as MyFragments
 
-class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewModel): RecyclerView.Adapter<UserContactsAdapter.UserContactsViewHolder>() {
+class UserContactsAdapter(val context: Context): RecyclerView.Adapter<UserContactsAdapter.UserContactsViewHolder>() {
     var data = mutableListOf<User>()
 
     fun setAdapterDataNotify(newList: List<User>) {
@@ -55,9 +49,9 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         holder.name.text = item.name
         holder.lastname.text = item.lastname
         if (item.avatarURL != null) {
-            viewModel.getAvatar(item.avatarURL) {
+            SharedConfigs.userRepository.getAvatar(item.avatarURL).observeOnceWithoutOwner(Observer {
                 holder.contactsUserImageView.setImageBitmap(it)
-            }
+            })
         } else  {
             holder.contactsUserImageView.setImageResource(R.drawable.ic_user_image)
         }
@@ -65,7 +59,7 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserContactsViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.contacts_item_view, parent, false)
+            .inflate(R.layout.item_view_contacts, parent, false)
         return UserContactsViewHolder(view, context)
     }
 
@@ -77,41 +71,31 @@ class UserContactsAdapter(val context: Context, val viewModel: UserContactsViewM
         val contactsUserImageView: ImageView = itemView.findViewById(R.id.contactsUserImageView)
         init {
             itemView.setOnClickListener {
+                HomeActivity.receiverID = userContact!!._id
                 if (SharedConfigs.lastFragment == MyFragments.CHATS) {
-                    HomeActivity.opponentUser = viewModel.getUserById(userContact!!._id)
-                    HomeActivity.receiverID = userContact!!._id
-                    (context as AppCompatActivity?)!!.supportFragmentManager
+                    SharedConfigs.userRepository.getUserInformation(userContact!!._id).observe((context as AppCompatActivity), Observer {
+                        HomeActivity.opponentUser = it
+                    })
+                    context.supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.fragmentContainer , ChatRoomFragment())
                         .addToBackStack(null)
                         .commit()
                     return@setOnClickListener
                 }
-                if (viewModel.getUserById(userContact!!._id) != null) {
-                    Log.i("+++", "userContacts if")
-                    nextPage(viewModel.getUserById(userContact!!._id))
-                } else {
-                    viewModel.viewModelScope.launch {
-                        try {
-                            val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, userContact!!._id)
-                            if (response.isSuccessful) {
-                                response.body()?.let { user -> viewModel.saveUser(user) }
-                                Log.i("+++", "userContacts else ${response.body()}")
-                                nextPage(response.body())
-                            } else {
-                                Log.i("+++else", "getOpponentInfoFromNetwork $response")
-                            }
-                        } catch (e: Exception) {
-                            Log.i("+++exception", "getOpponentInfoFromNetwork $e")
-                        }
-                    }
+
+                if (SharedConfigs.lastFragment == MyFragments.CALLS) {
+                    SharedConfigs.callingOpponentId = userContact!!._id
+                    val intent = Intent(context, CallRoomActivity::class.java)
+                    context.startActivity(intent)
+                    return@setOnClickListener
                 }
+
+                nextPage()
             }
         }
 
-        private fun nextPage(opponentUser: User?) {
-            HomeActivity.opponentUser = opponentUser
-            HomeActivity.receiverID = userContact!!._id
+        private fun nextPage() {
             (context as AppCompatActivity?)!!.supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.fragmentContainer , OpponentInformationFragment())

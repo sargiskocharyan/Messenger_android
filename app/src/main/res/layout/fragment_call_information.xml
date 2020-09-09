@@ -57,7 +57,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="@{viewModel.callInformation.username}"
+            android:text="@{viewModel.opponentInformation.username}"
+            android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="@+id/callInformationAvatarImageView"
             app:layout_constraintStart_toStartOf="@+id/callInformationAvatarImageView"
             app:layout_constraintTop_toBottomOf="@+id/callInformationAvatarImageView"
@@ -115,7 +116,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Message"
+            android:text="@string/message"
             app:layout_constraintEnd_toEndOf="@+id/callInformationMessageImageView"
             app:layout_constraintStart_toStartOf="@+id/callInformationMessageImageView"
             app:layout_constraintTop_toBottomOf="@+id/callInformationMessageImageView" />
@@ -125,7 +126,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Video"
+            android:text="@string/video"
             app:layout_constraintEnd_toEndOf="@+id/callInformationVideoCallImageView"
             app:layout_constraintStart_toStartOf="@+id/callInformationVideoCallImageView"
             app:layout_constraintTop_toBottomOf="@+id/callInformationVideoCallImageView" />
@@ -135,7 +136,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Call"
+            android:text="@string/call"
             app:layout_constraintEnd_toEndOf="@+id/callInformationCallImageView"
             app:layout_constraintStart_toStartOf="@+id/callInformationCallImageView"
             app:layout_constraintTop_toBottomOf="@+id/callInformationCallImageView" />
@@ -156,7 +157,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="@{viewModel.callTimeDay}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/blackViewCallInformation"
@@ -166,40 +167,42 @@
             android:id="@+id/callTimeHourTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="@{viewModel.callTimeHour}"
-            tools:text="17:55"
             app:layout_constraintStart_toStartOf="@+id/callingTimeDayTextView"
-            app:layout_constraintTop_toBottomOf="@+id/callingTimeDayTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/callingTimeDayTextView"
+            tools:text="17:55" />
 
         <TextView
             android:id="@+id/callStateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:text="@{viewModel.callState}"
-            tools:text="Outgoing call"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/callTimeHourTextView"
             app:layout_constraintStart_toEndOf="@+id/callTimeHourTextView"
-            app:layout_constraintTop_toTopOf="@+id/callTimeHourTextView" />
+            app:layout_constraintTop_toTopOf="@+id/callTimeHourTextView"
+            tools:text="Outgoing call" />
 
         <TextView
             android:id="@+id/callDurationTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="@{viewModel.callDuration}"
-            tools:text="0 sec"
             app:layout_constraintEnd_toEndOf="@+id/callStateTextView"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/callStateTextView"
-            app:layout_constraintTop_toBottomOf="@+id/callStateTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/callStateTextView"
+            tools:text="0 sec" />
 
         <View
             android:id="@+id/blackView2CallInformation"
             style="@style/BlackLineStyle"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"

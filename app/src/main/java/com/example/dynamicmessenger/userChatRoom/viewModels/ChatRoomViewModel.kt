@@ -2,39 +2,35 @@ package com.example.dynamicmessenger.userChatRoom.viewModels
 
 import android.app.Application
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.Toast
+import androidx.databinding.Bindable
+import androidx.databinding.Observable
+import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.ChatRoomApi
-import com.example.dynamicmessenger.network.GetUserInfoByIdApi
-import com.example.dynamicmessenger.network.LoadAvatarApi
-import com.example.dynamicmessenger.network.authorization.models.ChatRoom
-import com.example.dynamicmessenger.network.authorization.models.User
-import com.example.dynamicmessenger.userDataController.database.DiskCache
-import com.example.dynamicmessenger.userDataController.database.SavedUserRepository
-import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
+import com.example.dynamicmessenger.network.authorization.models.ChatRoomMessage
+import com.example.dynamicmessenger.network.authorization.models.MessageStatus
 import kotlinx.coroutines.launch
 
-class ChatRoomViewModel(application: Application) : AndroidViewModel(application) {
-    private val diskLruCache = DiskCache.getInstance(application)
-    private val usersDao = SignedUserDatabase.getUserDatabase(application)!!.savedUserDao()
-    private val usersRepository = SavedUserRepository(usersDao)
+class ChatRoomViewModel(application: Application) : AndroidViewModel(application), Observable {
+    val isKeyboardVisible = MutableLiveData<Boolean>()
+    val toolbarOpponentUsername = MutableLiveData<String>()
+    @Bindable
+    val userEnteredMessage = MutableLiveData<String>()
+    val opponentTypingTextVisibility = MutableLiveData<Boolean>()
 
-    fun getUserById(id: String): User? {
-        return usersRepository.getUserById(id) //TODO change for download from internet if user not saved in DB
-    }
-
-    fun getMessagesFromNetwork(context: Context?, receiverID: String, closure: (List<ChatRoom>) -> Unit) {
+    fun getMessagesFromNetwork(context: Context?, receiverID: String, closure: (List<ChatRoomMessage>, List<MessageStatus>) -> Unit) {
         viewModelScope.launch {
             try {
                 val response = ChatRoomApi.retrofitService.chatRoomResponseAsync(SharedConfigs.token, receiverID)
                 if (response.isSuccessful) {
-                    closure(response.body()!!)
+                    response.body()?.let {
+                        closure(it.array, it.statuses)
+                    }
                 } else {
                     Toast.makeText(context, "User chat room else", Toast.LENGTH_SHORT).show()
                 }
@@ -45,41 +41,13 @@ class ChatRoomViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun getAvatar(receiverURL: String?, closure: (Bitmap) -> Unit) {
-        viewModelScope.launch {
-            if (receiverURL != null) {
-                try {
-                    if (diskLruCache.get(receiverURL) != null) {
-                        closure(diskLruCache.get(receiverURL)!!)
-                    } else {
-                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(receiverURL)
-                        if (response.isSuccessful) {
-                            val inputStream = response.body()!!.byteStream()
-                            val bitmap = BitmapFactory.decodeStream(inputStream)
-                            closure(bitmap)
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.i("+++exception", e.toString())
-                }
-            }
-        }
+    private val callbacks: PropertyChangeRegistry by lazy { PropertyChangeRegistry() }
+
+    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
+        callbacks.add(callback)
     }
 
-    fun getOpponentInfoFromNetwork(receiverId: String?) {
-        viewModelScope.launch {
-            if (receiverId != null) {
-                try {
-                    val response = GetUserInfoByIdApi.retrofitService.getUserInfoByIdResponseAsync(SharedConfigs.token, receiverId)
-                    if (response.isSuccessful) {
-                        HomeActivity.opponentUser = response.body()
-                    } else {
-                        Log.i("+++else", "getOpponentInfoFromNetwork $response")
-                    }
-                } catch (e: Exception) {
-                    Log.i("+++exception", "getOpponentInfoFromNetwork $e")
-                }
-            }
-        }
+    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
+        callbacks.remove(callback)
     }
 }

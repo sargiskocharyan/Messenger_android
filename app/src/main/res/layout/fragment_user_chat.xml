@@ -15,6 +15,9 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
+        android:elevation="5dp"
+        android:background="@color/toolBarColor"
+        app:menu="@menu/plus_top_bar"
         app:title=" ">
 
         <TextView
@@ -37,7 +40,7 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/userChatToolbar"
             android:scrollbars="vertical"
-            tools:listitem="@layout/chats_item_view"/>
+            tools:listitem="@layout/item_view_chats"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

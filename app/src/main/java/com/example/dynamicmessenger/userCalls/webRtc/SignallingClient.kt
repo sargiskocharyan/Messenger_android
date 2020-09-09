@@ -18,7 +18,7 @@ import java.security.NoSuchAlgorithmException
 import java.util.*
 
 class SignallingClient {
-    private var roomName: String? = null
+    private var roomName: String? = SharedConfigs.callRoomName
     private lateinit var mSocket: Socket
     var isChannelReady = false
     var isInitiator = false
@@ -128,11 +128,7 @@ class SignallingClient {
 //                }
 //            }
             */
-        } catch (e: URISyntaxException) {
-            e.printStackTrace()
-        } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
-        } catch (e: KeyManagementException) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -142,6 +138,9 @@ class SignallingClient {
         if (array[0] == true) {
             roomName = array[1].toString()
             callback.onCallAccepted(array[1].toString())
+        } else {
+//            roomName = array[1].toString()
+//            callback.onRemoteNotAccepted(array[2].toString())
         }
     }
 
@@ -194,7 +193,6 @@ class SignallingClient {
             obj.put("sdp", message.description)
             Log.d("emitMessage", obj.toString())
             mSocket.emit("message", obj)
-            Log.d("vivek1794", obj.toString())
         } catch (e: JSONException) {
             e.printStackTrace()
         }
@@ -246,13 +244,12 @@ class SignallingClient {
 
     fun callOpponent() {
         Log.d("SignallingClient", "call call")
-        mSocket.emit("call", SharedConfigs.callingOpponentId, Ack {
+        mSocket.emit("call", SharedConfigs.callingOpponentId, "video", Ack {
             roomName = it[0] as String?
         })
     }
 
     fun callStarted() {
-        val currentTime = System.currentTimeMillis()
         callStarted = true
         mSocket.emit("callStarted", roomName)
     }
@@ -277,6 +274,7 @@ class SignallingClient {
         fun onCallAccepted(room: String?)
         fun onTryToStart()
         fun onNewPeerJoined()
+        fun onRemoteNotAccepted(answer: String)
     }
 
     companion object {

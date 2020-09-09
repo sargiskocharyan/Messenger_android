@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="toolBarColor">#303030</color>
+    <color name="toolBarColor">#121212</color>
+    <color name="dayNightBlack">#FFFFFF</color>
 </resources>

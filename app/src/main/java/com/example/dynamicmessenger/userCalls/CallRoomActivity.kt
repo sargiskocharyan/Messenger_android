@@ -1,22 +1,19 @@
 package com.example.dynamicmessenger.userCalls
 
-import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.media.AudioManager
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.ActivityCallRoomBinding
@@ -24,13 +21,15 @@ import com.example.dynamicmessenger.userCalls.viewModels.CallRoomViewModel
 import com.example.dynamicmessenger.userCalls.webRtc.CustomPeerConnectionObserver
 import com.example.dynamicmessenger.userCalls.webRtc.CustomSdpObserver
 import com.example.dynamicmessenger.userCalls.webRtc.SignallingClient
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.example.dynamicmessenger.utils.notifications.RemoteNotificationManager
+import com.example.dynamicmessenger.utils.turnScreenOffAndKeyguardOn
+import com.example.dynamicmessenger.utils.turnScreenOnAndKeyguardOff
 import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.*
 import java.util.*
 import kotlin.math.roundToInt
+
 
 class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterface {
     private lateinit var peerConnectionFactory: PeerConnectionFactory
@@ -48,65 +47,54 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     private var rootEglBase: EglBase? = null
     private var gotUserMedia = false
     private var peerIceServers: MutableList<PeerConnection.IceServer> = ArrayList()
-    private val ALL_PERMISSIONS_CODE = 1
     private lateinit var binding: ActivityCallRoomBinding
     private lateinit var viewModel: CallRoomViewModel
+    private lateinit var timer: CountDownTimer
+    private var stream: MediaStream? = null
+    private lateinit var audioManager: AudioManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_call_room)
         viewModel = ViewModelProvider(this).get(CallRoomViewModel::class.java)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_call_room)
         binding.viewModel = viewModel
         binding.signalingClient = SignallingClient.getInstance()
         binding.lifecycleOwner = this
         SharedConfigs.isCallingInProgress = true
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !== PackageManager.PERMISSION_GRANTED
-            || ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) !== PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO), ALL_PERMISSIONS_CODE)
+        if (!RemoteNotificationManager.checkPermissions(this)) {
+            RemoteNotificationManager.requestPermissions(this)
         } else {
             start()
         }
-        viewModel.getOpponentInfoFromNetwork()
-        viewModel.opponentAvatarUrl.observe(this, androidx.lifecycle.Observer {
-            viewModel.getAvatar(it)
-        })
-        viewModel.opponentAvatarBitmap.observe(this, androidx.lifecycle.Observer {
-            binding.callerCircleImageView.setImageBitmap(it)
-        })
+        observers()
+        onClickListeners()
 
-        binding.disableMicrophoneCircleImageView.setOnClickListener {
-            if (viewModel.isEnabledMicrophone.value!!) {
-                viewModel.isEnabledMicrophone.value = false
-                localAudioTrack.setEnabled(false)
-            } else {
-                viewModel.isEnabledMicrophone.value = true
-                localAudioTrack.setEnabled(true)
+        audioManager = this.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager.isSpeakerphoneOn = true
+        audioManager.mode = AudioManager.MODE_NORMAL
+
+        timer = object : CountDownTimer(30000, 2000) {
+            override fun onTick(millisUntilFinished: Long) {
+                if (SignallingClient.getInstance()?.callStarted!!) {
+                    timer.cancel()
+                }
+            }
+
+            override fun onFinish() {
+                if (!SignallingClient.getInstance()?.callStarted!!) {
+                    SignallingClient.getInstance()!!.leaveRoom()
+                    onRemoteHangUp()
+                }
             }
         }
 
-        binding.disableAudioCircleImageView.setOnClickListener {
-            if (viewModel.isEnabledVolume.value!!) {
-                viewModel.isEnabledVolume.value = false
-            } else {
-                viewModel.isEnabledVolume.value = true
-            }
-        }
+        timer.start()
 
-        binding.acceptCallCardView.setOnClickListener {
-            if (SharedConfigs.isCalling) {
-                Log.d("SignallingClient", "accept call on click")
-                SignallingClient.getInstance()!!.emitCallAccepted(true)
-            } else {
-                SignallingClient.getInstance()!!.callOpponent()
-            }
-            SignallingClient.getInstance()!!.isCallingNotProgress.value = false
-        }
+        turnScreenOnAndKeyguardOff()
+        val notificationManager = NotificationManagerCompat.from(this)
+        notificationManager.cancel(1155)
 
-        binding.hangUpCallCardView.setOnClickListener {
-            SignallingClient.getInstance()!!.leaveRoom()
-            hangup()
-        }
 
     }
 
@@ -261,9 +249,9 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 
     private fun addStreamToLocalPeer() {
         //creating local mediastream
-        val stream = peerConnectionFactory.createLocalMediaStream("102")
-        stream.addTrack(localAudioTrack)
-        stream.addTrack(localVideoTrack)
+        stream = peerConnectionFactory.createLocalMediaStream("102")
+        stream!!.addTrack(localAudioTrack)
+        stream!!.addTrack(localVideoTrack)
         localPeer!!.addStream(stream)
     }
 
@@ -292,6 +280,7 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         val videoTrack = stream.videoTracks[0]
         runOnUiThread {
             try {
+                viewModel.isEnableSwitchCamera.postValue(true)
                 remoteVideoView.visibility = View.VISIBLE
                 localVideoView.visibility = View.VISIBLE
                 videoTrack.addSink(remoteVideoView)
@@ -310,7 +299,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
     }
 
     override fun onRemoteHangUp() {
-        showToast("Remote Peer hungup")
         runOnUiThread { hangup() }
     }
 
@@ -409,7 +397,12 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         }
     }
 
-//    private fun updateVideoViews(remoteVisible: Boolean) {
+    override fun onRemoteNotAccepted(answer: String) {
+        Toast.makeText(this, answer, Toast.LENGTH_SHORT).show()
+        onRemoteHangUp()
+    }
+
+    //    private fun updateVideoViews(remoteVisible: Boolean) {
 //        runOnUiThread {
 //            var params = localVideoView.layoutParams
 //            if (remoteVisible) {
@@ -426,7 +419,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
 //    }
 
     private fun hangup() {
-        viewModel.saveCall()
         if (SignallingClient.getInstance()!!.isCallingNotProgress.value == true) {
             SignallingClient.getInstance()!!.emitCallAccepted(false)
         }
@@ -437,7 +429,6 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
                 localPeer!!.close()
             }
             localPeer = null
-            peerConnectionFactory.dispose()
 //                updateVideoViews(false)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -452,15 +443,26 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         if (localPeer != null) {
             localPeer!!.close()
         }
+        try {
+            peerConnectionFactory.dispose()
+        } catch (e: Exception) {
+            Log.i("+++++++", "$e")
+        }
         localPeer = null
+        timer.cancel()
         SharedConfigs.callingOpponentId = null
         SharedConfigs.isCallingInProgress = false
+        SharedConfigs.callRoomName = null
         SignallingClient.getInstance()!!.isCallingNotProgress.value = true
         SignallingClient.destroyInstance()
 //        if (surfaceTextureHelper != null) {
+//        stream?.dispose()
+//        stream = null
         surfaceTextureHelper.dispose()
 //            surfaceTextureHelper = null
 //        }
+
+        turnScreenOffAndKeyguardOn()
     }
 
     private fun dpToPx(dp: Int): Int {
@@ -502,8 +504,113 @@ class CallRoomActivity : AppCompatActivity(), SignallingClient.SignalingInterfac
         return null
     }
 
+    private fun changeCamera(videoCapturerAndroid: VideoCapturer?, isBackCamera: Boolean) {
+        stream!!.removeTrack(localVideoTrack)
+        videoConstraints = MediaConstraints()
+        if (videoCapturerAndroid != null) {
+            surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", rootEglBase?.eglBaseContext)
+            videoSource = peerConnectionFactory.createVideoSource(videoCapturerAndroid.isScreencast)
+            videoCapturerAndroid.initialize(surfaceTextureHelper, this, videoSource.capturerObserver)
+        }
+        localVideoTrack.removeSink(localVideoView)
+        localVideoTrack = peerConnectionFactory.createVideoTrack("100", videoSource)
+        videoCapturerAndroid?.startCapture(1024, 720, 30)
+        localVideoTrack.addSink(localVideoView)
+        stream!!.addTrack(localVideoTrack)
+        if (isBackCamera) {
+            localVideoView.setMirror(false)
+        } else {
+            localVideoView.setMirror(true)
+        }
+    }
+
+    private fun createBackCameraCapturer(enumerator: CameraEnumerator): VideoCapturer? {
+        val deviceNames = enumerator.deviceNames
+
+        Logging.d(TAG, "Looking for front facing cameras.")
+        for (deviceName in deviceNames) {
+            if (enumerator.isBackFacing(deviceName)) {
+                Logging.d(TAG, "Creating front facing camera capturer.")
+                val videoCapturer: VideoCapturer? = enumerator.createCapturer(deviceName, null)
+                if (videoCapturer != null) {
+                    return videoCapturer
+                }
+            }
+        }
+
+        Logging.d(TAG, "Looking for other cameras.")
+        for (deviceName in deviceNames) {
+            if (!enumerator.isBackFacing(deviceName)) {
+                Logging.d(TAG, "Creating other camera capturer.")
+                val videoCapturer: VideoCapturer? = enumerator.createCapturer(deviceName, null)
+                if (videoCapturer != null) {
+                    return videoCapturer
+                }
+            }
+        }
+        return null
+    }
+
+    private fun onClickListeners() {
+        binding.disableMicrophoneCircleImageView.setOnClickListener {
+            if (viewModel.isEnabledMicrophone.value!!) {
+                viewModel.isEnabledMicrophone.value = false
+                localAudioTrack.setEnabled(false)
+            } else {
+                viewModel.isEnabledMicrophone.value = true
+                localAudioTrack.setEnabled(true)
+            }
+        }
+
+        binding.disableAudioCircleImageView.setOnClickListener {
+            if (viewModel.isEnabledVolume.value!!) {
+                viewModel.isEnabledVolume.value = false
+            } else {
+                viewModel.isEnabledVolume.value = true
+            }
+        }
+
+        binding.acceptCallCardView.setOnClickListener {
+            if (SharedConfigs.isCalling) {
+                Log.d("SignallingClient", "accept call on click")
+                SignallingClient.getInstance()!!.emitCallAccepted(true)
+            } else {
+                SignallingClient.getInstance()!!.callOpponent()
+            }
+            SignallingClient.getInstance()!!.isCallingNotProgress.value = false
+        }
+
+        binding.hangUpCallCardView.setOnClickListener {
+            SignallingClient.getInstance()!!.leaveRoom()
+            onRemoteHangUp()
+//            hangup()
+        }
+
+        binding.switchCamera.setOnClickListener {
+            if (viewModel.isFrontCamera.value!!) {
+                viewModel.isFrontCamera.value = false
+//                localVideoTrack.dispose()
+                changeCamera(createBackCameraCapturer(Camera1Enumerator(false)), true)
+            } else {
+                viewModel.isFrontCamera.value = true
+                changeCamera(createCameraCapturer(Camera1Enumerator(false)), false)
+            }
+        }
+    }
+
+    private fun observers() {
+        SharedConfigs.userRepository.getUserInformation(SharedConfigs.callingOpponentId).observe(this, androidx.lifecycle.Observer { user ->
+            viewModel.opponentInformation.value = user
+            viewModel.opponentAvatarUrl.value = user?.avatarURL
+            SharedConfigs.userRepository.getAvatar(user?.avatarURL).observe(this, androidx.lifecycle.Observer {
+                viewModel.opponentAvatarBitmap.value = it
+            })
+        })
+    }
+
     companion object {
         private const val TAG = "MainActivity"
+        private const val ALL_PERMISSIONS_CODE = 1
 //        val socket = SocketManager.getErosSocketInstance()!!
     }
 }

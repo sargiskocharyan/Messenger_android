@@ -13,7 +13,6 @@ class ResponseUrls {
         const val login = "login"
         const val updateUser = "updateuser"
         const val verifyToken = "tokenExists"
-        const val allUniversity = "university/all"
         const val contacts = "contacts"
         const val searchContacts = "findusers"
         const val addContact = "addcontact"
@@ -27,6 +26,16 @@ class ResponseUrls {
         const val userInfoById = "user"
         const val onlineUsers = "onlineusers"
         const val removeContact = "removecontact"
+        const val hideData = "hidedata"
+        const val usernameExists = "usernameExists"
+        const val callHistory = "callhistory"
+        const val call = "call"
+        const val registerDevice = "registerdevice"
+        const val updateEmail = "updatemail"
+        const val verifyEmail = "verifyemail"
+        const val updatePhoneNumber = "updatephonenumber"
+        const val verifyPhoneNumber = "verifyphonenumber"
+        const val readCallHistory = "readcallhistory"
 
 //        users/me/avatar
 //        users/5ee76c90bfa0980017a39013/avatar
@@ -38,18 +47,20 @@ object MyTime {
     const val threeMinutes = 180000L
 }
 
+object ChanelConstants {
+    const val CHANNEL_ID = "channel_id"
+    const val MESSAGE_CHANNEL_ID = "message_channel_id"
+    const val CALL_CHANNEL_ID = "call_channel_id"
+    val callVibratePattern = longArrayOf(500, 500, 500, 500, 500, 500, 500, 500, 500)
+//    const val
+}
+
 class SharedPrefConstants {
     companion object {
         const val sharedPrefCreate = "messengerAuth"
-        const val sharedPrefMail = "mail"
-        const val sharedPrefIsMailExist = "isMailExist"
         const val sharedPrefToken = "sharedToken"
-        const val sharedPrefCode = "code"
         const val sharedPrefDarkMode = "darkMode"
-        const val sharedPrefReceiverID = "receiverID"
-        const val sharedPrefIsContacts = "isContacts"
         const val sharedPrefAppLang = "appLanguage"
-        const val sharedPrefReceiverAvatar = "receiverAvatar"
     }
 }
 
@@ -63,9 +74,10 @@ class MyHeaders {
 
 class ValidationConstants {
     companion object {
-        val NAME_REGEX = Pattern.compile("[a-zA-Z]{2,31}")
-        val LAST_NAME_REGEX = Pattern.compile("[a-zA-Z]{2,31}")
-        val USERNAME_REGEX = Pattern.compile("^[a-zA-Z0-9](_(?!(\\.|_|-))|\\.(?!(_|-|\\.))|-(?!(\\.|_|-))|[a-zA-Z0-9]){2,18}[a-zA-Z0-9]\$")
+        val NAME_REGEX: Pattern = Pattern.compile("[a-zA-Z]{2,31}")
+        val LAST_NAME_REGEX: Pattern = Pattern.compile("[a-zA-Z]{2,31}")
+        val USERNAME_REGEX: Pattern = Pattern.compile("^[a-zA-Z0-9](_(?!(\\.|_|-))|\\.(?!(_|-|\\.))|-(?!(\\.|_|-))|[a-zA-Z0-9]){2,18}[a-zA-Z0-9]\$")
+        val PHONE_NUMBER_REGEX: Pattern = Pattern.compile("([+])[0-9]{2,31}")
     }
 }
 
@@ -96,5 +108,10 @@ enum class MyFragments {
     INFORMATION,
     CONTACTS,
     CHAT_ROOM,
-    OPPONENT_INFORMATION
+    OPPONENT_INFORMATION,
+    UPDATE_INFORMATION,
+    USER_IMAGE,
+    CALL_INFORMATION,
+    UPDATE_EMAIL,
+    UPDATE_PHONE_NUMBER
 }

@@ -43,26 +43,26 @@ class UserTokenRepository(private val userTokenDao: UserTokenDao) {
     }
 }
 
-class UserCallsRepository(private val userCallsDao: UserCallsDao) {
-    fun getUserCalls() = userCallsDao.getUserCalls()
-    val getUserCalls: LiveData<List<UserCalls>> = userCallsDao.getUserCalls()
-    val getLastCall = userCallsDao.getLastCall()
-    fun getCallByTime(time: Long) = userCallsDao.getCallByTime(time)
-
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
-    suspend fun insert(userCalls: UserCalls) {
-        userCallsDao.insert(userCalls)
-    }
-
-    suspend fun deleteCallByTime(time: Long) {
-        userCallsDao.deleteCallByTime(time)
-    }
-
-    suspend fun delete() {
-        userCallsDao.deleteAll()
-    }
-}
+//class UserCallsRepository(private val userCallsDao: UserCallsDao) {
+//    fun getUserCalls() = userCallsDao.getUserCalls()
+//    val getUserCalls: LiveData<List<UserCalls>> = userCallsDao.getUserCalls()
+//    val getLastCall = userCallsDao.getLastCall()
+//    fun getCallByTime(time: Long) = userCallsDao.getCallByTime(time)
+//
+//    @Suppress("RedundantSuspendModifier")
+//    @WorkerThread
+//    suspend fun insert(userCalls: UserCalls) {
+//        userCallsDao.insert(userCalls)
+//    }
+//
+//    suspend fun deleteCallByTime(time: Long) {
+//        userCallsDao.deleteCallByTime(time)
+//    }
+//
+//    suspend fun delete() {
+//        userCallsDao.deleteAll()
+//    }
+//}
 
 class SavedUserRepository(private val savedUserDao: SavedUserDao) {
     fun getUserById(id: String) = savedUserDao.getUserById(id)
@@ -83,7 +83,7 @@ class SavedUserRepository(private val savedUserDao: SavedUserDao) {
 }
 
 class UserChatsRepository(private val userChatsDao: UserChatsDao) {
-    val getUserAllChats: List<Chat> = userChatsDao.getAllChats()
+    val getUserAllChats: List<Chat>? = userChatsDao.getAllChats()
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread

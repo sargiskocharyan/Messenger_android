@@ -1,39 +1,27 @@
 package com.example.dynamicmessenger.userHome.adapters
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.graphics.BitmapFactory
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.observe
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.LoadAvatarApi
 import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.userChatRoom.fragments.ChatRoomFragment
-import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
-import com.example.dynamicmessenger.userDataController.database.DiskCache
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.dynamicmessenger.utils.Utils
+import com.example.dynamicmessenger.utils.observeOnceWithoutOwner
 
 
-class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
+class UserChatsAdapter(val context: Context) : RecyclerView.Adapter<UserChatsAdapter.UserChatsViewHolder>(){
     var data = mutableListOf<Chat>()
-    private val coroutineScope = CoroutineScope(job + Dispatchers.Main)
-    private val diskLruCache = DiskCache.getInstance(context)
 
     fun setAdapterDataNotify(newList: List<Chat>) {
         data.clear()
@@ -55,75 +43,44 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserChatsViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.chats_item_view, parent, false)
+            .inflate(R.layout.item_view_chats, parent, false)
         return UserChatsViewHolder(view, context)
     }
 
 
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: UserChatsViewHolder, position: Int) {
         val item = data[position]
-        val timeInHours: String
-        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        format.timeZone = TimeZone.getTimeZone("UTC")
         val chatTime = item.message?.createdAt ?: item.chatCreateDay
-        try {
-            val date: Date = format.parse(chatTime)!!
-            val currentDate: Date = Calendar.getInstance().time
-            if ((currentDate.day == date.day) && (currentDate.month == date.month) && (currentDate.year == date.year)) {
-                val newFormat = SimpleDateFormat("HH:mm")
-                timeInHours = newFormat.format(date)
-                holder.messageTime.text = timeInHours
-            } else if ((currentDate.day != date.day) || (currentDate.month != date.month) && (currentDate.year == date.year)) {
-                val newFormat = SimpleDateFormat("MMMM-dd")
-                timeInHours = newFormat.format(date)
-                holder.messageTime.text = timeInHours
-            } else {
-                holder.messageTime.setText(R.string.long_time_ago)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
+        holder.messageTime.text = Utils.dateConverter(chatTime)
         holder.name.text = item.name ?: item.username
         holder.chat = item
         holder.lastname.text = item.lastname
-        holder.lastMessage.text = item.message?.text
+        if (item.message?.type == "call") {//TODO change for all types
+            holder.lastMessage.text = "${item.message.call?.type} call ${item.message.call?.duration ?: ""}"
+        } else {
+            holder.lastMessage.text = item.message?.text
+        }
         if (item.recipientAvatarURL != null) {
-            getAvatar(holder.chatUserImageView, item.recipientAvatarURL)
+            SharedConfigs.userRepository.getAvatar(item.recipientAvatarURL).observeOnceWithoutOwner(
+                Observer {
+                    if (it != null) {
+                        holder.chatUserImageView.setImageBitmap(it)
+                    } else {
+                        holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
+                    }
+                })
         } else  {
             holder.chatUserImageView.setImageResource(R.drawable.ic_user_image)
         }
         SharedConfigs.onlineUsers?.let {onlineUsers ->
-            onlineUsers.observeForever {
+            onlineUsers.observe((context as AppCompatActivity), Observer {
                 if (it.contains(holder.chat!!.id)) {
                     holder.chatUserOnlineStatus.visibility = View.VISIBLE
                 } else {
                     holder.chatUserOnlineStatus.visibility = View.INVISIBLE
                 }
-            }
-        }
-    }
-
-    private fun getAvatar(imageView: ImageView, recipientAvatarURL: String?) {
-        coroutineScope.launch {
-            if (recipientAvatarURL != null) {
-                try {
-                    if (diskLruCache.get(recipientAvatarURL) != null) {
-                        imageView.setImageBitmap(diskLruCache.get(recipientAvatarURL)!!)
-                    } else {
-                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(recipientAvatarURL)
-                        if (response.isSuccessful) {
-                            val inputStream = response.body()!!.byteStream()
-                            val bitmap = BitmapFactory.decodeStream(inputStream)
-                            diskLruCache.put(recipientAvatarURL, bitmap)
-                            imageView.setImageBitmap(bitmap)
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.i("+++exception", e.toString())
-                }
-            }
+            })
         }
     }
 
@@ -138,12 +95,12 @@ class UserChatsAdapter(val context: Context, job: Job) : RecyclerView.Adapter<Us
         val chatUserOnlineStatus: ImageView = itemView.findViewById(R.id.chatUserOnlineStatus)
         init {
             itemView.setOnClickListener {
+                HomeActivity.receiverID = chat!!.id
                 (context as AppCompatActivity?)!!.supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.fragmentContainer , ChatRoomFragment())
                     .addToBackStack(null)
                     .commit()
-                HomeActivity.receiverID = chat!!.id
             }
         }
     }

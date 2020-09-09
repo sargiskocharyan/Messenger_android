@@ -1,42 +1,38 @@
 package com.example.dynamicmessenger.activitys
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlertDialog
-import android.app.NotificationManager
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.viewModels.HomeActivityViewModel
+import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.MyTime
-import com.example.dynamicmessenger.common.ResponseUrls
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.network.UserTokenVerifyApi
-import com.example.dynamicmessenger.network.authorization.models.Chat
 import com.example.dynamicmessenger.network.authorization.models.User
-import com.example.dynamicmessenger.network.chatRooms.SocketManager
-import com.example.dynamicmessenger.userCalls.CallRoomActivity
-import com.example.dynamicmessenger.userCalls.SocketEventsForVideoCalls
 import com.example.dynamicmessenger.userDataController.SharedPreferencesManager
 import com.example.dynamicmessenger.userDataController.database.SignedUserDatabase
-import com.example.dynamicmessenger.userDataController.database.UserCalls
 import com.example.dynamicmessenger.userDataController.database.UserTokenDao
 import com.example.dynamicmessenger.userDataController.database.UserTokenRepository
-import com.example.dynamicmessenger.userHome.fragments.*
+import com.example.dynamicmessenger.userHome.fragments.UserCallFragment
+import com.example.dynamicmessenger.userHome.fragments.UserChatFragment
+import com.example.dynamicmessenger.userHome.fragments.UserInformationFragment
+import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.LocalizationUtil
-import com.example.dynamicmessenger.utils.MyAlertMessage
-import com.example.dynamicmessenger.utils.NotificationMessages
-import com.github.nkzawa.socketio.client.IO
-import com.github.nkzawa.socketio.client.Socket
+import com.example.dynamicmessenger.utils.notifications.RemoteNotificationManager
+import com.example.dynamicmessenger.utils.observeOnce
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -49,12 +45,11 @@ class HomeActivity : AppCompatActivity() {
     private var activityJob = Job()
     private val coroutineScope = CoroutineScope(activityJob + Dispatchers.Main)
     private lateinit var selectedFragment: Fragment
-    private lateinit var socketManager: SocketManager
-    private lateinit var mSocket: Socket
     private lateinit var viewModel: HomeActivityViewModel
     private lateinit var tokenDao: UserTokenDao
     private lateinit var tokenRep: UserTokenRepository
 
+    @SuppressLint("HardwareIds")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -65,79 +60,72 @@ class HomeActivity : AppCompatActivity() {
         tokenDao = SignedUserDatabase.getUserDatabase(this)!!.userTokenDao()
         tokenRep = UserTokenRepository(tokenDao)
 
-        viewModel.repeat()
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("FireBase", "getInstanceId failed", task.exception)
+                return@OnCompleteListener
+            }
 
-        //socket
-        socketManager = SocketManager
-        try {
-            mSocket = socketManager.getSocketInstance()!!
-        } catch (e: Exception){
-            //TODO: Use TAGS
-            Log.e("+++", "HomeActivity Socket $e")
+            // Get new Instance ID token
+            val token = task.result?.token
+
+            // Log and toast
+//            val msg = getString(R.string.msg_token_fmt, token)
+
+            Log.d("FireBase", token)
+//            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+        })
+        val androidId: String = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+        SharedConfigs.deviceUUID = androidId
+        RemoteNotificationManager.registerDeviceToken(androidId)
+
+
+        //TODO change badge for all icons
+
+        val badge = bottomNavBar.getOrCreateBadge(R.id.call)
+        when (val missedCallHistorySize = SharedConfigs.signedUser?.missedCallHistory?.size) {
+            0, null -> {
+                badge.isVisible = false
+                Log.i("+++", "missed Call History Size $missedCallHistorySize")
+            }
+            else -> {
+                badge.isVisible = true
+                badge.number = missedCallHistorySize
+                Log.i("+++", "missed Call History Size $missedCallHistorySize")
+            }
         }
-        mSocket.connect()
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        mSocket.on("message", socketManager.onMessageForNotification(Activity()){
-            try {
-                Log.i("+++mSocket", selectedFragment.toString())
-                if (selectedFragment != UserChatFragment() && it.sender.id != SharedConfigs.signedUser?._id ?: true){
-                    NotificationMessages.setNotificationMessage(it.sender.name, it.text!!, this, manager)
+
+        SharedConfigs.appLang.value?.value?.let { LocalizationUtil.setApplicationLocale(this, it) }
+        SharedConfigs.currentFragment.observe(this, androidx.lifecycle.Observer {
+            when (it) {
+                MyFragments.CALLS,
+                MyFragments.CHATS,
+                MyFragments.CONTACTS,
+                MyFragments.INFORMATION -> {
+                    bottomNavBar.visibility = View.VISIBLE
                 }
-            } catch (e: Exception) {
-                Log.i("+++catch", e.toString())
+                else -> bottomNavBar.visibility = View.GONE
             }
+            Log.i("+++", "current fragment = $it")
         })
 
-        mSocket.on("callAccepted") {
-            socketManager.onCallAccepted(it)
-            Log.d("SignallingClientAcc", "Home activity call accepted: args = " + Arrays.toString(it))
-        }
-        mSocket.on("offer") {
-            socketManager.onOffer(it)
-            Log.d("SignallingClientAcc", "Home activity offer ")
-        }
-        mSocket.on("answer") {
-            socketManager.onAnswer(it)
-            Log.d("SignallingClientAcc", "Home activity answer ")
-        }
-        mSocket.on("candidates") {
-            socketManager.onCandidate(it)
-            Log.d("SignallingClientAcc", "Home activity candidates ")
-        }
-        mSocket.on("callEnded") {
-            socketManager.onCallEnded()
-            Log.d("SignallingClientAcc", "Home activity call Ended ")
-        }
-        mSocket.on("call") {
-            val currentDate = System.currentTimeMillis()
-            val opponentUser = viewModel.getUserById(it[0].toString())
-            opponentUser?.let {user ->
-                val userCalls = UserCalls(user._id, user.name , user.lastname, user.username, user.avatarURL, currentDate, 2)
-                viewModel.saveCall(userCalls)
+        SharedConfigs.userRepository.getUserInformation(SharedConfigs.signedUser?._id).observeOnce(this, androidx.lifecycle.Observer { user ->
+            user?.let {
+                SharedConfigs.signedUser = ClassConverter.userToSignedUser(it).apply {
+                    deviceRegistered = SharedConfigs.signedUser?.deviceRegistered!!
+                }
             }
-            if (!SharedConfigs.isCallingInProgress) {
-                SharedConfigs.callingOpponentId = it[0].toString()
-                SharedConfigs.isCalling = true
-                val intent = Intent(this, CallRoomActivity::class.java)
-                startActivity(intent)
-            } else {
-                mSocket.emit("callAccepted", SharedConfigs.callingOpponentId, false)
-                NotificationMessages.setNotificationMessage("Incoming Call", "Incoming Call", this, manager)
-            }
-        }
-
-        SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
-            LocalizationUtil.setApplicationLocale(this, it.value)
         })
+//        SharedConfigs.appLang.observe(this, androidx.lifecycle.Observer {
+//        })
     }
 
-//    override fun attachBaseContext(base: Context?) {
-//        super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value!!.value))
-//    }
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(LocalizationUtil.updateResources(base!!, SharedConfigs.appLang.value!!.value))
+    }
 
     override fun onDestroy() {
         super.onDestroy()
-        socketManager.closeSocket()
         activityJob.cancel()
     }
 
@@ -161,7 +149,7 @@ class HomeActivity : AppCompatActivity() {
     private fun tokenCheck(context: Context?, token: String) {
         coroutineScope.launch {
             try {
-                val response = UserTokenVerifyApi.retrofitService.userTokenResponseAsync(token)
+                val response = UserTokenVerifyApi.retrofitService.verifyUserToken(token)
                 val tokenExpire = tokenRep.tokenExpire
                 val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                 val date: Date = format.parse(tokenExpire!!)!!
@@ -171,13 +159,12 @@ class HomeActivity : AppCompatActivity() {
                     SharedConfigs.deleteToken()
                     SharedConfigs.deleteSignedUser()
                     AlertDialog.Builder(context)
-                        .setTitle("Error")
-                        .setMessage("Your seans is out of time")
-                        .setPositiveButton("ok") { _, _ ->
+                        .setTitle(getString(R.string.error_message))
+                        .setMessage(getString(R.string.your_session_expires_please_log_in_again))
+                        .setPositiveButton(getString(R.string.ok)) { _, _ ->
                             val intent = Intent(context, MainActivity::class.java)
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                             startActivity(intent)
+                            finish()
                         }
                         .create().show()
                 }
@@ -186,6 +173,10 @@ class HomeActivity : AppCompatActivity() {
             }
         }
     }
+
+//    private fun getUserContacts() {
+//        SharedConfigs
+//    }
 
     companion object {
         var opponentUser: User? = null
@@ -203,7 +194,7 @@ class HomeActivity : AppCompatActivity() {
                 field = value
                 Log.i("+++", "is Add Contacts set $value")
             }
-        var callTime: Long? = null
+        var callId: String? = null
             set(value) {
                 field = value
                 Log.i("+++", "call Time set $value")

@@ -14,7 +14,8 @@
     <color name="appMainColour">#805EFB</color>
     <color name="appMainBlack">#000000</color>
     <color name="white">#FFFFFF</color>
-    <color name="toolBarColor">#F9F9F9</color>
+    <color name="dayNightBlack">#000000</color>
+    <color name="toolBarColor">#FFFFFF</color>
     <color name="transparent">#00000000</color>
     <color name="transparentik">#7A000000</color>
     <color name="greenOnline">#7DCC01</color>

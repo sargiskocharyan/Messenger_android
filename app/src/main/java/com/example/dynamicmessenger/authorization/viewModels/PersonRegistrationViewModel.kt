@@ -1,7 +1,6 @@
 package com.example.dynamicmessenger.authorization.viewModels
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import android.view.View
 import androidx.databinding.Bindable
@@ -13,16 +12,16 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.SharedConfigs
-import com.example.dynamicmessenger.network.UniversityApi
+import com.example.dynamicmessenger.network.CheckUsernameExistsApi
 import com.example.dynamicmessenger.network.UpdateUserApi
-import com.example.dynamicmessenger.network.authorization.models.UniversityProperty
 import com.example.dynamicmessenger.network.authorization.models.UpdateUserTask
-import com.example.dynamicmessenger.userDataController.database.SignedUser
+import com.example.dynamicmessenger.network.authorization.models.UsernameExistsTask
 import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
 
 class PersonRegistrationViewModel(application: Application): AndroidViewModel(application), Observable {
+    val context = application
 
     @Bindable
     val userEnteredName = MutableLiveData<String>()
@@ -30,13 +29,33 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
     val userEnteredLastName = MutableLiveData<String>()
     @Bindable
     val userEnteredUsername = MutableLiveData<String>()
-    val userEnteredUniversity = MutableLiveData<String>()
+    @Bindable
+    val userEnteredGender = MutableLiveData<String?>()
+    val isValidUsername = MutableLiveData<Boolean?>()
+    val isValidName = MutableLiveData<Boolean>()
+    val isValidLastName = MutableLiveData<Boolean>()
     val isValidParameters = MutableLiveData<Boolean>()
+
+    init {
+        isValidUsername.value = false
+        isValidName.value = true
+        isValidLastName.value = true
+    }
+
+    fun changeIsValidParameters() {
+        isValidParameters.value = isValidUsername.value ?: false && isValidName.value!! && isValidLastName.value!!
+    }
 
     fun updateUserInformation(view: View) {
         viewModelScope.launch {
             try {
-                val usernameEditText = UpdateUserTask(userEnteredName.value, userEnteredLastName.value, userEnteredUsername.value, userEnteredUniversity.value)
+                if (userEnteredName.value?.isEmpty()!!) {userEnteredName.value = null}
+                if (userEnteredLastName.value?.isEmpty()!!) {userEnteredLastName.value = null}
+                val selectedGender = when (userEnteredGender.value) {
+                    context.resources.getString(R.string.male) -> "male"
+                    else -> "female"
+                }
+                val usernameEditText = UpdateUserTask(userEnteredName.value, userEnteredLastName.value, userEnteredUsername.value, gender = selectedGender)
                 val response = UpdateUserApi.retrofitService.updateUserResponseAsync(SharedConfigs.token ,usernameEditText)
                 if (response.isSuccessful) {
                     val user = ClassConverter.userToSignedUser(response.body()!!)
@@ -52,21 +71,23 @@ class PersonRegistrationViewModel(application: Application): AndroidViewModel(ap
         }
     }
 
-    fun getAllUniversity(context: Context?, closure: (List<UniversityProperty>) -> Unit){
-        var allUniversity: List<UniversityProperty>? = null
+    fun checkUsernameExists(): MutableLiveData<Boolean> {
+        val isUsernameExists = MutableLiveData<Boolean>()
         viewModelScope.launch {
             try {
-                val response = UniversityApi.retrofitService.universityResponseAsync(SharedConfigs.token)
+                val response = CheckUsernameExistsApi.retrofitService.checkUsernameExists(SharedConfigs.token, UsernameExistsTask(userEnteredUsername.value))
                 if (response.isSuccessful) {
-                    allUniversity = response.body()
-                    closure(allUniversity!!)
-                } else {
-                    MyAlertMessage.showAlertDialog(context, "Get all university error")
+                    if (response.body()!!.usernameExists) {
+                        isUsernameExists.postValue(false)
+                    } else {
+                        isUsernameExists.postValue(true)
+                    }
                 }
             } catch (e: Exception) {
-                MyAlertMessage.showAlertDialog(context, "Check your internet connection")
+
             }
         }
+        return isUsernameExists
     }
 
     fun skipRegistration(view: View) {

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="64dp"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    android:background="#282e31">-->
+
+<!--&lt;!&ndash;    <ImageView&ndash;&gt;-->
+<!--&lt;!&ndash;        android:id="@+id/notificationCallAvatarCircleImageView"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_width="42dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_height="42dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_marginTop="20dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_marginStart="20dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_alignParentTop="true"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_alignParentStart="true"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layerType="hardware"&ndash;&gt;-->
+<!--&lt;!&ndash;        tools:src="#0f0"/>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <ImageView&ndash;&gt;-->
+<!--&lt;!&ndash;        android:id="@+id/icon"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_width="16dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_height="16dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_alignBottom="@+id/notificationCallAvatarCircleImageView"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_alignEnd="@+id/notificationCallAvatarCircleImageView"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_marginEnd="-2dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_marginBottom="-2dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:src="@drawable/ic_armenia"/>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    <LinearLayout&ndash;&gt;-->
+<!--&lt;!&ndash;        android:id="@+id/text_wrap"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_toEndOf="@+id/notificationCallAvatarCircleImageView"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_alignTop="@+id/notificationCallAvatarCircleImageView"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_alignBottom="@+id/notificationCallAvatarCircleImageView"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_marginTop="-12dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_marginBottom="-12dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_marginStart="12dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:layout_marginEnd="20dp"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:gravity="center_vertical|left"&ndash;&gt;-->
+<!--&lt;!&ndash;        android:orientation="vertical"&ndash;&gt;-->
+<!--&lt;!&ndash;        tools:ignore="RtlHardcoded">&ndash;&gt;-->
+
+<!--&lt;!&ndash;        <TextView&ndash;&gt;-->
+<!--&lt;!&ndash;            android:id="@+id/notificationCallName"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:textSize="17sp"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:singleLine="true"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:ellipsize="end"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:textColor="#FFF"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:fontFamily="sans-serif-medium"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:gravity="left"&ndash;&gt;-->
+<!--&lt;!&ndash;            tools:text="Name"/>&ndash;&gt;-->
+
+<!--&lt;!&ndash;        <TextView&ndash;&gt;-->
+<!--&lt;!&ndash;            android:id="@+id/notificationCallTitleTextView"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:textSize="14sp"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:textColor="#FFF"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:singleLine="true"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:ellipsize="end"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:gravity="left"&ndash;&gt;-->
+<!--&lt;!&ndash;            tools:text="Dynamic Call"/>&ndash;&gt;-->
+
+<!--&lt;!&ndash;        <TextView&ndash;&gt;-->
+<!--&lt;!&ndash;            android:id="@+id/subtitle"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_width="match_parent"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:textSize="14sp"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:textColor="#6BFFFFFF"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:singleLine="true"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:ellipsize="end"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:gravity="left"&ndash;&gt;-->
+<!--&lt;!&ndash;            tools:text="to Account Name"/>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    </LinearLayout>&ndash;&gt;-->
+
+<!--    <LinearLayout-->
+<!--        android:id="@+id/buttons"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="64dp"-->
+<!--        android:paddingTop=".3dp"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:orientation="horizontal">-->
+
+<!--        <FrameLayout-->
+<!--            android:id="@+id/notificationCallDeclineButton"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_margin="2dp"-->
+<!--            android:layout_weight="1">-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/decline_text"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:textAllCaps="true"-->
+<!--                android:gravity="center"-->
+<!--                android:textSize="14sp"-->
+<!--                android:textColor="#ef5050"-->
+<!--                android:fontFamily="sans-serif-medium"-->
+<!--                android:drawableLeft="@drawable/ic_baseline_call_end_24"-->
+<!--                android:drawablePadding="12dp"-->
+<!--                android:text="decline"/>-->
+
+<!--        </FrameLayout>-->
+
+<!--        <FrameLayout-->
+<!--            android:id="@+id/notificationCallAcceptButton"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_margin="2dp"-->
+<!--            android:layout_weight="1">-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/answer_text"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:textAllCaps="true"-->
+<!--                android:gravity="center"-->
+<!--                android:textSize="14sp"-->
+<!--                android:textColor="#5ee067"-->
+<!--                android:drawableLeft="@drawable/ic_baseline_call_24"-->
+<!--                android:drawablePadding="12dp"-->
+<!--                android:text="accept"/>-->
+
+<!--        </FrameLayout>-->
+
+<!--    </LinearLayout>-->
+
+<!--</RelativeLayout>-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="64dp"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:background="?android:attr/windowBackground">
+
+<LinearLayout
+    android:id="@+id/buttons"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:layout_alignParentBottom="true"
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:id="@+id/notificationCallDeclineButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5">
+
+    <ImageView
+        android:id="@+id/hangUpCallCardView"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@drawable/background_for_buttons"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:layout_marginStart="10dp"
+        android:layout_gravity="start|center_vertical"
+        android:padding="10dp"
+        android:src="@drawable/ic_baseline_call_end_24" />
+
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginEnd="15dp"
+        android:layout_gravity="center">
+        <ImageView
+            android:id="@+id/notificationCallImage"
+            android:src="@drawable/ic_user_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:id="@+id/text_wrap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/notificationCallName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:text="Name"/>
+
+            <TextView
+                android:id="@+id/notificationCallTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:text="Dynamic Call"/>
+
+        </LinearLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/notificationCallAcceptButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5">
+
+
+    <ImageView
+        android:id="@+id/acceptCallCardView"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@drawable/background_for_buttons"
+        android:backgroundTint="@android:color/holo_green_light"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="10dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_baseline_call_24" />
+
+    </FrameLayout>
+
+</LinearLayout>
+
+</RelativeLayout>

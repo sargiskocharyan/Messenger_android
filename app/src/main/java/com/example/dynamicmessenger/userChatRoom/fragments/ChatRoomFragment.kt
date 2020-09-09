@@ -1,91 +1,65 @@
 package com.example.dynamicmessenger.userChatRoom.fragments
 
+import android.graphics.Rect
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.activitys.HomeActivity
+import com.example.dynamicmessenger.common.MyFragments
 import com.example.dynamicmessenger.common.SharedConfigs
 import com.example.dynamicmessenger.databinding.FragmentChatRoomBinding
+import com.example.dynamicmessenger.network.authorization.models.ChatRoomMessage
+import com.example.dynamicmessenger.network.authorization.models.MessageStatus
 import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.userChatRoom.adapters.ChatRoomAdapter
 import com.example.dynamicmessenger.userChatRoom.viewModels.ChatRoomViewModel
-import com.github.nkzawa.socketio.client.Socket
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class ChatRoomFragment : Fragment() {
     private lateinit var viewModel: ChatRoomViewModel
-    private lateinit var mSocket: Socket
     private lateinit var binding: FragmentChatRoomBinding
     private lateinit var adapter: ChatRoomAdapter
-    private lateinit var socketManager: SocketManager
+    private var scrollUpWhenKeyboardOpened = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentChatRoomBinding.inflate(layoutInflater)
-        viewModel = ViewModelProvider(this).get(ChatRoomViewModel::class.java)
         val myID = SharedConfigs.signedUser!!._id
-//        val receiverID = SharedPreferencesManager.getReceiverID(requireContext())
-//        val receiverAvatar = SharedPreferencesManager.getReceiverAvatarUrl(requireContext())
         val receiverID = HomeActivity.receiverID!!
-        val receiverInfo = viewModel.getUserById(receiverID)
-        val receiverAvatar = receiverInfo?.avatarURL
-        adapter = ChatRoomAdapter(requireContext(), myID)
         val linearLayoutManager = LinearLayoutManager(requireContext())
+        viewModel = ViewModelProvider(this).get(ChatRoomViewModel::class.java)
+        adapter = ChatRoomAdapter(requireContext(), myID)
+        binding = FragmentChatRoomBinding.inflate(layoutInflater)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
         binding.chatRecyclerView.adapter = adapter
-
-        val bottomNavBar: BottomNavigationView =
-            requireActivity().findViewById(R.id.bottomNavigationView)
-        bottomNavBar.visibility = View.GONE
-
-        //Toolbar
-        setHasOptionsMenu(true)
-        val toolbar: Toolbar = binding.chatRoomToolbar
-        configureTopNavBar(toolbar)
-        binding.userChatToolbarTitle.text = receiverInfo?.username ?: ""
-
-        viewModel.getAvatar(receiverAvatar) {
-            adapter.receiverImage = it
-        }
-
-        viewModel.getOpponentInfoFromNetwork(receiverID)
-
-        val firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition()
         binding.chatRecyclerView.layoutManager = linearLayoutManager
-
-        updateRecyclerView(receiverID)
         binding.root.setHasTransientState(true)
 
+        SharedConfigs.currentFragment.value = MyFragments.CHAT_ROOM
+        //Toolbar
+        setHasOptionsMenu(true)
+        configureTopNavBar(binding.chatRoomToolbar)
+        observers(receiverID, linearLayoutManager)
+        updateRecyclerView(receiverID)
+
         //socket
-        socketManager = SocketManager
+        SocketManager.addChatRoomFragment(this)
 
-        try {
-            mSocket = socketManager.getSocketInstance()!!
-        } catch (e: Exception) {
-            Log.i("+++", "ChatRoomFragment Socket $e")
-        }
-//        mSocket.connect()
-        mSocket.on("message", socketManager.onMessage(adapter, receiverID, activity))
         binding.sendMessageButton.setOnClickListener {
-            socketManager.sendMessage(receiverID, binding.sendMessageEditText)
+            SocketManager.sendMessage(receiverID, viewModel.userEnteredMessage)
         }
-
-        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            override fun onChanged() {
-                super.onChanged()
-                scrollToBottom(binding, adapter)
-            }
-        })
-
 
         return binding.root
     }
@@ -97,25 +71,83 @@ class ChatRoomFragment : Fragment() {
         super.onPrepareOptionsMenu(menu)
     }
 
-//    override fun onDestroyView() {
-//        super.onDestroyView()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        SocketManager.removeChatRoomFragment()
 //        HomeActivity.isAddContacts = false
-//    }
+    }
+
+    private fun observers(receiverID: String, linearLayoutManager: LinearLayoutManager) {
+        SharedConfigs.userRepository.getUserInformation(receiverID).observe(viewLifecycleOwner, Observer {user ->
+            if (user != null) {
+                HomeActivity.opponentUser = user
+                viewModel.toolbarOpponentUsername.value = user.username ?: ""
+                SharedConfigs.userRepository.getAvatar(user.avatarURL).observe(viewLifecycleOwner, Observer {bitmap ->
+                    adapter.receiverImage = bitmap
+                })
+            }
+        })
+
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onChanged() {
+                super.onChanged()
+                scrollToBottom()
+            }
+        })
+
+        binding.chatRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                scrollUpWhenKeyboardOpened = linearLayoutManager.findLastVisibleItemPosition() > adapter.itemCount - 3
+            }
+        })
+
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener {
+            val r = Rect()
+            binding.root.getWindowVisibleDisplayFrame(r)
+            val screenHeight = binding.root.rootView.height
+            val keypadHeight: Int = screenHeight - r.bottom
+            val isVisible = keypadHeight > screenHeight * 0.15
+            if (viewModel.isKeyboardVisible.value != isVisible) {
+                viewModel.isKeyboardVisible.value = isVisible
+            }
+        }
+
+        viewModel.isKeyboardVisible.observe(viewLifecycleOwner, Observer {
+            if (it && scrollUpWhenKeyboardOpened) {
+                scrollToBottom()
+            }
+        })
+
+        viewModel.userEnteredMessage.observe(viewLifecycleOwner, Observer {
+            SocketManager.messageTyping(receiverID)
+        })
+
+        viewModel.opponentTypingTextVisibility.observe(viewLifecycleOwner, Observer {
+            if (scrollUpWhenKeyboardOpened) {
+                scrollToBottom()
+            }
+        })
+    }
 
     private fun updateRecyclerView(receiverID: String) {
-        viewModel.getMessagesFromNetwork(requireContext(), receiverID) {
-            adapter.submitList(it)
-            scrollToBottom(binding, adapter)
+        viewModel.getMessagesFromNetwork(requireContext(), receiverID) { list, statuses ->
+            adapter.submitList(list)
+            adapter.statuses.addAll(statuses)
+            val lastElementNumber = list.size - 1
+            if (list[lastElementNumber].senderId != SharedConfigs.signedUser?._id) {
+                list[lastElementNumber].senderId?.let { SocketManager.messageRead(it, list[lastElementNumber]._id) }
+            }
+            scrollToBottom()
         }
     }
 
-    private fun scrollToBottom(binding: FragmentChatRoomBinding, adapter: ChatRoomAdapter) {
+    private fun scrollToBottom() {
         binding.chatRecyclerView.scrollToPosition(adapter.itemCount - 1)
     }
 
     private fun configureTopNavBar(toolbar: Toolbar) {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        toolbar.elevation = 10.0F
         toolbar.setNavigationOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
@@ -126,6 +158,32 @@ class ChatRoomFragment : Fragment() {
                 ?.addToBackStack(null)
                 ?.commit()
             return@setOnMenuItemClickListener true
+        }
+    }
+
+    fun receiveMessage(newMessage: ChatRoomMessage) {
+        if (HomeActivity.receiverID!! == newMessage.senderId || HomeActivity.receiverID!! == newMessage.reciever) {
+            val newData = adapter.data.toMutableList()
+            newData += newMessage
+            adapter.submitList(newData)
+            if (scrollUpWhenKeyboardOpened) {
+                scrollToBottom()
+            }
+        }
+    }
+
+    private val countDownTimer = object: CountDownTimer(2000, 1000) {
+        override fun onTick(millisUntilFinished: Long) {}
+
+        override fun onFinish() {
+            viewModel.opponentTypingTextVisibility.postValue(false)
+        }
+    }
+    fun opponentTyping(array: Array<Any>) {
+        if (HomeActivity.receiverID!! == array[0]) {
+            viewModel.opponentTypingTextVisibility.postValue(true)
+            countDownTimer.cancel()
+            countDownTimer.start()
         }
     }
 }

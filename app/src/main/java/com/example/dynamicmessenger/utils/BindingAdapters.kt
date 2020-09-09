@@ -8,6 +8,7 @@ import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
 import com.example.dynamicmessenger.R
 import com.example.dynamicmessenger.common.AppLangKeys
+import com.google.android.material.textfield.TextInputLayout
 import de.hdodenhof.circleimageview.CircleImageView
 
 //@BindingAdapter("languageIMG")
@@ -29,6 +30,15 @@ fun setTextViewVisible(textView: TextView, answer: Boolean) {
         textView.visibility = View.VISIBLE
     } else {
         textView.visibility = View.INVISIBLE
+    }
+}
+
+@BindingAdapter("setTextViewGone")
+fun setTextViewGone(textView: TextView, answer: Boolean) {
+    if (answer) {
+        textView.visibility = View.VISIBLE
+    } else {
+        textView.visibility = View.GONE
     }
 }
 
@@ -78,17 +88,17 @@ fun loginRegisterTextChange(textView: TextView, answer: Boolean) {
     }
 }
 
-@BindingAdapter("setCircleImageVisible")
-fun setCircleImageVisible(circleImage: CircleImageView, answer: Boolean) {
+@BindingAdapter("setViewVisible")
+fun setViewVisible(view: View, answer: Boolean) {
     if (answer) {
-        circleImage.visibility = View.VISIBLE
+        view.visibility = View.VISIBLE
     } else {
-        circleImage.visibility = View.INVISIBLE
+        view.visibility = View.INVISIBLE
     }
 }
 
 @BindingAdapter("setCardViewVisible")
-fun setCardViewVisible(cardView: CardView, answer: Boolean) {
+fun setCardViewVisible(cardView: View, answer: Boolean) {
     if (answer) {
         cardView.visibility = View.VISIBLE
     } else {
@@ -100,8 +110,9 @@ fun setCardViewVisible(cardView: CardView, answer: Boolean) {
 fun setCircleImageBitmap(circleImage: CircleImageView, bitmap: Bitmap?) {
     if (bitmap == null) {
         circleImage.setImageResource(R.drawable.ic_user_image)
+    } else {
+        circleImage.setImageBitmap(bitmap)
     }
-    circleImage.setImageBitmap(bitmap)
 }
 
 @BindingAdapter("setImageViewBitmap")
@@ -113,7 +124,7 @@ fun setImageViewBitmap(image: ImageView, bitmap: Bitmap?) {
 }
 
 @BindingAdapter("setMicrophoneImage")
-fun setMicrophoneImage(circleImage: CircleImageView, answer: Boolean) {
+fun setMicrophoneImage(circleImage: ImageView, answer: Boolean) {
     if (answer) {
         circleImage.setImageResource(R.drawable.ic_baseline_mic_on_24)
     } else {
@@ -122,7 +133,7 @@ fun setMicrophoneImage(circleImage: CircleImageView, answer: Boolean) {
 }
 
 @BindingAdapter("setVolumeImage")
-fun setVolumeImage(circleImage: CircleImageView, answer: Boolean) {
+fun setVolumeImage(circleImage: ImageView, answer: Boolean) {
     if (answer) {
         circleImage.setImageResource(R.drawable.ic_baseline_volume_up_24)
     } else {
@@ -136,5 +147,59 @@ fun setAddContactImage(image: ImageView, answer: Boolean) {
         image.setImageResource(R.drawable.ic_baseline_person_add_24)
     } else {
         image.setImageResource(R.drawable.ic_baseline_person_add_disabled_24)
+    }
+}
+
+@BindingAdapter("setImageVisibility")
+fun setImageVisibility(image: ImageView, answer: Boolean) {
+    if (answer) {
+        image.visibility = View.VISIBLE
+    } else {
+        image.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("setEmailErrorText")
+fun setEmailErrorText(textInputLayout: TextInputLayout, answer: Boolean) {
+    if (answer) {
+        textInputLayout.error = null
+    } else {
+        textInputLayout.error = textInputLayout.context.getString(R.string.incorrect_email)
+    }
+}
+
+@BindingAdapter("setCodeErrorText")
+fun setCodeErrorText(textInputLayout: TextInputLayout, answer: Boolean) {
+    if (answer) {
+        textInputLayout.error = null
+    } else {
+        textInputLayout.error = textInputLayout.context.getString(R.string.incorrect_code)
+    }
+}
+
+@BindingAdapter("setUsernameErrorText")
+fun setUsernameErrorText(textInputLayout: TextInputLayout, answer: Boolean?) {
+    when (answer) {
+        true -> textInputLayout.error = null
+        false -> textInputLayout.error = textInputLayout.context.getString(R.string.the_username_must_contain_at_least_4_letters)
+        null -> textInputLayout.error = textInputLayout.context.getString(R.string.this_username_is_taken)
+    }
+}
+
+@BindingAdapter("setNameErrorText")
+fun setNameErrorText(textInputLayout: TextInputLayout, answer: Boolean) {
+    if (answer) {
+        textInputLayout.error = null
+    } else {
+        textInputLayout.error = textInputLayout.context.getString(R.string.name_must_contain_at_least_2_letters)
+    }
+}
+
+@BindingAdapter("setLastNameErrorText")
+fun setLastNameErrorText(textInputLayout: TextInputLayout, answer: Boolean) {
+    if (answer) {
+        textInputLayout.error = null
+    } else {
+        textInputLayout.error = textInputLayout.context.getString(R.string.lastname_must_contain_at_least_2_letters)
     }
 }

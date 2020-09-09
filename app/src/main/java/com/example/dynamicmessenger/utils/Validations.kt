@@ -21,5 +21,9 @@ class Validations {
             return ValidationConstants.USERNAME_REGEX.matcher(username).matches()
         }
 
+        fun isPhoneNumberValid(phoneNumber: String): Boolean {
+            return ValidationConstants.PHONE_NUMBER_REGEX.matcher(phoneNumber).matches()
+        }
+
     }
 }

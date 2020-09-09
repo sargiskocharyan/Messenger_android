@@ -55,52 +55,80 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <EditText
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/usernameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="10dp"
                         android:layout_marginEnd="32dp"
                         android:ems="10"
                         android:hint="@string/username"
-                        android:inputType="textPersonName" />
+                        android:inputType="textPersonName"
+                        app:setUsernameErrorText="@{updateUserViewModel.isUsernameValid}"
+                        app:errorEnabled="true">
 
-                    <EditText
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:text="@={updateUserViewModel.userEnteredUsername}"
+                            android:background="@android:color/transparent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/nameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="10dp"
                         android:layout_marginEnd="32dp"
                         android:ems="10"
                         android:hint="@string/name"
-                        android:inputType="textPersonName" />
+                        android:inputType="textPersonName"
+                        app:setNameErrorText="@{updateUserViewModel.isNameValid}"
+                        app:errorEnabled="true">
 
-                    <EditText
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:text="@={updateUserViewModel.userEnteredName}"
+                            android:background="@android:color/transparent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/lastNameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="10dp"
                         android:layout_marginEnd="32dp"
                         android:ems="10"
                         android:hint="@string/last_name"
-                        android:inputType="textPersonName" />
+                        android:inputType="textPersonName"
+                        app:setLastNameErrorText="@{updateUserViewModel.isLastNameValid}"
+                        app:errorEnabled="true">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:text="@={updateUserViewModel.userEnteredLastName}"
+                            android:background="@android:color/transparent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="10dp"
                         android:layout_marginEnd="32dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
                             android:text="@string/hide_personal_data"
                             android:textSize="18sp"
                             app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/hidePersonalDataSwitch"
+                            app:layout_constraintHorizontal_bias="1.0"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -112,74 +140,78 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-                    <Spinner
-                        android:id="@+id/genderSpinner"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/genderTextField"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="10dp"
                         android:layout_marginEnd="32dp"
-                        android:text="@string/select_gender" />
+                        android:hint="@string/select_gender">
 
-                    <EditText
+                        <AutoCompleteTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:text="@={updateUserViewModel.userEnteredGender}"
+                            android:backgroundTint="@android:color/transparent" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/userInfoEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="32dp"
-                        android:text="info" />
-
-                    <Spinner
-                        android:id="@+id/universitySpinner"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
-                        android:layout_marginTop="10dp"
                         android:layout_marginEnd="32dp"
                         android:ems="10"
-                        android:inputType="textPersonName" />
+                        android:hint="bio"
+                        android:inputType="textPersonName">
 
-                    <Button
-                        android:id="@+id/birthDateEditText"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:text="@={updateUserViewModel.userEnteredInfo}"
+                            android:background="@android:color/transparent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!--                        <Button-->
+                    <!--                            android:id="@+id/birthDateDatePicker"-->
+                    <!--                            android:layout_width="match_parent"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_marginStart="32dp"-->
+                    <!--                            android:layout_marginTop="10dp"-->
+                    <!--                            android:layout_marginEnd="32dp"-->
+                    <!--                            android:ems="10"-->
+                    <!--                            android:text="@{updateUserViewModel.userEnteredDate}"-->
+
+                    <!--                            android:hint="@string/birth_date" />-->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/birthDateDatePicker"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="32dp"
-                        android:layout_marginTop="10dp"
                         android:layout_marginEnd="32dp"
                         android:ems="10"
-                        android:hint="@string/birth_date" />
+                        android:hint="@string/birth_date"
+                        android:inputType="date">
 
-                    <EditText
-                        android:id="@+id/editTextPhoneNumber"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="32dp"
-                        android:ems="10"
-                        android:hint="@string/number"
-                        android:inputType="phone" />
-
-                    <EditText
-                        android:id="@+id/updateEmailEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="32dp"
-                        android:text="@string/email" />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:text="@={updateUserViewModel.userEnteredDate}"
+                            android:background="@android:color/transparent"
+                            android:focusable="false"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/continueButton"
                     style="@style/ButtonStyle"
-                    android:layout_width="0dp"
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="32dp"
@@ -187,6 +219,7 @@
                     android:background="@drawable/disable_button_design"
                     android:enabled="false"
                     android:text="@string/update_information"
+                    app:backgroundTint="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout" />

@@ -1,7 +1,6 @@
 package com.example.dynamicmessenger.dialogs
 
 import android.app.Dialog
-import android.content.DialogInterface
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
@@ -13,16 +12,13 @@ class DeleteUserDialog(val myClosure: (Boolean) -> Unit): AppCompatDialogFragmen
         builder.setTitle(R.string.attention)
             .setMessage(R.string.are_you_sure_want_to_delete_your_account_your_information_will_be_lost)
             .setPositiveButton(
-                R.string.delete,
-                DialogInterface.OnClickListener { _, _ ->
-                    myClosure(true)
-                })
+                R.string.delete) { _, _ ->
+                myClosure(true)
+            }
             .setNegativeButton(
-                R.string.cancel,
-                DialogInterface.OnClickListener { _, _ ->
-                    myClosure(false)
-                }
-            )
+                R.string.cancel) { _, _ ->
+                myClosure(false)
+            }
         return builder.create()
     }
 }

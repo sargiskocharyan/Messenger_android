@@ -2,11 +2,18 @@ package com.example.dynamicmessenger.common
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.NetworkRequest
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.dynamicmessenger.network.chatRooms.SocketManager
+import com.example.dynamicmessenger.userDataController.Repository
 import com.example.dynamicmessenger.userDataController.database.*
+import com.example.dynamicmessenger.utils.NetworkUtils
+import com.github.nkzawa.socketio.client.Socket
 import java.util.*
 
 
@@ -17,11 +24,16 @@ object SharedConfigs {
     private lateinit var userRep: SignedUserRepository
     private lateinit var tokenDao: UserTokenDao
     private lateinit var tokenRep: UserTokenRepository
+    lateinit var deviceUUID: String
     var callingOpponentId: String? = null
+    var callRoomName: String? = null
     var isCalling: Boolean = false //TODO
     var isCallingInProgress: Boolean = false
     var lastFragment: MyFragments? = null
+    val currentFragment = MutableLiveData<MyFragments>()
     var onlineUsers = MutableLiveData<List<String>>()
+    lateinit var userRepository: Repository
+
     fun init(context: Context) {
         this.myContext = context
         userDao = SignedUserDatabase.getUserDatabase(context)!!.signedUserDao()
@@ -31,6 +43,8 @@ object SharedConfigs {
         signedUser = userRep.signedUser
         sharedPrefs = context.getSharedPreferences(SharedPrefConstants.sharedPrefCreate, Context.MODE_PRIVATE)
         appLang.value = setLang()
+        userRepository = Repository.getInstance(context)!!
+        token = tokenRep.getToken()
     }
 
     var signedUser: SignedUser? = null
@@ -111,4 +125,5 @@ object SharedConfigs {
     private fun getAppLanguage(): String? {
         return sharedPrefs.getString(SharedPrefConstants.sharedPrefAppLang, "")
     }
+
 }

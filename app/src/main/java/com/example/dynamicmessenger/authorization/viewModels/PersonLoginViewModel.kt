@@ -13,7 +13,7 @@ import com.example.dynamicmessenger.network.LoginApi
 import com.example.dynamicmessenger.network.MailExistApi
 import com.example.dynamicmessenger.network.RegistrationApi
 import com.example.dynamicmessenger.network.authorization.models.*
-import com.example.dynamicmessenger.userDataController.database.*
+import com.example.dynamicmessenger.network.chatRooms.SocketManager
 import com.example.dynamicmessenger.utils.ClassConverter
 import com.example.dynamicmessenger.utils.MyAlertMessage
 import kotlinx.coroutines.launch
@@ -26,11 +26,11 @@ class PersonLoginViewModel: ViewModel(), Observable {
     val hintVisibility = MutableLiveData<Boolean>()
     val isCodeValid = MutableLiveData<Boolean>()
     val progressBarVisibility = MutableLiveData<Boolean>()
-    private val _goToNextPage = MutableLiveData<Boolean>(false)
-    val goToNextPage: LiveData<Boolean> = _goToNextPage
-
     val personEmail = MutableLiveData<String>()
     val isEmailExists = MutableLiveData<Boolean>()
+
+    private val _goToNextPage = MutableLiveData<Boolean>(false)
+    val goToNextPage: LiveData<Boolean> = _goToNextPage
 
     fun loginNetwork(view: View) {
         progressBarVisibility.value = true
@@ -39,10 +39,7 @@ class PersonLoginViewModel: ViewModel(), Observable {
                 try {
                     val response = LoginApi.retrofitService.loginResponseAsync(LoginTask(personEmail.value!!, userEnteredCode.value!!))
                     if (response.isSuccessful) {
-                        //TODO:Use GsonFactory or Moshi?
-                        SharedConfigs.signedUser = ClassConverter.loginPropertyToSignedUser(response.body()!!)
-//                        SharedConfigs.token = response.body()!!.token
-                        SharedConfigs.saveToken(response.body()!!.token, response.body()!!.tokenExpire)
+                        saveAndConfigureUser(response.body()!!)
                         _goToNextPage.value = true
                     } else {
                         MyAlertMessage.showAlertDialog(view.context, "Enter correct code")
@@ -56,9 +53,7 @@ class PersonLoginViewModel: ViewModel(), Observable {
                 try {
                     val response = RegistrationApi.retrofitService.registrationResponseAsync(LoginTask(personEmail.value!!, userEnteredCode.value!!))
                     if (response.isSuccessful) {
-                        SharedConfigs.signedUser = ClassConverter.loginPropertyToSignedUser(response.body()!!)
-//                        SharedConfigs.token = response.body()!!.token
-                        SharedConfigs.saveToken(response.body()!!.token, response.body()!!.tokenExpire)
+                        saveAndConfigureUser(response.body()!!)
                         view.findNavController().navigate(R.id.action_personLoginFragment_to_personRegistrationFragment)
                     } else {
                         MyAlertMessage.showAlertDialog(view.context, "Enter correct code")
@@ -76,7 +71,7 @@ class PersonLoginViewModel: ViewModel(), Observable {
         progressBarVisibility.value = true
         viewModelScope.launch {
             try {
-                val response = MailExistApi.retrofitService.isMailExistAsync(EmailExistTask(personEmail.value!!))
+                val response = MailExistApi.retrofitService.isMailExist(EmailExistTask(personEmail.value!!))
                 if (response.isSuccessful) {
                     isEmailExists.value = response.body()!!.mailExist
                     userEnteredCode.value = response.body()!!.code
@@ -88,6 +83,12 @@ class PersonLoginViewModel: ViewModel(), Observable {
             }
             progressBarVisibility.value = false
         }
+    }
+
+    private fun saveAndConfigureUser(response: LoginProperty) {
+        SharedConfigs.signedUser = ClassConverter.loginPropertyToSignedUser(response)
+        SharedConfigs.saveToken(response.token, response.tokenExpire)
+        SocketManager.connectSocket()
     }
 
     private val callbacks: PropertyChangeRegistry by lazy { PropertyChangeRegistry() }

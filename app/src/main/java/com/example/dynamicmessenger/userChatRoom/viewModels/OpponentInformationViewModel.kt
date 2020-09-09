@@ -22,20 +22,18 @@ import kotlinx.coroutines.launch
 
 class OpponentInformationViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val diskLruCache = DiskCache.getInstance(application)
     private val context = application
-    private val callsDao = SignedUserDatabase.getUserDatabase(application)!!.userCallsDao()
-    private val callsRepository = UserCallsRepository(callsDao)
     private val userContactsDao = SignedUserDatabase.getUserDatabase(application)!!.userContactsDao()
     private val contactsRepository = UserContactsRepository(userContactsDao)
     private val contactsList: List<String> = getSavedContacts()
     val isUserInContacts = MutableLiveData<Boolean>()
-    private val _opponentUser = MutableLiveData<User>()
-    val opponentUser: LiveData<User> = _opponentUser
+    val opponentUser = MutableLiveData<User>()
 
-    init {
-        _opponentUser.value = HomeActivity.opponentUser
-        isUserInContacts.value = contactsList.contains(opponentUser.value?._id)
+    fun getOpponentInformation(user: User?) {
+        if (user != null) {
+            opponentUser.value = user
+            isUserInContacts.value = contactsList.contains(opponentUser.value?._id)
+        }
     }
 
     private fun getSavedContacts(): MutableList<String> {
@@ -45,32 +43,22 @@ class OpponentInformationViewModel(application: Application) : AndroidViewModel(
         return list
     }
 
-    fun saveCall(userCalls: UserCalls) {
+    fun removeUserFromContacts() {
         viewModelScope.launch {
-            callsRepository.insert(userCalls)
-        }
-    }
-
-    fun getAvatar(closure: (Bitmap) -> Unit) {
-        viewModelScope.launch {
-            if (opponentUser.value?.avatarURL != null) {
-                try {
-                    if (diskLruCache.get(opponentUser.value!!.avatarURL!!) != null) {
-                        closure(diskLruCache.get(opponentUser.value!!.avatarURL!!)!!)
-                    } else {
-                        val response = LoadAvatarApi.retrofitService.loadAvatarResponseAsync(
-                            opponentUser.value!!.avatarURL!!
-                        )
-                        if (response.isSuccessful) {
-                            val inputStream = response.body()!!.byteStream()
-                            val bitmap = BitmapFactory.decodeStream(inputStream)
-                            diskLruCache.put(opponentUser.value!!.avatarURL!!, bitmap)
-                            closure(bitmap)
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.i("+++exception", "userInformationViewModel getAvatar $e")
+            try {
+                val task = RemoveContactTask(HomeActivity.receiverID!!)
+                val response =
+                    RemoveContactApi.retrofitService.removeContact(SharedConfigs.token, task)
+                if (response.isSuccessful) {
+                    HomeActivity.isAddContacts = false
+                    Toast.makeText(context, "User removed  contacts", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
                 }
+                isUserInContacts.postValue(false)
+            } catch (e: Exception) {
+                Log.i("+++", "add contact exception $e")
+                Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -78,29 +66,16 @@ class OpponentInformationViewModel(application: Application) : AndroidViewModel(
     fun addUserToContacts() {
         viewModelScope.launch {
             try {
-                if (isUserInContacts.value!!) {
-                    val task = RemoveContactTask(HomeActivity.receiverID!!)
-                    val response =
-                        RemoveContactApi.retrofitService.removeContact(SharedConfigs.token, task)
-                    if (response.isSuccessful) {
-                        HomeActivity.isAddContacts = false
-                        Toast.makeText(context, "User removed  contacts", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
-                    }
-                    isUserInContacts.postValue(false)
+                val task = AddUserContactTask(HomeActivity.receiverID!!)
+                val response =
+                    AddContactApi.retrofitService.addContactResponseAsync(SharedConfigs.token, task)
+                if (response.isSuccessful) {
+                    HomeActivity.isAddContacts = false
+                    Toast.makeText(context, "User added in your contacts", Toast.LENGTH_SHORT).show()
                 } else {
-                    val task = AddUserContactTask(HomeActivity.receiverID!!)
-                    val response =
-                        AddContactApi.retrofitService.addContactResponseAsync(SharedConfigs.token, task)
-                    if (response.isSuccessful) {
-                        HomeActivity.isAddContacts = false
-                        Toast.makeText(context, "User added in your contacts", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
-                    }
-                    isUserInContacts.postValue(true)
+                    Toast.makeText(context, "User is already in your contacts", Toast.LENGTH_SHORT).show()
                 }
+                isUserInContacts.postValue(true)
             } catch (e: Exception) {
                 Log.i("+++", "add contact exception $e")
                 Toast.makeText(context, "Check your internet connection", Toast.LENGTH_SHORT).show()

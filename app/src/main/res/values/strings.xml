@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">Dynamic Messenger</string>
+    <string name="app_name" translatable="false">Method</string>
     <string name="enter_your_email">Enter your email for login or register</string>
     <string name="error_message">Error message</string>
     <string name="ok">OK</string>
-    <string name="incorrect_code">Incorrect code</string> <!--   TODO not used  -->
+    <string name="incorrect_code">Incorrect code</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
     <string name="resend_code">Resend code?</string>
@@ -11,7 +11,6 @@
     <string name="last_name">Last Name</string>
     <string name="username">Username</string>
     <string name="email">Email</string>
-    <string name="university">University</string> <!--   TODO not used  -->
     <string name="contacts">Contacts</string>
     <string name="reset">Reset</string> <!--   TODO not used  -->
     <string name="found_users">Found users</string> <!--   TODO not used  -->
@@ -23,8 +22,7 @@
     <string name="email_will_be_used_to_confirm">Email will be used to confirm</string>
     <string name="continue_button">Continue</string> <!--   TODO continue key reserved  -->
     <string name="enter_code">Enter code...</string>
-    <string name="select_university">Select university</string> <!--   TODO not used  -->
-    <string name="create_account">Update information</string> <!--   TODO not used  -->
+    <string name="create_account">Update information</string>
     <string name="skip">Skip</string>
     <string name="congratulations">Congratulations</string>
     <string name="done">Done</string> <!--   TODO not used  -->
@@ -32,14 +30,14 @@
     <string name="phone">Phone</string>
     <string name="language">Language</string>
     <string name="dark_mode">Dark mode</string>
-    <string name="correct_email">Correct email</string> <!--   TODO not used  -->
-    <string name="incorrect_email">Incorrect email</string> <!--   TODO not used  -->
-    <string name="incorrect_username">Incorrect username</string> <!--   TODO not used  -->
+    <string name="correct_email">Correct email</string>
+    <string name="incorrect_email">Incorrect email</string>
+    <string name="incorrect_username">Incorrect username</string>
     <string name="correct_username">Correct username</string> <!--   TODO not used  -->
     <string name="correct_name">Correct name</string> <!--   TODO not used  -->
-    <string name="name_must_contain_at_least_2_letters">Name must contain at least 2 letters</string> <!--   TODO not used  -->
+    <string name="name_must_contain_at_least_2_letters">Name must contain at least 2 letters</string>
     <string name="correct_lastname">Correct last name</string> <!--   TODO not used  -->
-    <string name="lastname_must_contain_at_least_2_letters">last name must contain at least 2 letters</string> <!--   TODO not used  -->
+    <string name="lastname_must_contain_at_least_2_letters">last name must contain at least 2 letters</string>
     <string name="code">Code</string> <!--   TODO not used  -->
     <string name="update_information">Update information</string>
     <string name="enter_message">Enter message...</string>
@@ -48,7 +46,7 @@
     <string name="chats">Chats</string>
     <string name="please_fill_all_fields">Please fill all fields</string> <!--   TODO not used  -->
     <string name="close">Close</string> <!--   TODO not used  -->
-    <string name="select_gender">Select gender</string> <!--   TODO not used  -->
+    <string name="select_gender">Select gender</string>
     <string name="address">Address</string> <!--   TODO not used  -->
     <string name="birth_date">Birth date(m/d/yy)</string>
     <string name="add_contact">Add contact</string> <!--   TODO not used  -->
@@ -62,7 +60,38 @@
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="attention">Attention</string> <!--   TODO not used  -->
+    <string name="info">Info</string> <!--   TODO not used  -->
+    <string name="gender">Gender</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="add_to_contact">Add to contact</string> <!--   TODO not used  -->
+    <string name="calls">Calls</string>
+    <string name="call">Call</string>
+    <string name="you_have_no_calls">You have no calls</string> <!--   TODO not used  -->
+    <string name="this_user_is_not_in_your_contacts">This user is not in your contacts</string> <!--   TODO not used  -->
+    <string name="your_session_expires_please_log_in_again">Your session expires, please log in again</string>
+    <string name="reconnecting">Reconnecting...</string> <!--   TODO not used  -->
+    <string name="calling">Calling</string> <!--   TODO not used  -->
+    <string name="you_have_no_messages">You have no messages</string> <!--   TODO not used  -->
+    <string name="dynamics_user">Dynamic\'s user</string> <!--   TODO not used  -->
+    <string name="video">Video</string>
+    <string name="audio">Audio</string>
+    <string name="message">Message</string>
+    <string name="album">Album</string> <!--   TODO not used  -->
+    <string name="camera">Camera</string> <!--   TODO not used  -->
+    <string name="choose_one_of_this_app_to_upload_photo">Choose one of this app to upload photo</string> <!--   TODO not used  -->
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="info_not_set">Info not set</string> <!--   TODO not used  -->
+    <string name="the_username_must_contain_at_least_4_letters">The username must contain at least 4 letters</string>
+    <string name="this_username_is_taken">This username is taken</string>
 
+    <string-array name="genders">
+        <item>@string/male</item>
+        <item>@string/female</item>
+    </string-array>
+
+    <string name="birth_date_only">Birth date</string>
     <string name="sms_comment">In this phone number will be sent SMS with the code</string>
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="next" translatable="false">Next</string>
