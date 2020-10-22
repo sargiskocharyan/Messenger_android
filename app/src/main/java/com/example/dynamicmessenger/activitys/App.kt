@@ -20,7 +20,6 @@ class App: Application() {
         SharedConfigs.init(this)
         if (SharedConfigs.token != "") {
             SocketManager.connectSocket()
-//            SocketManager.callSocketEvents()
         }
         NetworkUtils.createConnectivityManager()
         createNotificationChannels()
